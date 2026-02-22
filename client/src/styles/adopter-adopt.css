@@ -1,0 +1,36 @@
+/* Organizations Top Row */
+.org-carousel {
+  display: flex;
+  gap: 12px;
+}
+
+.org-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #aaa;
+}
+
+.org-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+/* Adopt Grid */
+.adopt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* Filter bar */
+.filter-bar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 240px;
+  height: 100vh;
+  border-left: 1px solid #ddd;
+  padding: 20px;
+  background: white;
+}
