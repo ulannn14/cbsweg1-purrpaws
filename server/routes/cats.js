@@ -1,7 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { getAllCats } = require("../controllers/catController");
+const catController = require('../controllers/catController');
 
-router.get("/", getAllCats);
+router.get('/', catController.getCats);
 
 module.exports = router;
