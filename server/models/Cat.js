@@ -7,6 +7,26 @@ const mongoose = require('mongoose');
  */
 const catSchema = new mongoose.Schema({
 
+/**
+ * Optional reference to an organization that the cat belongs to
+ * Will be null if the cat is not yet associated with any user
+ */
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    default: null
+  },
+
+/**
+ * Required reference to an organization that the cat belongs to
+ */
+  organizationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization',
+    required: true
+  },
+
   /**
    * Name of the cat
    * Required field
@@ -68,6 +88,25 @@ const catSchema = new mongoose.Schema({
     default: 'available'
   },
 
+
+  /**
+   * Description of the cat's behavior and personality
+   */
+  temperament: {
+    type: String,
+    enum: ['Energetic', 'Calm', 'Shy', 'Friendly', 'Independent', 'Affectionate'],
+  },
+
+  /**
+   * Cat's vaccination records
+   * Array of vaccines the cat has received 
+   */
+  vaccinationStatus: [{
+    type: String,
+    enum: ['Spayed/Neutered', 'ARV(Anti-Rabies)', '4-in-1 Vaccine', 'Deworm'],
+  }],
+
+
   /**
    * Image URL of the cat
    * This will store the link to uploaded image
@@ -76,15 +115,6 @@ const catSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-
-  /**
-   * Reference to the organization or user who posted the cat
-   * Uses MongoDB ObjectId to link to User model
-   */
-  organization: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }
 
 }, {
   /**
