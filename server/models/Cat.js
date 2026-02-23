@@ -1,101 +1,102 @@
-// Import Cat model
-const Cat = require('../models/Cat');
+// Import mongoose
+const mongoose = require('mongoose');
 
 /**
- * @desc    Get all cats
- * @route   GET /api/cats
- * @access  Public
+ * Cat Schema
+ * Defines the structure of a Cat document in MongoDB
  */
-exports.getCats = async (req, res) => {
-  try {
-    // Fetch all cats from database
-    const cats = await Cat.find();
+const catSchema = new mongoose.Schema({
 
-    res.status(200).json(cats);
-  } catch (error) {
-    // Server error handling
-    res.status(500).json({ error: error.message });
+  /**
+   * Name of the cat
+   * Required field
+   */
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+
+  /**
+   * Age of the cat (in years)
+   * Must be 0 or higher
+   */
+  age: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+
+  /**
+   * Breed of the cat
+   * Example: Persian, Siamese, Bengal
+   */
+  breed: {
+    type: String,
+    required: true,
+    trim: true
+  },
+
+  /**
+   * Gender of the cat
+   * Restricted to only Male or Female
+   */
+  gender: {
+    type: String,
+    enum: ['Male', 'Female'],
+    required: true
+  },
+
+  /**
+   * Description of the cat
+   * Can include personality, behavior, etc.
+   */
+  description: {
+    type: String,
+    default: ''
+  },
+
+  /**
+   * Adoption status of the cat
+   * - available → ready for adoption
+   * - pending → application submitted
+   * - adopted → successfully adopted
+   */
+  status: {
+    type: String,
+    enum: ['available', 'pending', 'adopted'],
+    default: 'available'
+  },
+
+  /**
+   * Image URL of the cat
+   * This will store the link to uploaded image
+   */
+  image: {
+    type: String,
+    default: ''
+  },
+
+  /**
+   * Reference to the organization or user who posted the cat
+   * Uses MongoDB ObjectId to link to User model
+   */
+  organization: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
-};
+
+}, {
+  /**
+   * Automatically adds:
+   * - createdAt
+   * - updatedAt
+   */
+  timestamps: true
+});
 
 /**
- * @desc    Get single cat by ID
- * @route   GET /api/cats/:id
- * @access  Public
+ * Export the Cat model
+ * This allows us to use Cat in controllers
  */
-exports.getCatById = async (req, res) => {
-  try {
-    // Find cat by MongoDB ObjectId
-    const cat = await Cat.findById(req.params.id);
-
-    // If no cat found, return 404
-    if (!cat) {
-      return res.status(404).json({ message: "Cat not found" });
-    }
-
-    res.json(cat);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-/**
- * @desc    Create a new cat
- * @route   POST /api/cats
- * @access  Public (should be Protected later)
- */
-exports.createCat = async (req, res) => {
-  try {
-    // Create new cat document using request body
-    const newCat = await Cat.create(req.body);
-
-    res.status(201).json(newCat);
-  } catch (error) {
-    // Validation or bad request error
-    res.status(400).json({ error: error.message });
-  }
-};
-
-/**
- * @desc    Update existing cat
- * @route   PUT /api/cats/:id
- * @access  Public (should be Protected later)
- */
-exports.updateCat = async (req, res) => {
-  try {
-    // Find and update cat, return updated version
-    const updatedCat = await Cat.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
-    if (!updatedCat) {
-      return res.status(404).json({ message: "Cat not found" });
-    }
-
-    res.json(updatedCat);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-/**
- * @desc    Delete cat
- * @route   DELETE /api/cats/:id
- * @access  Public (should be Protected later)
- */
-exports.deleteCat = async (req, res) => {
-  try {
-    // Find and delete cat
-    const deletedCat = await Cat.findByIdAndDelete(req.params.id);
-
-    if (!deletedCat) {
-      return res.status(404).json({ message: "Cat not found" });
-    }
-
-    res.json({ message: "Cat deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+module.exports = mongoose.model('Cat', catSchema);
