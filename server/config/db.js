@@ -1,18 +1,17 @@
-const mysql = require("mysql2");
+const mongoose = require('mongoose');
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "your_password",
-  database: "cat_adoption"
-});
+const options = {};
 
-db.connect((err) => {
-  if (err) {
-    console.error("Database connection failed:", err);
-  } else {
-    console.log("Connected to MySQL");
-  }
-});
+const url = 'mongodb+srv://matthewfajardo_db_user:<db_password>@purrpaws.8qhjusz.mongodb.net/?appName=PurrPaws';
 
-module.exports = db;
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(url, options);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        process.exit(1);
+    }
+};
+
+module.exports = connectDB;
