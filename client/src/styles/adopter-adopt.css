@@ -34,3 +34,47 @@
   padding: 20px;
   background: white;
 }
+
+.filter-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.filter-group input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.age-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.age-range input {
+  width: 80px;
+}
+
+.age-separator {
+  font-weight: bold;
+}
+
+.filter-btn {
+  padding: 10px;
+  border: none;
+  background: black;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.filter-btn:hover {
+  opacity: 0.9;
+}

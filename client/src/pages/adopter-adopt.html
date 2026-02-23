@@ -55,7 +55,46 @@
     </main>
 
     <aside class="filter-bar">
-    <h3>FILTER</h3>
+        <h3>FILTER</h3>
+        <form class="filter-form">
+
+        <!-- Location Filter -->
+        <div class="filter-group">
+        <label for="location">Location</label>
+        <input 
+            type="text" 
+            id="location" 
+            name="location" 
+            placeholder="Enter city or ZIP code"
+        >
+        </div>
+
+        <!-- Age Range Filter -->
+        <div class="filter-group">
+        <label>Age Range</label>
+        <div class="age-range">
+            <input 
+            type="number" 
+            id="age-min" 
+            name="age_min" 
+            placeholder="Min" 
+            min="0"
+            >
+            <span class="age-separator">-</span>
+            <input 
+            type="number" 
+            id="age-max" 
+            name="age_max" 
+            placeholder="Max" 
+            min="0"
+            >
+        </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="filter-btn">Apply Filters</button>
+
+    </form>
     </aside>
 
 </div>
