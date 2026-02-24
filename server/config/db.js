@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const options = {};
 
-const url = 'mongodb+srv://matthewfajardo_db_user:<db_password>@purrpaws.8qhjusz.mongodb.net/?appName=PurrPaws';
+const url = 'mongodb://localhost:27017/catAdoptionDB';
 
 const connectDB = async () => {
     try {

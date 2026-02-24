@@ -1,7 +1,7 @@
 const Cat = require('../models/Cat');
 
 // Get all cats
-exports.getCats = async (req, res) => {
+exports.getPets = async (req, res) => {
   try {
     const cats = await Cat.find();
     res.status(200).json(cats);
