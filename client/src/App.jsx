@@ -1,14 +1,16 @@
-import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdopterLanding from "./pages/AdopterLanding";
+import AdopterAdopt from "./pages/AdopterAdopt";
 
 function App() {
-  useEffect(() => {
-    fetch("http://localhost:5000/api/cats")
-      .then(res => res.json())
-      .then(data => console.log("FROM BACKEND:", data))
-      .catch(err => console.error("ERROR:", err));
-  }, []);
-
-  return <h1>PurrPaws Frontend Running</h1>;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AdopterLanding />} />
+        <Route path="/adopt" element={<AdopterAdopt />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
