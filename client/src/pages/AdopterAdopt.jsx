@@ -196,3 +196,52 @@ function AdopterAdopt() {
 }
 
 export default AdopterAdopt;
+
+
+/* 
+import { useEffect, useState } from "react";
+
+function AdopterAdopt() {
+  const [cats, setCats] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/cats")
+      .then(res => {
+        console.log("STATUS:", res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log("DATA FROM BACKEND:", data);
+        setCats(data);
+      })
+      .catch(err => {
+        console.error("FETCH ERROR:", err);
+        setError("Failed to fetch data");
+      });
+  }, []);
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1>Backend Connection Test</h1>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {cats.length === 0 ? (
+        <p>No cats loaded yet...</p>
+      ) : (
+        <ul>
+          {cats.map(cat => (
+            <li key={cat._id}>
+              {cat.name} - {cat.breed}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export default AdopterAdopt;
+
+*/
