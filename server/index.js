@@ -1,19 +1,20 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 
 const connectDB = require('./config/db');
-
 connectDB();
-
-require('dotenv').config();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+const path = require('path');
+
+// Serve static files from the client/public folder
+app.use('/images', express.static(path.join(__dirname, '../client/public/images')));
 
 const catRoutes = require('./routes/cats');
-const { connect } = require('mongoose');
 app.use('/api/cats', catRoutes);
 
 const PORT = process.env.PORT || 5000;
