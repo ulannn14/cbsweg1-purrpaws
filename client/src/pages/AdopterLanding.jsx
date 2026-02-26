@@ -8,15 +8,17 @@ function AdopterLanding() {
     const [featuredPet, setFeaturedPet] = useState(null);
     const [pets, setPets] = useState([]);
 
+    const API = import.meta.env.VITE_API_URL;
+
     // Fetch Campaigns + Pet Data
     useEffect(() => {
 
-        fetch("http://localhost:5000/api/campaigns")
+        fetch(`${API}/api/campaigns`)
         .then(res => res.json())
         .then(data => setCampaigns(data))
         .catch(err => console.error(err));
 
-        fetch("http://localhost:5000/api/cats")
+        fetch(`${API}/api/cats`)
         .then(res => res.json())
         .then(data => {
             console.debug('Fetched pets:', data?.length ?? 'no-data', data);
@@ -24,7 +26,7 @@ function AdopterLanding() {
         })
         .catch(err => console.error(err));
 
-        fetch("http://localhost:5000/api/featured-pet")
+        fetch(`${API}/api/featured-pet`)
         .then(res => res.json())
         .then(data => setFeaturedPet(data))
         .catch(err => console.error(err));
