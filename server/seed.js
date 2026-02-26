@@ -39,14 +39,16 @@ const seedDatabase = async () => {
         age: 2,
         breed: "Persian",
         gender: "Female",
-        organizationId: org1._id
+        organizationId: org1._id,
+        location: "Makati"
       },
       {
         name: "Snowball",
         age: 1,
         breed: "Siamese",
         gender: "Male",
-        organizationId: org2._id
+        organizationId: org2._id,
+        location: "Manila"
       }
     ]);
 
