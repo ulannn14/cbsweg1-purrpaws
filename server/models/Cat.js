@@ -38,6 +38,15 @@ const catSchema = new mongoose.Schema({
   },
 
   /**
+   * Location where the cat was found
+   */
+  location: {
+    type: String,
+    required: true,
+    trim: true
+  },
+
+  /**
    * Age of the cat (in years)
    * Must be 0 or higher
    */
