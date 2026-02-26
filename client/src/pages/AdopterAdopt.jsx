@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 
 function AdopterAdopt() {
@@ -28,9 +29,12 @@ function AdopterAdopt() {
         .then(data => setOrganizations(data))
         .catch(err => console.error(err));
 
-        fetch("http://localhost:5000/api/pets")
+        fetch("http://localhost:5000/api/cats")
         .then(res => res.json())
-        .then(data => setPets(data))
+        .then(data => {
+            console.debug('Adopt page fetched cats', data?.length, data);
+            setPets(data);
+        })
         .catch(err => console.error(err));
 
     }, []);
@@ -58,7 +62,7 @@ function AdopterAdopt() {
 
         // Example backend filtering request
         /*
-        fetch("http://localhost:5000/api/pets/filter", {
+        fetch("http://localhost:5000/api/cats/filter", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -99,33 +103,29 @@ function AdopterAdopt() {
             {pets.map(pet => (
                 <div key={pet._id} className="adopt-card">
 
-                <div className="pet-photo">
+                <Link to={`/pets/${pet._id}`} className="pet-link">
+                    <div className="pet-photo">
                     <img
-                    src={pet.photoUrl}
-                    alt={pet.name}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover"
-                    }}
+                        src={pet.image ? `http://localhost:5000/images/${pet.image}` : '/images/placeholder-cat.svg'}
+                        alt={pet.name}
                     />
-                </div>
-
-                <div className="pet-info">
-                    <h3>{pet.name}</h3>
-                    <p>{pet.breed}</p>
-
-                    <div className="tags">
-                    {pet.tags?.map((tag, index) => (
-                        <span
-                        key={index}
-                        className={`tag ${tag.dark ? "dark" : ""}`}
-                        >
-                        {tag.label}
-                        </span>
-                    ))}
                     </div>
-                </div>
+
+                    <div className="pet-meta">
+                    <h4 className="pet-name">{pet.name}</h4>
+                    <p className="pet-sub">
+                      {pet.gender || 'Unknown'}
+                      {pet.age ? ` • ${pet.age} yr${pet.age > 1 ? 's' : ''}` : ''}
+                    </p>
+                    <p className="pet-breed">{pet.breed || 'Unknown'}</p>
+                    {pet.status && <p className="pet-status">Status: {pet.status}</p>}
+                    {pet.temperament && <p className="pet-temperament">Temperament: {pet.temperament}</p>}
+                    {pet.description && <p className="pet-description">{pet.description}</p>}
+                    {pet.vaccinationStatus && pet.vaccinationStatus.length > 0 && (
+                      <p className="pet-vaccines">Vaccines: {pet.vaccinationStatus.join(', ')}</p>
+                    )}
+                    </div>
+                </Link>
 
                 </div>
             ))}
