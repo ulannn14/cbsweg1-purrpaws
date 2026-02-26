@@ -8,13 +8,13 @@ mongoose.connect('mongodb://localhost:27017/catAdoptionDB')
 
 const seedDatabase = async () => {
   try {
-    // 🔥 Clear existing data (optional but recommended)
+    //Clear existing data (optional but recommended)
     await Cat.deleteMany({});
     await Organization.deleteMany({});
 
     console.log("Old data cleared");
 
-    // 🏢 Create Organizations first
+    //Create Organizations first
     const org1 = await Organization.create({
       name: "Paws Rescue",
       address: "Manila",
@@ -32,7 +32,7 @@ const seedDatabase = async () => {
 
     console.log("Organizations created");
 
-    // 🐱 Create Cats linked to organizations
+    //Create Cats linked to organizations
     await Cat.create([
       {
         name: "Mingming",
@@ -40,15 +40,14 @@ const seedDatabase = async () => {
         breed: "Persian",
         gender: "Female",
         organizationId: org1._id,
-        location: "Makati"
+        image: "69a063ea798c837e907b9f68.jpg" // Example image filename based on cat ID
       },
       {
         name: "Snowball",
         age: 1,
         breed: "Siamese",
         gender: "Male",
-        organizationId: org2._id,
-        location: "Manila"
+        organizationId: org2._id
       }
     ]);
 
