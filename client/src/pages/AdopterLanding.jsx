@@ -7,17 +7,27 @@ function AdopterLanding() {
     const [campaigns, setCampaigns] = useState([]);
     const [featuredPets, setFeaturedPets] = useState([]);
 
+    const API = import.meta.env.VITE_API_URL;
+
     // Fetch Campaigns + Pet Data
     useEffect(() => {
 
-        fetch("http://localhost:5000/api/campaigns")
+        fetch(`${API}/api/campaigns`)
         .then(res => res.json())
         .then(data => setCampaigns(data))
         .catch(err => console.error(err));
 
-        fetch("http://localhost:5000/api/cats")
+        fetch(`${API}/api/cats`)
         .then(res => res.json())
-        .then(data => setFeaturedPets(Array.isArray(data) ? data : []))
+        .then(data => {
+            console.debug('Fetched pets:', data?.length ?? 'no-data', data);
+            setPets(data);
+        })
+        .catch(err => console.error(err));
+
+        fetch(`${API}/api/featured-pet`)
+        .then(res => res.json())
+        .then(data => setFeaturedPet(data))
         .catch(err => console.error(err));
 
     }, []);
@@ -33,11 +43,11 @@ function AdopterLanding() {
 
             <section className="section campaigns">
 
-            <h2>CAMPAIGNS</h2>
+            {/* <h2>CAMPAIGNS</h2> */}
 
             <div className="carousel-wrapper">
 
-                <button className="carousel-btn prev">❮</button>
+                {/* <button className="carousel-btn prev">❮</button> */}
 
                 <div className="carousel">
 
@@ -49,15 +59,15 @@ function AdopterLanding() {
                     ))
                 ) : (
                     <>
-                    <div className="campaign-card">Campaign 1</div>
-                    <div className="campaign-card">Campaign 2</div>
-                    <div className="campaign-card">Campaign 3</div>
+                    <div className="campaign-card">
+                    <img src="/images/campaign.jpg" alt="Campaign 1" />
+                    </div>
                     </>
                 )}
 
                 </div>
 
-                <button className="carousel-btn next">❯</button>
+                {/* <button className="carousel-btn next">❯</button> */}
 
             </div>
 

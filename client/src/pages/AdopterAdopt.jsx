@@ -17,6 +17,8 @@ function AdopterAdopt() {
         age_max: ""
     });
 
+    const API = import.meta.env.VITE_API_URL;
+
     // ===============================
     // Fetch Backend Data
     // Replace API URLs later if needed

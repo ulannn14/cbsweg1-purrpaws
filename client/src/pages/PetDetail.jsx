@@ -7,9 +7,11 @@ function PetDetail() {
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost:5000/api/cats/${id}`)
+    fetch(`${API}/api/cats/${id}`)
       .then((res) => res.json())
       .then((data) => {
         console.debug('PetDetail fetched', data);
@@ -36,8 +38,7 @@ function PetDetail() {
       <div className="pet-detail">
         <div className="pet-detail-photo">
           <img
-            src={pet.image ? `http://localhost:5000${pet.image}` : '/images/placeholder-cat.svg'}
-            onError={(e) => {e.target.src = '/images/placeholder-cat.svg'}}
+            src={pet.image ? `${API}/images/${pet.image}` : '/images/placeholder-cat.svg'}
             alt={pet.name}
           />
         </div>

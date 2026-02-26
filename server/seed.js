@@ -1,20 +1,22 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
+
 const Cat = require('./models/Cat');
 const Organization = require('./models/Organization');
 
-mongoose.connect('mongodb://localhost:27017/catAdoptionDB')
-  .then(() => console.log('MongoDB Connected for Seeding'))
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB Atlas Connected for Seeding'))
   .catch(err => console.log(err));
 
 const seedDatabase = async () => {
   try {
-    // 🔥 Clear existing data (optional but recommended)
+    // 🔥 Clear existing data
     await Cat.deleteMany({});
     await Organization.deleteMany({});
 
     console.log("Old data cleared");
 
-    // 🏢 Create Organizations first
+    // 🏢 Create Organizations
     const org1 = await Organization.create({
       name: "Paws Rescue",
       address: "Manila",
@@ -32,8 +34,8 @@ const seedDatabase = async () => {
 
     console.log("Organizations created");
 
-    // 🐱 Create Cats linked to organizations
-    const cats = await Cat.create([
+    // 🐱 Create Cats
+    await Cat.create([
       {
         name: "Mingming",
         age: 2,
