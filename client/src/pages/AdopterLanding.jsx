@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 
 function AdopterLanding() {
 
     const [campaigns, setCampaigns] = useState([]);
     const [featuredPet, setFeaturedPet] = useState(null);
+    const [pets, setPets] = useState([]);
 
     // Fetch Campaigns + Pet Data
     useEffect(() => {
@@ -12,6 +14,14 @@ function AdopterLanding() {
         fetch("http://localhost:5000/api/campaigns")
         .then(res => res.json())
         .then(data => setCampaigns(data))
+        .catch(err => console.error(err));
+
+        fetch("http://localhost:5000/api/cats")
+        .then(res => res.json())
+        .then(data => {
+            console.debug('Fetched pets:', data?.length ?? 'no-data', data);
+            setPets(data);
+        })
         .catch(err => console.error(err));
 
         fetch("http://localhost:5000/api/featured-pet")
@@ -70,47 +80,36 @@ function AdopterLanding() {
 
             <section className="section adopt">
 
-            <div className="section-header">
-                <h2>ADOPT HERE</h2>
+                        <div className="section-header">
+                                <h2>ADOPT HERE</h2>
 
-                <a href="/adopt">
-                <button className="arrow-btn">❯</button>
-                </a>
-            </div>
+                                <Link to="/adopt">
+                                <button className="arrow-btn">❯</button>
+                                </Link>
+                        </div>
 
-            {featuredPet && (
-                <div className="adopt-card">
-
-                <div className="pet-photo">
-                    <img
-                    src={featuredPet.photoUrl}
-                    alt={featuredPet.name}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover"
-                    }}
-                    />
-                </div>
-
-                <div className="pet-info">
-                    <h3>{featuredPet.name}</h3>
-                    <p>{featuredPet.breed}</p>
-
-                    <div className="tags">
-                    {featuredPet.tags?.map((tag, index) => (
-                        <span
-                        key={index}
-                        className={`tag ${tag.dark ? "dark" : ""}`}
-                        >
-                        {tag.label}
-                        </span>
-                    ))}
-                    </div>
-
-                </div>
-                </div>
-            )}
+                        <div className="pet-wheel">
+                            {pets.length > 0 ? (
+                                pets.map(pet => (
+                                    <Link key={pet._id} to={`/pets/${pet._id}`} className="pet-tile">
+                                        <div className="pet-thumb">
+                                            <img src={pet.image 
+                                                ? `http://localhost:5000/images/${pet.image}` 
+                                                : '/images/placeholder-cat.svg'} 
+                                                alt={pet.name} 
+                                            />
+                                        </div>
+                                        <div className="pet-tile-meta">
+                                            <div className="pt-name">{pet.name}</div>
+                                            <div className="pt-sub">{pet.age ? pet.age + ' yrs' : 'Age N/A'} • {pet.gender || 'Unknown'}</div>
+                                            <div className="pt-breed">{pet.breed || 'Unknown'}</div>
+                                        </div>
+                                    </Link>
+                                ))
+                            ) : (
+                                <div className="pet-tile empty">No pets available</div>
+                            )}
+                        </div>
 
             </section>
 
