@@ -44,11 +44,11 @@ function AdopterLanding() {
 
             <section className="section campaigns">
 
-            <h2>CAMPAIGNS</h2>
+            {/* <h2>CAMPAIGNS</h2> */}
 
             <div className="carousel-wrapper">
 
-                <button className="carousel-btn prev">❮</button>
+                {/* <button className="carousel-btn prev">❮</button> */}
 
                 <div className="carousel">
 
@@ -60,15 +60,15 @@ function AdopterLanding() {
                     ))
                 ) : (
                     <>
-                    <div className="campaign-card">Campaign 1</div>
-                    <div className="campaign-card">Campaign 2</div>
-                    <div className="campaign-card">Campaign 3</div>
+                    <div className="campaign-card">
+                    <img src="/images/campaign.jpg" alt="Campaign 1" />
+                    </div>
                     </>
                 )}
 
                 </div>
 
-                <button className="carousel-btn next">❯</button>
+                {/* <button className="carousel-btn next">❯</button> */}
 
             </div>
 

@@ -40,6 +40,15 @@
   justify-content: center;
   flex-shrink: 0;
   background: #f8f8f8;
+  position: relative;
+  overflow: hidden;
+}
+
+.campaign-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* Arrows */
