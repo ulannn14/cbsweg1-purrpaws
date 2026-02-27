@@ -26,12 +26,12 @@ function AdopterAdopt() {
 
     useEffect(() => {
 
-        fetch("http://localhost:5000/api/organizations")
+        fetch(`${API}/api/organizations`)
         .then(res => res.json())
         .then(data => setOrganizations(data))
         .catch(err => console.error(err));
 
-        fetch("http://localhost:5000/api/cats")
+        fetch(`${API}/api/cats`)
         .then(res => res.json())
         .then(data => setPets(data))
         .catch(err => console.error(err));
@@ -105,7 +105,7 @@ function AdopterAdopt() {
 
                 <div className="pet-photo">
                     <img
-                    src={pet.image ? `http://localhost:5000${pet.image}` : '/images/placeholder-cat.svg'}
+                    src={pet.image ? `${API}${pet.image}` : '/images/placeholder-cat.svg'}
                     onError={(e) => {e.target.src = '/images/placeholder-cat.svg'}}
                     alt={pet.name}
                     style={{
