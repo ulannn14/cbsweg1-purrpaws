@@ -11,17 +11,17 @@ function AdopterLanding() {
 
     // Fetch Campaigns + Pet Data
     useEffect(() => {
-
+        /*
         fetch(`${API}/api/campaigns`)
         .then(res => res.json())
         .then(data => setCampaigns(data))
         .catch(err => console.error(err));
-
+        */
         fetch(`${API}/api/cats`)
         .then(res => res.json())
         .then(data => {
             console.debug('Fetched pets:', data?.length ?? 'no-data', data);
-            setPets(data);
+            setFeaturedPets(data);
         })
         .catch(err => console.error(err));
 
@@ -96,7 +96,8 @@ function AdopterLanding() {
 
                 <div className="pet-photo">
                     <img
-                    src={pet.image ? `http://localhost:5000${pet.image}` : '/images/placeholder-cat.svg'}
+                    //src={pet.image ? `http://localhost:5000${pet.image}` : '/images/placeholder-cat.svg'}
+                    src={pet.image ? `${API}/images/${pet.image}` : '/images/placeholder-cat.svg'}
                     onError={(e) => {e.target.src = '/images/placeholder-cat.svg'}}
                     alt={pet.name}
                     style={{
