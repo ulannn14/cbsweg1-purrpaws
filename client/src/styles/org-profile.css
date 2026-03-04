@@ -1,0 +1,89 @@
+/* ORG PROFILE */
+
+.org-profile-section{
+  display:flex;
+  justify-content:center;
+}
+
+.org-profile-box{
+
+  width:100%;
+  max-width:1000px;
+
+  border:1px solid #ccc;
+  border-radius:30px;
+
+  padding:80px 60px 60px 60px;
+
+  position:relative;
+  background:white;
+}
+
+/* CENTER IMAGE */
+
+.org-profile-image{
+  display:flex;
+  justify-content:center;
+  margin-bottom:40px;
+}
+
+.org-avatar{
+
+  width:120px;
+  height:120px;
+
+  border-radius:50%;
+  border:1px solid #444;
+
+  background:#f3f3f3;
+}
+
+/* PROFILE GRID */
+
+.profile-grid{
+
+  display:grid;
+  grid-template-columns:150px 500px;
+
+  row-gap:30px;
+  column-gap:30px;
+
+  align-items:center;
+}
+
+.profile-grid label{
+  font-size:22px;
+}
+
+/* FIELD */
+
+.profile-field{
+
+  border:1px solid #444;
+
+  height:40px;
+
+  display:flex;
+  align-items:center;
+
+  padding-left:12px;
+
+  background:white;
+}
+
+/* EDIT BUTTON */
+
+.edit-btn{
+
+  position:absolute;
+  top:30px;
+  right:30px;
+
+  padding:10px 24px;
+
+  border-radius:25px;
+  border:1px solid #444;
+
+  background:#f4f4f4;
+  cursor:pointer;
+}

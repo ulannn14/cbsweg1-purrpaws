@@ -10,6 +10,9 @@ import './styles/adopter-adopt.css';
 import './styles/adopter-asean.css';
 import './styles/adopter-application.css';
 import "./styles/adopter-profile.css";
+import './styles/org-landing.css';
+import './styles/org-pets.css';
+import './styles/org-profile.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

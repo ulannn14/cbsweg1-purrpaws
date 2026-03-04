@@ -58,6 +58,8 @@
   top:35px;
   right:40px;
 
+  color: #000;
+
   padding:10px 26px;
   border-radius:25px;
   border:1px solid #444;
@@ -69,4 +71,5 @@
 
 .edit-btn:hover{
   background:#eaeaea;
+  border:1px solid #444;
 }

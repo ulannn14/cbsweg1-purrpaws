@@ -1,0 +1,33 @@
+import { Link } from "react-router-dom";
+
+function OrgSidebar() {
+    return (
+        <aside className="sidebar">
+
+        {/* Logo */}
+        <div className="logo">
+            <img src="/images/logo.png" alt="PurrPaws Logo" />
+        </div>
+
+        {/* Navigation */}
+        <nav className="nav">
+
+            <Link to="/applications" className="nav-item">
+            <img src="/images/icons/application.png" alt="Applications" />
+            </Link>
+
+            <Link to="/adopter" className="nav-item">
+            <img src="/images/icons/shelter.png" alt="Home" />
+            </Link>
+
+            <Link to="/profile" className="nav-item">
+            <img src="/images/icons/profile.png" alt="Profile" />
+            </Link>
+
+        </nav>
+
+        </aside>
+    );
+}
+
+export default OrgSidebar;

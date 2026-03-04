@@ -1,0 +1,101 @@
+/* LAYOUT */
+
+.org-layout{
+  display:flex;
+}
+
+.org-content{
+  flex:1;
+  padding:40px;
+}
+
+/* SIDEBAR */
+
+.org-sidebar{
+  width:90px;
+  background:#f4f4f4;
+  border-right:1px solid #ccc;
+  height:100vh;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.org-logo{
+  padding:20px;
+  font-weight:bold;
+}
+
+.org-nav{
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+  margin-top:40px;
+}
+
+.org-icon{
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* TITLE */
+
+.org-title{
+  text-align:center;
+  font-size:48px;
+  color:#E58B45;
+  margin-bottom:40px;
+}
+
+/* TABS */
+
+.org-tabs{
+  display:flex;
+  gap:40px;
+  border-bottom:1px solid #ccc;
+  padding-bottom:10px;
+  margin-bottom:30px;
+}
+
+.org-tabs button{
+  background:none;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.org-tabs button.active{
+  font-weight:bold;
+  border-bottom:2px solid black;
+}
+
+/* APPLICATION CARD */
+
+.application-list{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+.application-card{
+  border:1px solid #ccc;
+  padding:25px;
+  border-radius:6px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.application-info h3{
+  margin:0;
+}
+
+.view-btn{
+  border:1px solid #444;
+  background:#f4f4f4;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}

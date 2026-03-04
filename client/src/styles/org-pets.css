@@ -1,0 +1,81 @@
+/* PET TABS */
+
+.pet-tabs{
+  display:flex;
+  gap:40px;
+  border-bottom:1px solid #ccc;
+  margin-bottom:20px;
+  padding-bottom:10px;
+}
+
+.pet-tabs button{
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.pet-tabs button.active{
+  font-weight:bold;
+  border-bottom:2px solid black;
+}
+
+/* HEADER */
+
+.pets-header{
+  display:grid;
+  grid-template-columns:80px 1fr 1fr 1fr 1fr 1fr 60px;
+  font-size:14px;
+  color:#666;
+  margin-bottom:10px;
+}
+
+/* PET ROW */
+
+.pet-row{
+  display:grid;
+  grid-template-columns:80px 1fr 1fr 1fr 1fr 1fr 60px;
+
+  align-items:center;
+  border:1px solid #ccc;
+  border-radius:15px;
+
+  padding:20px;
+  margin-bottom:15px;
+}
+
+/* IMAGE */
+
+.pet-img{
+  width:60px;
+  height:60px;
+  border:1px solid #aaa;
+}
+
+/* EDIT ICON */
+
+.edit-icon{
+  background:black;
+  color:white;
+  border:none;
+  border-radius:50%;
+  width:35px;
+  height:35px;
+  cursor:pointer;
+}
+
+/* ADD BUTTON */
+
+.add-pet-container{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:20px;
+}
+
+.add-pet-btn{
+  border:1px solid #444;
+  padding:10px 20px;
+  border-radius:20px;
+  background:#f4f4f4;
+  cursor:pointer;
+}
