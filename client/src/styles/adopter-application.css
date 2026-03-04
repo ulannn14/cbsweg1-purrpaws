@@ -1,0 +1,87 @@
+/* APPLICATION PAGE */
+
+.applications h2{
+  margin-bottom: 20px;
+}
+
+.applications-list{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.application-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:16px;
+  border:1px solid #ddd;
+  border-radius:12px;
+
+  background:white;
+  transition:0.2s;
+}
+
+.application-card:hover{
+  background:#f9f9f9;
+}
+
+.application-link{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* PET CARD */
+
+.pet-preview{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.pet-photo{
+  width:90px;
+  height:90px;
+  border-radius:10px;
+  overflow:hidden;
+  background:#eee;
+}
+
+.pet-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* APPLICATION INFO */
+
+.application-info{
+  flex:1;
+  margin-left:20px;
+}
+
+.application-info h3{
+  margin-bottom:4px;
+}
+
+/* STATUS */
+
+.status-pill{
+  padding:8px 18px;
+  border-radius:20px;
+  font-size:13px;
+  text-transform:uppercase;
+}
+
+.status-pill.pending{
+  background:#eee;
+}
+
+.status-pill.approved{
+  background:#d4f5d4;
+}
+
+.status-pill.rejected{
+  background:#ffd6d6;
+}

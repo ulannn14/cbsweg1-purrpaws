@@ -139,9 +139,22 @@ function AdopterLanding() {
 
             <div className="section-header">
                 <h2>MORE INFO</h2>
-            </div>
 
-            <div className="asean-text"></div>
+                <a href="/asean-info">
+                <button className="arrow-btn">❯</button>
+                </a>
+            </div>
+            
+            <div className="asean-header">
+                <h2>Pet Adoption and Stray Animal Situation in ASEAN</h2>
+                <p>
+                Stray animal populations remain a major concern across many
+                Southeast Asian countries. Limited shelter capacity, lack of
+                awareness on responsible pet ownership, and rapid urbanization
+                contribute to the growing number of stray cats and dogs in
+                cities across the region.
+                </p>
+            </div>
 
             </section>
 

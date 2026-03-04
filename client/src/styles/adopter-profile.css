@@ -1,0 +1,72 @@
+/* PROFILE PAGE */
+
+.profile-section{
+  display:flex;
+  justify-content:center;
+}
+
+.profile-box{
+  width:100%;
+  max-width:900px;
+
+  border:1px solid #ccc;
+  border-radius:10px;
+
+  padding:50px 60px;
+  background:white;
+
+  position:relative;
+}
+
+/* GRID LAYOUT */
+
+.profile-box h2{
+  margin-bottom: 40px;
+}
+
+.profile-grid{
+  display:grid;
+  grid-template-columns: 160px 520px;
+  row-gap:28px;
+  column-gap:30px;
+  align-items:center;
+}
+
+.profile-grid label{
+  font-size:22px;
+}
+
+/* INPUT STYLE BOX */
+
+.profile-field{
+  border:1px solid #444;
+  height:40px;
+  width:500px;
+
+  display:flex;
+  align-items:center;
+  padding-left:12px;
+
+  font-size:16px;
+  background:#fff;
+}
+
+/* EDIT BUTTON */
+
+.edit-btn{
+  position:absolute;
+  top:35px;
+  right:40px;
+
+  padding:10px 26px;
+  border-radius:25px;
+  border:1px solid #444;
+
+  background:#f4f4f4;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.edit-btn:hover{
+  background:#eaeaea;
+}
