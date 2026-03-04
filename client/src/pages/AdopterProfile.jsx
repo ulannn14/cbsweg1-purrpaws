@@ -23,7 +23,9 @@ function AdopterProfile() {
 
             <h2>PROFILE INFORMATION</h2>
 
+            <a href="/org">
             <button className="edit-btn">EDIT</button>
+            </a>
 
             <div className="profile-grid">
 

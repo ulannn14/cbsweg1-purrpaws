@@ -1,5 +1,6 @@
 import { useState } from "react";
-import OrgLayout from "../components/OrgAppLayout";
+import { FaEdit } from "react-icons/fa";
+import OrgAppLayout from "../components/OrgAppLayout";
 
 function OrgPets() {
 
@@ -41,9 +42,11 @@ function OrgPets() {
       : pets.filter(pet => pet.type === activeTab);
 
   return (
-    <OrgLayout>
+    <OrgAppLayout>
 
       <main className="org-main">
+
+        <h1 className="org-title">ORGANIZATION NAME</h1>
 
         {/* Tabs */}
 
@@ -102,7 +105,9 @@ function OrgPets() {
               <div>{pet.breed}</div>
               <div>{pet.status}</div>
 
-              <button className="edit-icon">✏️</button>
+              <button className="edit-icon">
+                <FaEdit />
+              </button>
 
             </div>
 
@@ -118,7 +123,7 @@ function OrgPets() {
 
       </main>
 
-    </OrgLayout>
+    </OrgAppLayout>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import OrgLayout from "../components/OrgLayout";
+import OrgAppLayout from "../components/OrgAppLayout";
 
 function OrgLanding() {
 
@@ -31,11 +31,11 @@ function OrgLanding() {
   );
 
   return (
-    <OrgLayout>
+    <OrgAppLayout>
 
       <main className="org-main">
 
-        <h1 className="org-title">ORGANIZATION</h1>
+        <h1 className="org-title">ORGANIZATION NAME</h1>
 
         {/* Tabs */}
 
@@ -96,7 +96,7 @@ function OrgLanding() {
 
       </main>
 
-    </OrgLayout>
+    </OrgAppLayout>
   );
 }
 

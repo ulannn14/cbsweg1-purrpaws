@@ -55,6 +55,7 @@ body {
   height: 28px;
   object-fit: contain;
   transition: transform 0.2s ease;
+  
 }
 
 .nav-item:hover img {

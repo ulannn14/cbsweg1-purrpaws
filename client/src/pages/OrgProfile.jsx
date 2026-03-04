@@ -1,5 +1,5 @@
 import { useState } from "react";
-import OrgLayout from "../components/OrgAppLayout";
+import OrgAppLayout from "../components/OrgAppLayout";
 
 function OrgProfile() {
 
@@ -12,7 +12,7 @@ function OrgProfile() {
   });
 
   return (
-    <OrgLayout>
+    <OrgAppLayout>
 
       <main className="org-main">
 
@@ -20,7 +20,9 @@ function OrgProfile() {
 
           <div className="org-profile-box">
 
+            <a href="/">
             <button className="edit-btn">EDIT</button>
+            </a>
 
             {/* PROFILE IMAGE */}
 
@@ -41,7 +43,7 @@ function OrgProfile() {
               <label>Name</label>
               <div className="profile-field">{org.name}</div>
 
-              <label>Birthdate</label>
+              <label>Date Established</label>
               <div className="profile-field">{org.birthdate}</div>
 
               <label>Address</label>
@@ -55,7 +57,7 @@ function OrgProfile() {
 
       </main>
 
-    </OrgLayout>
+    </OrgAppLayout>
   );
 }
 

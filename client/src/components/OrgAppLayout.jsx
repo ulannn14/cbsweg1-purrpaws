@@ -1,4 +1,4 @@
-import Sidebar from "./Sidebar";
+import OrgSidebar from "./OrgSidebar";
 
 function OrgAppLayout({ children }) {
     return (
