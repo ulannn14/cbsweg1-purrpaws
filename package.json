@@ -1,0 +1,26 @@
+{
+  "name": "cbsweg1-purrpaws",
+  "version": "1.0.0",
+  "description": "PurrPaws is a fullstack web application built using React and Express. It aims to address the issue regarding stray animals in the country by streamlining the adoption process.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "install-all": "npm install --prefix server && npm install --prefix client",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ulannn14/cbsweg1-purrpaws.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ulannn14/cbsweg1-purrpaws/issues"
+  },
+  "homepage": "https://github.com/ulannn14/cbsweg1-purrpaws#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
