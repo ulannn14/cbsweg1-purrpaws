@@ -1,30 +1,9 @@
 const bcrypt = require('bcrypt');
-const pool = require('../config/db'); // your PostgreSQL pool connection
+const pool = require('../config/db'); // PostgreSQL pool
 
-// Get all users
-exports.getUsers = async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users');
-    res.status(200).json(result.rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Get single user by ID
-exports.getUserById = async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.params.uid]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.status(200).json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Create new user
+// --------------------------
+// CREATE USER (Sign Up)
+// --------------------------
 exports.createUser = async (req, res) => {
   try {
     const {
@@ -40,82 +19,61 @@ exports.createUser = async (req, res) => {
       address
     } = req.body;
 
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // Check if email or username already exists
+    const userExists = await pool.query(
+      'SELECT * FROM users WHERE email = $1 OR username = $2',
+      [email, username]
+    );
+    if (userExists.rows.length > 0) {
+      return res.status(400).json({ message: 'Email or username already exists' });
+    }
 
-    const result = await pool.query(
-      `INSERT INTO users 
-      (firstName, lastName, email, mobile, username, password, birthdate, city, province, address)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+    // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert user into DB
+    const newUser = await pool.query(
+      `INSERT INTO users (first_name, last_name, email, mobile, username, password, birthdate, city, province, address)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+       RETURNING id, first_name, last_name, email, username, birthdate, city, province, address`,
       [firstName, lastName, email, mobile, username, hashedPassword, birthdate, city, province, address]
     );
 
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(201).json(newUser.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// Update user
-exports.updateUser = async (req, res) => {
+// --------------------------
+// LOGIN USER
+// --------------------------
+exports.loginUser = async (req, res) => {
   try {
-    const { uid } = req.params;
-    const {
-      firstName,
-      lastName,
-      email,
-      mobile,
-      username,
-      password,
-      birthdate,
-      city,
-      province,
-      address
-    } = req.body;
+    const { email, password } = req.body;
 
-    // Hash password if provided
-    let hashedPassword = password;
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      hashedPassword = await bcrypt.hash(password, salt);
+    // Find user by email
+    const userQuery = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = userQuery.rows[0];
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const result = await pool.query(
-      `UPDATE users SET
-        firstName=$1,
-        lastName=$2,
-        email=$3,
-        mobile=$4,
-        username=$5,
-        password=$6,
-        birthdate=$7,
-        city=$8,
-        province=$9,
-        address=$10
-      WHERE id=$11 RETURNING *`,
-      [firstName, lastName, email, mobile, username, hashedPassword, birthdate, city, province, address, uid]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    res.status(200).json(result.rows[0]);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+    // Remove password from user object before sending
+    delete user.password;
 
-// Delete user
-exports.deleteUser = async (req, res) => {
-  try {
-    const result = await pool.query('DELETE FROM users WHERE id=$1 RETURNING *', [req.params.uid]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.status(200).json({ message: 'User deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
