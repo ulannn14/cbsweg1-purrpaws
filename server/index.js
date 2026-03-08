@@ -18,10 +18,14 @@ app.use(express.json());
 const catRoutes = require('./routes/cats');
 const userRoutes = require('./routes/users');
 const orgRoutes = require('./routes/organizations');
+const authController = require('../controllers/authController');
 
 app.use('/api/cats', catRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/organizations', orgRoutes);
+
+// Login route
+router.post('/login', authController.loginUser);
 
 // Health check endpoint
 app.get('/', (req, res) => {
