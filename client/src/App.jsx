@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import AdopterLanding from "./pages/AdopterLanding";
 import AdopterAdopt from "./pages/AdopterAdopt";
 import AdopterAsean from "./pages/AdopterAsean";
@@ -15,7 +17,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AdopterLanding />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/adopter" element={<AdopterLanding />} />
         <Route path="/adopt" element={<AdopterAdopt />} />
         <Route path="/adopt/:id" element={<PetDetail />} />
         <Route path="/asean-info" element={<AdopterAsean />} />

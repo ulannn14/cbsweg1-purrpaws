@@ -12,7 +12,7 @@ function Sidebar() {
         {/* Navigation */}
         <nav className="nav">
 
-            <Link to="/" className="nav-item">
+            <Link to="/adopter" className="nav-item">
             <img src="/images/icons/shelter.png" alt="Home" />
             </Link>
 
