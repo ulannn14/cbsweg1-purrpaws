@@ -1,17 +1,10 @@
-const { pool } = require('../config/db');
 const bcrypt = require('bcrypt');
-
-// ===============================
-// USER CONTROLLER
-// Handles CRUD operations for users
-// ===============================
+const pool = require('../config/db'); // your PostgreSQL pool connection
 
 // Get all users
 exports.getUsers = async (req, res) => {
   try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM users ORDER BY uid');
-    client.release();
+    const result = await pool.query('SELECT * FROM users');
     res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -21,15 +14,10 @@ exports.getUsers = async (req, res) => {
 // Get single user by ID
 exports.getUserById = async (req, res) => {
   try {
-    const uid = req.params.uid;
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM users WHERE uid=$1', [uid]);
-    client.release();
-
-    if (!result.rows[0]) {
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.params.uid]);
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     res.status(200).json(result.rows[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -42,44 +30,26 @@ exports.createUser = async (req, res) => {
     const {
       firstName,
       lastName,
-      username,
-      password,
       email,
       mobile,
+      username,
+      password,
       birthdate,
       city,
       province,
-      address,
-      organization_id,
-      role
+      address
     } = req.body;
 
-    const full_name = `${firstName} ${lastName}`;
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const client = await pool.connect();
-    const result = await client.query(
-      `INSERT INTO users
-        (username, full_name, password, email, mobile, birthdate, city, province, address, organization_id, role)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
-       RETURNING *`,
-      [
-        username,
-        full_name,
-        hashedPassword,
-        email || null,
-        mobile || null,
-        birthdate || null,
-        city || null,
-        province || null,
-        address || null,
-        organization_id || null,
-        role || 'adoptee'
-      ]
+    const result = await pool.query(
+      `INSERT INTO users 
+      (firstName, lastName, email, mobile, username, password, birthdate, city, province, address)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+      [firstName, lastName, email, mobile, username, hashedPassword, birthdate, city, province, address]
     );
-    client.release();
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -90,64 +60,44 @@ exports.createUser = async (req, res) => {
 // Update user
 exports.updateUser = async (req, res) => {
   try {
-    const uid = req.params.uid;
+    const { uid } = req.params;
     const {
       firstName,
       lastName,
-      username,
-      password,
       email,
       mobile,
+      username,
+      password,
       birthdate,
       city,
       province,
-      address,
-      organization_id,
-      role
+      address
     } = req.body;
 
-    const full_name = `${firstName} ${lastName}`;
-
-    // Hash password if it is being updated
+    // Hash password if provided
     let hashedPassword = password;
     if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(password, salt);
     }
 
-    const client = await pool.connect();
-    const result = await client.query(
+    const result = await pool.query(
       `UPDATE users SET
-        username=$1,
-        full_name=$2,
-        password=$3,
-        email=$4,
-        mobile=$5,
-        birthdate=$6,
-        city=$7,
-        province=$8,
-        address=$9,
-        organization_id=$10,
-        role=$11
-       WHERE uid=$12
-       RETURNING *`,
-      [
-        username,
-        full_name,
-        hashedPassword,
-        email || null,
-        mobile || null,
-        birthdate || null,
-        city || null,
-        province || null,
-        address || null,
-        organization_id || null,
-        role || 'adoptee',
-        uid
-      ]
+        firstName=$1,
+        lastName=$2,
+        email=$3,
+        mobile=$4,
+        username=$5,
+        password=$6,
+        birthdate=$7,
+        city=$8,
+        province=$9,
+        address=$10
+      WHERE id=$11 RETURNING *`,
+      [firstName, lastName, email, mobile, username, hashedPassword, birthdate, city, province, address, uid]
     );
-    client.release();
 
-    if (!result.rows[0]) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
 
@@ -160,15 +110,10 @@ exports.updateUser = async (req, res) => {
 // Delete user
 exports.deleteUser = async (req, res) => {
   try {
-    const uid = req.params.uid;
-    const client = await pool.connect();
-    const result = await client.query('DELETE FROM users WHERE uid=$1 RETURNING *', [uid]);
-    client.release();
-
-    if (!result.rows[0]) {
+    const result = await pool.query('DELETE FROM users WHERE id=$1 RETURNING *', [req.params.uid]);
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
