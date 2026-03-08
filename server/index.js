@@ -1,20 +1,20 @@
 require('dotenv').config();
 
-
 const express = require('express');
 const cors = require('cors');
 
-const connectDB = require('./config/db');
-
-connectDB();
+const { connectDB } = require('./config/db');
 
 const app = express();
+
+// connect to PostgreSQL
+connectDB();
 
 app.use(cors());
 app.use(express.json());
 
+// routes
 const catRoutes = require('./routes/cats');
-const { connect } = require('mongoose');
 app.use('/api/cats', catRoutes);
 
 const PORT = process.env.PORT || 5000;

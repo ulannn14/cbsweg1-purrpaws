@@ -1,7 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const Cat = require('./models/Cat');
+const Cat = require('./models/Pet');
 const Organization = require('./models/Organization');
 
 mongoose.connect(process.env.MONGO_URI)
