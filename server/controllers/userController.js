@@ -1,24 +1,57 @@
 const bcrypt = require('bcrypt');
 const prisma = require('../config/prisma');
 
-// Get all users
+
+// GET ALL USERS
 exports.getUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
+
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        userName: true,
+        birthdate: true,
+        city: true,
+        address: true,
+        provinceId: true
+      }
+    });
+
     res.status(200).json(users);
+
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ message: 'Server error' });
+
   }
 };
 
-// Get single user
+
+
+// GET SINGLE USER
 exports.getUserById = async (req, res) => {
-  const { uid } = req.params;
+
+  const { id } = req.params;
 
   try {
+
     const user = await prisma.user.findUnique({
-      where: { id: Number(uid) }
+      where: { id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        userName: true,
+        birthdate: true,
+        city: true,
+        address: true,
+        provinceId: true
+      }
     });
 
     if (!user) {
@@ -28,14 +61,29 @@ exports.getUserById = async (req, res) => {
     res.status(200).json(user);
 
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ message: 'Server error' });
+
   }
 };
 
-// Signup
+
+
+// SIGNUP
 exports.createUser = async (req, res) => {
-  const { firstName, lastName, email, mobile, username, password, birthdate, city, province, address } = req.body;
+
+  const {
+    firstName,
+    lastName,
+    email,
+    userName,
+    password,
+    birthdate,
+    city,
+    provinceId,
+    address
+  } = req.body;
 
   try {
 
@@ -43,7 +91,7 @@ exports.createUser = async (req, res) => {
       where: {
         OR: [
           { email },
-          { username }
+          { userName }
         ]
       }
     });
@@ -59,12 +107,11 @@ exports.createUser = async (req, res) => {
         firstName,
         lastName,
         email,
-        mobile,
-        username,
+        userName,
         password: hashedPassword,
         birthdate: new Date(birthdate),
         city,
-        province,
+        provinceId: Number(provinceId),
         address
       }
     });
@@ -74,13 +121,18 @@ exports.createUser = async (req, res) => {
     res.status(201).json(userWithoutPassword);
 
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ message: "Server error" });
+
   }
 };
 
-// Login
+
+
+// LOGIN
 exports.loginUser = async (req, res) => {
+
   const { email, password } = req.body;
 
   try {
@@ -104,23 +156,30 @@ exports.loginUser = async (req, res) => {
     res.status(200).json(userWithoutPassword);
 
   } catch (err) {
+
     console.error(err);
     res.status(500).json({ message: "Server error" });
+
   }
 };
 
-// Update user
+
+
+// UPDATE USER
 exports.updateUser = async (req, res) => {
-  const { uid } = req.params;
+
+  const { id } = req.params;
 
   try {
 
     const updatedUser = await prisma.user.update({
-      where: { id: Number(uid) },
+      where: { id },
       data: req.body
     });
 
-    res.status(200).json(updatedUser);
+    const { password, ...userWithoutPassword } = updatedUser;
+
+    res.status(200).json(userWithoutPassword);
 
   } catch (err) {
 
@@ -130,17 +189,21 @@ exports.updateUser = async (req, res) => {
 
     console.error(err);
     res.status(500).json({ message: 'Server error' });
+
   }
 };
 
-// Delete user
+
+
+// DELETE USER
 exports.deleteUser = async (req, res) => {
-  const { uid } = req.params;
+
+  const { id } = req.params;
 
   try {
 
     await prisma.user.delete({
-      where: { id: Number(uid) }
+      where: { id }
     });
 
     res.status(200).json({ message: 'User deleted successfully' });
@@ -153,5 +216,6 @@ exports.deleteUser = async (req, res) => {
 
     console.error(err);
     res.status(500).json({ message: 'Server error' });
+
   }
 };

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AppLayout from "../components/AppLayout";
+import { Link } from "react-router-dom";
 
 function NotFound() {
   return (

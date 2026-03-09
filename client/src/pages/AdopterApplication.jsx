@@ -7,9 +7,13 @@ function AdopterApplication() {
   const [applications, setApplications] = useState([]);
   const API = import.meta.env.VITE_API_URL;
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
 
-    fetch(`${API}/api/applications`)
+    if (!user) return;
+
+    fetch(`${API}/api/applications/user/${user.id}`)
       .then(res => res.json())
       .then(data => {
         console.log("Applications:", data);
@@ -17,7 +21,7 @@ function AdopterApplication() {
       })
       .catch(err => console.error(err));
 
-  }, []); 
+  }, [API, user]);
 
   return (
     <AppLayout>
@@ -30,15 +34,13 @@ function AdopterApplication() {
 
           <div className="applications-list">
 
+            {applications.length === 0 && (
+              <p>No applications yet.</p>
+            )}
+
             {applications.map(app => (
 
-              <Link
-                key={app._id}
-                to={`/applications/${app._id}`}
-                className="application-link"
-              >
-
-                <div className="application-card">
+                <div key={app.id} className="application-card">
 
                   {/* PET CARD */}
                   <div className="pet-preview">
@@ -56,7 +58,7 @@ function AdopterApplication() {
 
                     <div className="pet-info">
                       <h3>{app.pet?.name}</h3>
-                      <p>{app.pet?.breed}</p>
+                      <p>{app.pet?.breed?.name}</p>
                     </div>
 
                   </div>
@@ -64,23 +66,21 @@ function AdopterApplication() {
                   {/* APPLICATION INFO */}
                   <div className="application-info">
 
-                    <h3>{app.pet?.name}</h3>
+                    <h3>{app.pet?.organization?.name}</h3>
 
                     <p>
-                      Application Date:{" "}
+                      Application Date{" "}
                       {new Date(app.createdAt).toLocaleDateString()}
                     </p>
 
                   </div>
 
                   {/* STATUS */}
-                  <div className={`status-pill ${app.status}`}>
+                  <div className={`status-pill ${app.status?.toLowerCase()}`}>
                     {app.status}
                   </div>
 
                 </div>
-
-              </Link>
 
             ))}
 

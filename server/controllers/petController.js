@@ -1,39 +1,46 @@
 const prisma = require("../config/prisma");
 
 
-// Get all pets
 exports.getPets = async (req, res) => {
   try {
 
-    const { provinceId, age_min, age_max } = req.query;
+    const { provinceId, age_min, age_max, organizationId } = req.query;
 
     const pets = await prisma.pets.findMany({
+
       where: {
+
+        // org filter (for clickable org header)
+        ...(organizationId && {
+          organizationId: organizationId
+        }),
+
+        // province filter
         ...(provinceId && {
           organization: {
             provinceId: Number(provinceId)
           }
         }),
 
-        ...(age_min && {
+        // age filter
+        ...((age_min || age_max) && {
           age: {
-            gte: Number(age_min)
-          }
-        }),
-
-        ...(age_max && {
-          age: {
-            lte: Number(age_max)
+            ...(age_min && { gte: Number(age_min) }),
+            ...(age_max && { lte: Number(age_max) })
           }
         })
+
       },
+
       include: {
         breed: true,
         organization: true
       },
+
       orderBy: {
         name: "asc"
       }
+
     });
 
     res.json(pets);

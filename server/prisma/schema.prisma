@@ -195,5 +195,14 @@ model AdoptionApplication {
   petId String
   pet   Pets   @relation(fields: [petId], references: [id])
 
+  status AdoptionApplicationStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
   @@unique([userId, petId])
+}
+
+enum AdoptionApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

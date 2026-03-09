@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 
 function PetDetail() {
@@ -20,7 +20,6 @@ function PetDetail() {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
-
   }, [id]);
 
   if (loading) return (
@@ -60,6 +59,22 @@ function PetDetail() {
           {pet.rescueStory && (
             <p className="pet-detail-desc">{pet.rescueStory}</p>
           )}
+
+        <Link to={`/apply/${pet.id}`}>
+          <button
+            style={{
+              background: "#ff7a7a",
+              color: "white",
+              padding: "10px 16px",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              marginTop: "10px"
+            }}
+          >
+            Apply for Adoption
+          </button>
+        </Link>
 
         </div>
 

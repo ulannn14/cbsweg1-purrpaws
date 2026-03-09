@@ -8,6 +8,8 @@ function AdopterAdopt() {
     const [pets, setPets] = useState([]);
     const [provinces, setProvinces] = useState([]);
 
+    const [selectedOrg, setSelectedOrg] = useState(null);
+
     const [filters, setFilters] = useState({
         provinceId: "",
         age_min: "",
@@ -28,7 +30,6 @@ function AdopterAdopt() {
         .then(data => setPets(data))
         .catch(err => console.error(err));
 
-        // fetch provinces for dropdown
         fetch(`${API}/api/provinces`)
         .then(res => res.json())
         .then(data => setProvinces(data))
@@ -43,12 +44,25 @@ function AdopterAdopt() {
         });
     }
 
+    function handleOrgClick(orgId) {
+
+        setSelectedOrg(orgId);
+
+        fetch(`${API}/api/pets?organizationId=${orgId}`)
+        .then(res => res.json())
+        .then(data => setPets(data))
+        .catch(err => console.error(err));
+
+    }
+
     function handleFilterSubmit(e) {
         e.preventDefault();
 
+        setSelectedOrg(null); // disable org filtering
+
         fetch(
         `${API}/api/pets?provinceId=${filters.provinceId}&age_min=${filters.age_min}&age_max=${filters.age_max}`
-        )        
+        )
         .then(res => res.json())
         .then(data => setPets(data))
         .catch(err => console.error(err));
@@ -65,7 +79,11 @@ function AdopterAdopt() {
             <div className="org-carousel">
 
                 {organizations.map(org => (
-                <div key={org.id} className="org-icon">
+                <div
+                    key={org.id}
+                    className={`org-icon ${selectedOrg === org.id ? "active" : ""}`}
+                    onClick={() => handleOrgClick(org.id)}
+                >
                     {org.name}
                 </div>
                 ))}

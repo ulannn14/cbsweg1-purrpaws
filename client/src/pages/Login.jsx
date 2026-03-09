@@ -17,20 +17,38 @@ function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${API}/api/users/login`, {
+      // try user login first
+      let response = await fetch(`${API}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData)
       });
 
-      const data = await response.json();
+      let data = await response.json();
 
       if (response.ok) {
         localStorage.setItem("user", JSON.stringify(data));
         navigate("/adopter");
-      } else {
-        setError(data.message || "Login failed");
+        return;
       }
+
+      // if user login fails → try organization login
+      response = await fetch(`${API}/api/organizations/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData)
+      });
+
+      data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("org", JSON.stringify(data));
+        navigate("/org");
+        return;
+      }
+
+      setError("Invalid email or password");
+
     } catch (err) {
       console.error(err);
       setError("Server error, please try again later");

@@ -1,38 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppLayout from "../components/AppLayout";
 
 function AdopterProfile() {
 
   const [editing, setEditing] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const [user, setUser] = useState({
-    email: "leigh@email.com",
-    username: "leighalbo",
-    password: "********",
-    name: "Leigh Albo",
-    contactNumber: "09123456789",
-    birthdate: "April 15, 2003",
-    address: "Santa Ana, Manila"
-  });
+  // Load user from backend
+  useEffect(() => {
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (!storedUser) return;
+
+    fetch(`http://localhost:5000/users/${storedUser.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setUser(data);
+      })
+      .catch(err => console.error(err));
+
+  }, []);
 
   const handleChange = (e) => {
+
     const { name, value } = e.target;
 
     setUser(prev => ({
       ...prev,
       [name]: value
     }));
+
   };
 
-  const handleSave = () => {
-    // later connect to backend
-    console.log("Saving user:", user);
-    setEditing(false);
+  const handleSave = async () => {
+
+    try {
+
+      const res = await fetch(`http://localhost:5000/users/${user.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+      });
+
+      const updatedUser = await res.json();
+
+      // update localStorage
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      setUser(updatedUser);
+      setEditing(false);
+
+    } catch (err) {
+      console.error(err);
+    }
+
   };
 
   const handleCancel = () => {
     setEditing(false);
   };
+
+  if (!user) {
+    return <div>Loading profile...</div>;
+  }
 
   return (
     <AppLayout>
@@ -42,8 +75,6 @@ function AdopterProfile() {
         <section className="section profile-section">
 
           <div className="profile-box">
-
-            {/* ACTION BUTTONS */}
 
             {!editing ? (
 
@@ -78,8 +109,6 @@ function AdopterProfile() {
 
             <div className="profile-grid">
 
-              {/* ACCOUNT */}
-
               <h2 className="profile-section-title">Account Details</h2>
 
               <label>Email</label>
@@ -91,41 +120,47 @@ function AdopterProfile() {
 
               <label>Username</label>
               {editing ? (
-                <input name="username" value={user.username} onChange={handleChange} className="profile-input"/>
+                <input name="userName" value={user.userName} onChange={handleChange} className="profile-input"/>
               ) : (
-                <div className="profile-field">{user.username}</div>
+                <div className="profile-field">{user.userName}</div>
               )}
-
-              <label>Password</label>
-              {editing ? (
-                <input name="password" value={user.password} onChange={handleChange} className="profile-input"/>
-              ) : (
-                <div className="profile-field">{user.password}</div>
-              )}
-
-              {/* PERSONAL */}
 
               <h2 className="profile-section-title">Personal Information</h2>
 
-              <label>Name</label>
+              <label>First Name</label>
               {editing ? (
-                <input name="name" value={user.name} onChange={handleChange} className="profile-input"/>
+                <input name="firstName" value={user.firstName} onChange={handleChange} className="profile-input"/>
               ) : (
-                <div className="profile-field">{user.name}</div>
+                <div className="profile-field">{user.firstName}</div>
               )}
 
-              <label>Contact Number</label>
+              <label>Last Name</label>
               {editing ? (
-                <input name="contactNumber" value={user.contactNumber} onChange={handleChange} className="profile-input"/>
+                <input name="lastName" value={user.lastName} onChange={handleChange} className="profile-input"/>
               ) : (
-                <div className="profile-field">{user.contactNumber}</div>
+                <div className="profile-field">{user.lastName}</div>
               )}
 
               <label>Birthdate</label>
               {editing ? (
-                <input name="birthdate" value={user.birthdate} onChange={handleChange} className="profile-input"/>
+                <input
+                  type="date"
+                  name="birthdate"
+                  value={user.birthdate?.split("T")[0]}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
-                <div className="profile-field">{user.birthdate}</div>
+                <div className="profile-field">
+                  {new Date(user.birthdate).toLocaleDateString()}
+                </div>
+              )}
+
+              <label>City</label>
+              {editing ? (
+                <input name="city" value={user.city} onChange={handleChange} className="profile-input"/>
+              ) : (
+                <div className="profile-field">{user.city}</div>
               )}
 
               <label>Address</label>

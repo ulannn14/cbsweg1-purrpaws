@@ -1,16 +1,15 @@
-// routes/users.js
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
-// Admin / REST routes
-router.get('/', userController.getUsers);
-router.get('/:uid', userController.getUserById);
-router.put('/:uid', userController.updateUser);
-router.delete('/:uid', userController.deleteUser);
-
-// Public auth routes
+// auth
 router.post('/signup', userController.createUser);
 router.post('/login', userController.loginUser);
+
+// users
+router.get('/', userController.getUsers);
+router.get('/:id', userController.getUserById);
+router.put('/:id', userController.updateUser);
+router.delete('/:id', userController.deleteUser);
 
 module.exports = router;

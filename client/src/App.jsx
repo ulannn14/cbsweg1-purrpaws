@@ -12,6 +12,7 @@ import OrgLanding from "./pages/OrgLanding";
 import OrgPets from "./pages/OrgPets";
 import OrgProfile from "./pages/OrgProfile";
 import NotFound from "./pages/NotFound"
+import AdopterApply from "./pages/AdopterApply";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/adopter" element={<AdopterLanding />} />
         <Route path="/adopt" element={<AdopterAdopt />} />
         <Route path="/adopt/:id" element={<PetDetail />} />
+        <Route path="/apply/:id" element={<AdopterApply />} />
         <Route path="/asean-info" element={<AdopterAsean />} />
         <Route path="/applications" element={<AdopterApplication />} />
         <Route path="/applications/:id" element={<AdopterApplicationDetail />} />
