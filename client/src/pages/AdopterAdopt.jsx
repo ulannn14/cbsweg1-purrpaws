@@ -6,9 +6,10 @@ function AdopterAdopt() {
 
     const [organizations, setOrganizations] = useState([]);
     const [pets, setPets] = useState([]);
+    const [provinces, setProvinces] = useState([]);
 
     const [filters, setFilters] = useState({
-        location: "",
+        provinceId: "",
         age_min: "",
         age_max: ""
     });
@@ -17,82 +18,40 @@ function AdopterAdopt() {
 
     useEffect(() => {
 
-        /* ===============================
-           DATABASE FETCH (DISABLED TEMP)
-        ===============================
-
         fetch(`${API}/api/organizations`)
         .then(res => res.json())
         .then(data => setOrganizations(data))
         .catch(err => console.error(err));
 
-        fetch(`${API}/api/cats`)
+        fetch(`${API}/api/pets`)
         .then(res => res.json())
         .then(data => setPets(data))
         .catch(err => console.error(err));
-        */
 
-        // HARDCODED ORGANIZATIONS
-
-        setOrganizations([
-            { _id: "1", name: "Paws Rescue" },
-            { _id: "2", name: "Hope Shelter" },
-            { _id: "3", name: "Happy Tails" },
-            { _id: "4", name: "Stray Haven" }
-        ]);
-
-        // HARDCODED PETS
-
-        setPets([
-            {
-                _id: "1",
-                name: "Milo",
-                breed: "Shih Tzu",
-                image: "/images/pets/dog.jpg",
-                tags: [{ label: "Male" }, { label: "2 yrs old" }]
-            },
-            {
-                _id: "2",
-                name: "Luna",
-                breed: "Persian",
-                image: "/images/pets/cat1.jpg",
-                tags: [{ label: "Female" }, { label: "1 yr old" }]
-            },
-            {
-                _id: "3",
-                name: "Rocky",
-                breed: "Aspin",
-                image: "/images/pets/dog.jpg",
-                tags: [{ label: "Male" }, { label: "3 yrs old" }]
-            },
-            {
-                _id: "4",
-                name: "Snow",
-                breed: "British Shorthair",
-                image: "/images/pets/cat2.jpg",
-                tags: [{ label: "Female" }, { label: "2 yrs old" }]
-            },
-            {
-                _id: "5",
-                name: "Brownie",
-                breed: "Mixed Breed",
-                image: "/images/pets/dog.jpg",
-                tags: [{ label: "Male" }, { label: "Puppy" }]
-            }
-        ]);
+        // fetch provinces for dropdown
+        fetch(`${API}/api/provinces`)
+        .then(res => res.json())
+        .then(data => setProvinces(data))
+        .catch(err => console.error(err));
 
     }, []);
 
     function handleChange(e) {
         setFilters({
-        ...filters,
-        [e.target.name]: e.target.value
+            ...filters,
+            [e.target.name]: e.target.value
         });
     }
 
     function handleFilterSubmit(e) {
         e.preventDefault();
-        console.log("FILTER VALUES:", filters);
+
+        fetch(
+        `${API}/api/pets?provinceId=${filters.provinceId}&age_min=${filters.age_min}&age_max=${filters.age_max}`
+        )        
+        .then(res => res.json())
+        .then(data => setPets(data))
+        .catch(err => console.error(err));
     }
 
     return (
@@ -101,12 +60,12 @@ function AdopterAdopt() {
 
         <main className="main">
 
-            {/* Organizations */}
+            {/* Organizations Carousel */}
             <section className="section organizations">
             <div className="org-carousel">
 
                 {organizations.map(org => (
-                <div key={org._id} className="org-icon">
+                <div key={org.id} className="org-icon">
                     {org.name}
                 </div>
                 ))}
@@ -114,32 +73,37 @@ function AdopterAdopt() {
             </div>
             </section>
 
-            {/* Pets */}
+            {/* Adopt Grid */}
             <section className="section adopt-grid">
 
             {pets.map(pet => (
-                <Link key={pet._id} to={`/adopt/${pet._id}`} style={{ textDecoration: "none" }}>
+                <Link
+                    key={pet.id}
+                    to={`/adopt/${pet.id}`}
+                    style={{ textDecoration: "none" }}
+                >
+
                 <div className="adopt-card">
 
-                <div className="adopt-pet-photo">
-                    <img src={pet.image} alt={pet.name} />
+                <div className="pet-photo">
+                    <img
+                        src="/images/placeholder-cat.svg"
+                        alt={pet.name}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover"
+                        }}
+                    />
                 </div>
 
                 <div className="pet-info">
                     <h3>{pet.name}</h3>
-                    <p>{pet.breed}</p>
-
-                    <div className="tags">
-                    {pet.tags?.map((tag, index) => (
-                        <span key={index} className={`tag ${tag.dark ? "dark" : ""}`}>
-                        {tag.label}
-                        </span>
-                    ))}
-                    </div>
-
+                    <p>{pet.breed?.name}</p>
                 </div>
 
                 </div>
+
                 </Link>
             ))}
 
@@ -154,17 +118,28 @@ function AdopterAdopt() {
 
             <form className="filter-form" onSubmit={handleFilterSubmit}>
 
+            {/* Province Filter */}
             <div className="filter-group">
-                <label>Location</label>
-                <input
-                type="text"
-                name="location"
-                placeholder="Enter city"
-                value={filters.location}
-                onChange={handleChange}
-                />
+                <label>Province</label>
+
+                <select
+                    name="provinceId"
+                    value={filters.provinceId}
+                    onChange={handleChange}
+                >
+
+                    <option value="">All Provinces</option>
+
+                    {provinces.map(p => (
+                        <option key={p.id} value={p.id}>
+                            {p.name}
+                        </option>
+                    ))}
+
+                </select>
             </div>
 
+            {/* Age Range Filter */}
             <div className="filter-group">
                 <label>Age Range</label>
 

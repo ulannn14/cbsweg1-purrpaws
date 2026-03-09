@@ -11,14 +11,16 @@ function PetDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`${API}/api/cats/${id}`)
+
+    fetch(`${API}/api/pets/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        console.debug('PetDetail fetched', data);
+        console.debug("PetDetail fetched", data);
         setPet(data);
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
+
   }, [id]);
 
   if (loading) return (
@@ -36,25 +38,31 @@ function PetDetail() {
   return (
     <AppLayout>
       <div className="pet-detail">
+
         <div className="pet-detail-photo">
           <img
-            src={pet.image ? `${API}/images/${pet.image}` : '/images/placeholder-cat.svg'}
+            src="/images/placeholder-cat.svg"
             alt={pet.name}
           />
         </div>
 
         <div className="pet-detail-info">
           <h2>{pet.name}</h2>
-          <p><strong>Breed:</strong> {pet.breed || 'Unknown'}</p>
-          <p><strong>Gender:</strong> {pet.gender || 'Unknown'}</p>
-          <p><strong>Age:</strong> {pet.age ?? 'Unknown'}</p>
-          {pet.status && <p><strong>Status:</strong> {pet.status}</p>}
-          {pet.temperament && <p><strong>Temperament:</strong> {pet.temperament}</p>}
-          {pet.vaccinationStatus && pet.vaccinationStatus.length > 0 && (
-            <p><strong>Vaccinations:</strong> {pet.vaccinationStatus.join(', ')}</p>
+
+          <p><strong>Breed:</strong> {pet.breed?.name || "Unknown"}</p>
+          <p><strong>Age:</strong> {pet.age ?? "Unknown"}</p>
+          <p><strong>Color:</strong> {pet.color ?? "Unknown"}</p>
+
+          {pet.temperament && (
+            <p><strong>Temperament:</strong> {pet.temperament}</p>
           )}
-          {pet.description && <p className="pet-detail-desc">{pet.description}</p>}
+
+          {pet.rescueStory && (
+            <p className="pet-detail-desc">{pet.rescueStory}</p>
+          )}
+
         </div>
+
       </div>
     </AppLayout>
   );
