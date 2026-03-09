@@ -1,6 +1,6 @@
 // controllers/userController.js
 const bcrypt = require('bcrypt');
-const pool = require('../config/db'); // your PostgreSQL pool
+const prisma = require('../config/prisma');
 
 // Get all users
 exports.getUsers = async (req, res) => {

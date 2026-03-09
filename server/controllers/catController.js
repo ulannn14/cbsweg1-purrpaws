@@ -1,4 +1,4 @@
-const { pool } = require('../config/db');
+const prisma = require('../config/prisma');
 
 // Get all cats
 exports.getCats = async (req, res) => {
