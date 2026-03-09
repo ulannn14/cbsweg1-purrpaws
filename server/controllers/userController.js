@@ -1,90 +1,133 @@
-// controllers/userController.js
 const bcrypt = require('bcrypt');
 const prisma = require('../config/prisma');
 
 // Get all users
 exports.getUsers = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM users');
-    res.status(200).json(result.rows);
+    const users = await prisma.user.findMany();
+    res.status(200).json(users);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-// Get single user by ID
+// Get single user
 exports.getUserById = async (req, res) => {
   const { uid } = req.params;
+
   try {
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [uid]);
-    if (result.rows.length === 0) return res.status(404).json({ message: 'User not found' });
-    res.status(200).json(result.rows[0]);
+    const user = await prisma.user.findUnique({
+      where: { id: Number(uid) }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-// Signup / create user
+// Signup
 exports.createUser = async (req, res) => {
   const { firstName, lastName, email, mobile, username, password, birthdate, city, province, address } = req.body;
 
   try {
-    // Check if user exists
-    const existing = await pool.query('SELECT * FROM users WHERE email = $1 OR username = $2', [email, username]);
-    if (existing.rows.length > 0) return res.status(400).json({ message: 'User already exists' });
 
-    // Hash password
+    const existing = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { username }
+        ]
+      }
+    });
+
+    if (existing) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await pool.query(
-      `INSERT INTO users (first_name,last_name,email,mobile,username,password,birthdate,city,province,address)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
-      [firstName,lastName,email,mobile,username,hashedPassword,birthdate,city,province,address]
-    );
+    const user = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        mobile,
+        username,
+        password: hashedPassword,
+        birthdate: new Date(birthdate),
+        city,
+        province,
+        address
+      }
+    });
 
-    res.status(201).json(result.rows[0]);
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.status(201).json(userWithoutPassword);
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// Login user
+// Login
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
+
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (result.rows.length === 0) return res.status(400).json({ message: 'Invalid email or password' });
 
-    const user = result.rows[0];
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid email or password' });
 
-    // Optional: remove password from response
-    delete user.password;
-    res.status(200).json(user);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.status(200).json(userWithoutPassword);
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 // Update user
 exports.updateUser = async (req, res) => {
   const { uid } = req.params;
-  const fields = req.body;
-  try {
-    const setString = Object.keys(fields)
-      .map((key, idx) => `${key}=$${idx + 1}`)
-      .join(', ');
-    const values = Object.values(fields);
 
-    const result = await pool.query(`UPDATE users SET ${setString} WHERE id=$${values.length + 1} RETURNING *`, [...values, uid]);
-    if (result.rows.length === 0) return res.status(404).json({ message: 'User not found' });
-    res.status(200).json(result.rows[0]);
+  try {
+
+    const updatedUser = await prisma.user.update({
+      where: { id: Number(uid) },
+      data: req.body
+    });
+
+    res.status(200).json(updatedUser);
+
   } catch (err) {
+
+    if (err.code === 'P2025') {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
@@ -93,11 +136,21 @@ exports.updateUser = async (req, res) => {
 // Delete user
 exports.deleteUser = async (req, res) => {
   const { uid } = req.params;
+
   try {
-    const result = await pool.query('DELETE FROM users WHERE id=$1 RETURNING *', [uid]);
-    if (result.rows.length === 0) return res.status(404).json({ message: 'User not found' });
+
+    await prisma.user.delete({
+      where: { id: Number(uid) }
+    });
+
     res.status(200).json({ message: 'User deleted successfully' });
+
   } catch (err) {
+
+    if (err.code === 'P2025') {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
