@@ -156,8 +156,10 @@ model MedicalCondition {
 
 model AdoptionApplication {
   id String @id @default(uuid())
-  useId String
-  user User @relation(fields: [useId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
   petId String
   pet Pets @relation(fields: [petId], references: [id])
+
+  @@unique ([userId, petId])
 }
