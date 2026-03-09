@@ -5,8 +5,10 @@ const prisma = new PrismaClient();
 
 async function main() {
   // create province first
-  const province = await prisma.province.create({
-    data: {
+  const province = await prisma.province.upsert({
+    where: { name: "Laguna" },
+    update: {},
+    create: {
       name: "Laguna"
     }
   });

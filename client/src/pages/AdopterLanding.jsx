@@ -9,25 +9,14 @@ function AdopterLanding() {
 
     const API = import.meta.env.VITE_API_URL;
 
-    // Fetch Campaigns + Pet Data
     useEffect(() => {
-        /*
-        fetch(`${API}/api/campaigns`)
-        .then(res => res.json())
-        .then(data => setCampaigns(data))
-        .catch(err => console.error(err));
-        */
-        fetch(`${API}/api/cats`)
+
+        fetch(`${API}/api/pets`)
         .then(res => res.json())
         .then(data => {
-            console.debug('Fetched pets:', data?.length ?? 'no-data', data);
+            console.debug("Fetched pets:", data);
             setFeaturedPets(data);
         })
-        .catch(err => console.error(err));
-
-        fetch(`${API}/api/featured-pet`)
-        .then(res => res.json())
-        .then(data => setFeaturedPet(data))
         .catch(err => console.error(err));
 
     }, []);
@@ -43,31 +32,23 @@ function AdopterLanding() {
 
             <section className="section campaigns">
 
-            {/* <h2>CAMPAIGNS</h2> */}
-
             <div className="carousel-wrapper">
-
-                {/* <button className="carousel-btn prev">❮</button> */}
 
                 <div className="carousel">
 
                 {campaigns.length > 0 ? (
                     campaigns.map(campaign => (
-                    <div key={campaign._id} className="campaign-card">
+                    <div key={campaign.id} className="campaign-card">
                         {campaign.title}
                     </div>
                     ))
                 ) : (
-                    <>
                     <div className="campaign-card">
-                    <img src="/images/campaign.jpg" alt="Campaign 1" />
+                        <img src="/images/campaign.jpg" alt="Campaign" />
                     </div>
-                    </>
                 )}
 
                 </div>
-
-                {/* <button className="carousel-btn next">❯</button> */}
 
             </div>
 
@@ -84,21 +65,26 @@ function AdopterLanding() {
             <div className="section-header">
                 <h2>ADOPT HERE</h2>
 
-                <a href="/adopt">
+                <Link to="/adopt">
                 <button className="arrow-btn">❯</button>
-                </a>
+                </Link>
             </div>
 
             <div className="adopt-grid">
+
             {featuredPets.map(pet => (
-                <Link key={pet._id} to={`/adopt/${pet._id}`} style={{ textDecoration: "none" }}>
+
+                <Link
+                    key={pet.id}
+                    to={`/adopt/${pet.id}`}
+                    style={{ textDecoration: "none" }}
+                >
+
                 <div className="adopt-card">
 
                 <div className="pet-photo">
                     <img
-                    //src={pet.image ? `http://localhost:5000${pet.image}` : '/images/placeholder-cat.svg'}
-                    src={pet.image ? `${API}/images/${pet.image}` : '/images/placeholder-cat.svg'}
-                    onError={(e) => {e.target.src = '/images/placeholder-cat.svg'}}
+                    src="/images/placeholder-cat.svg"
                     alt={pet.name}
                     style={{
                         width: "100%",
@@ -110,23 +96,15 @@ function AdopterLanding() {
 
                 <div className="pet-info">
                     <h3>{pet.name}</h3>
-                    <p>{pet.breed}</p>
-
-                    <div className="tags">
-                    {pet.tags?.map((tag, index) => (
-                        <span
-                        key={index}
-                        className={`tag ${tag.dark ? "dark" : ""}`}
-                        >
-                        {tag.label}
-                        </span>
-                    ))}
-                    </div>
+                    <p>{pet.breed?.name}</p>
+                </div>
 
                 </div>
-                </div>
+
                 </Link>
+
             ))}
+
             </div>
 
             </section>
@@ -140,9 +118,9 @@ function AdopterLanding() {
             <div className="section-header">
                 <h2>MORE INFO</h2>
 
-                <a href="/asean-info">
+                <Link to="/asean-info">
                 <button className="arrow-btn">❯</button>
-                </a>
+                </Link>
             </div>
             
             <div className="asean-header">

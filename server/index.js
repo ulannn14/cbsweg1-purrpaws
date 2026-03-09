@@ -10,15 +10,31 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const catRoutes = require('./routes/cats');
+const petRoutes = require('./routes/pets');
 const userRoutes = require('./routes/users');
 
-app.use('/api/cats', catRoutes);
+app.use('/api/pets', petRoutes);
 app.use('/api/users', userRoutes);
 
 // Health check endpoint
 app.get('/', (req, res) => {
   res.send('PurrPaws API is running');
+});
+
+const prisma = require("./config/prisma");
+
+// short hack for dropdown data - ideally this would be in a separate route and cached on the client
+app.get("/api/provinces", async (req, res) => {
+  try {
+    const provinces = await prisma.province.findMany({
+      orderBy: { name: "asc" }
+    });
+
+    res.json(provinces);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 // Start server

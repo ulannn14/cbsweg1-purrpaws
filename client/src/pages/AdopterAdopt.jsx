@@ -4,25 +4,17 @@ import AppLayout from "../components/AppLayout";
 
 function AdopterAdopt() {
 
-    // ===============================
-    // State Variables
-    // ===============================
-
     const [organizations, setOrganizations] = useState([]);
     const [pets, setPets] = useState([]);
+    const [provinces, setProvinces] = useState([]);
 
     const [filters, setFilters] = useState({
-        location: "",
+        provinceId: "",
         age_min: "",
         age_max: ""
     });
 
     const API = import.meta.env.VITE_API_URL;
-
-    // ===============================
-    // Fetch Backend Data
-    // Replace API URLs later if needed
-    // ===============================
 
     useEffect(() => {
 
@@ -31,51 +23,36 @@ function AdopterAdopt() {
         .then(data => setOrganizations(data))
         .catch(err => console.error(err));
 
-        fetch(`${API}/api/cats`)
+        fetch(`${API}/api/pets`)
         .then(res => res.json())
         .then(data => setPets(data))
         .catch(err => console.error(err));
 
-    }, []);
+        // fetch provinces for dropdown
+        fetch(`${API}/api/provinces`)
+        .then(res => res.json())
+        .then(data => setProvinces(data))
+        .catch(err => console.error(err));
 
-    // ===============================
-    // Filter Input Change Handler
-    // ===============================
+    }, []);
 
     function handleChange(e) {
         setFilters({
-        ...filters,
-        [e.target.name]: e.target.value
+            ...filters,
+            [e.target.name]: e.target.value
         });
     }
-
-    // ===============================
-    // Filter Submit Handler
-    // (Send filters to backend later)
-    // ===============================
 
     function handleFilterSubmit(e) {
         e.preventDefault();
 
-        console.log("FILTER VALUES:", filters);
-
-        // Example backend filtering request
-        /*
-        fetch("http://localhost:5000/api/pets/filter", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(filters)
-        })
+        fetch(
+        `${API}/api/pets?provinceId=${filters.provinceId}&age_min=${filters.age_min}&age_max=${filters.age_max}`
+        )        
         .then(res => res.json())
-        .then(data => setPets(data));
-        */
+        .then(data => setPets(data))
+        .catch(err => console.error(err));
     }
-
-    // ===============================
-    // UI Render
-    // ===============================
 
     return (
         <AppLayout>
@@ -88,7 +65,7 @@ function AdopterAdopt() {
             <div className="org-carousel">
 
                 {organizations.map(org => (
-                <div key={org._id} className="org-icon">
+                <div key={org.id} className="org-icon">
                     {org.name}
                 </div>
                 ))}
@@ -100,39 +77,33 @@ function AdopterAdopt() {
             <section className="section adopt-grid">
 
             {pets.map(pet => (
-                <Link key={pet._id} to={`/adopt/${pet._id}`} style={{ textDecoration: "none" }}>
+                <Link
+                    key={pet.id}
+                    to={`/adopt/${pet.id}`}
+                    style={{ textDecoration: "none" }}
+                >
+
                 <div className="adopt-card">
 
                 <div className="pet-photo">
                     <img
-                    src={pet.image ? `${API}${pet.image}` : '/images/placeholder-cat.svg'}
-                    onError={(e) => {e.target.src = '/images/placeholder-cat.svg'}}
-                    alt={pet.name}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover"
-                    }}
+                        src="/images/placeholder-cat.svg"
+                        alt={pet.name}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover"
+                        }}
                     />
                 </div>
 
                 <div className="pet-info">
                     <h3>{pet.name}</h3>
-                    <p>{pet.breed}</p>
-
-                    <div className="tags">
-                    {pet.tags?.map((tag, index) => (
-                        <span
-                        key={index}
-                        className={`tag ${tag.dark ? "dark" : ""}`}
-                        >
-                        {tag.label}
-                        </span>
-                    ))}
-                    </div>
+                    <p>{pet.breed?.name}</p>
                 </div>
 
                 </div>
+
                 </Link>
             ))}
 
@@ -147,16 +118,25 @@ function AdopterAdopt() {
 
             <form className="filter-form" onSubmit={handleFilterSubmit}>
 
-            {/* Location Filter */}
+            {/* Province Filter */}
             <div className="filter-group">
-                <label>Location</label>
-                <input
-                type="text"
-                name="location"
-                placeholder="Enter city or ZIP code"
-                value={filters.location}
-                onChange={handleChange}
-                />
+                <label>Province</label>
+
+                <select
+                    name="provinceId"
+                    value={filters.provinceId}
+                    onChange={handleChange}
+                >
+
+                    <option value="">All Provinces</option>
+
+                    {provinces.map(p => (
+                        <option key={p.id} value={p.id}>
+                            {p.name}
+                        </option>
+                    ))}
+
+                </select>
             </div>
 
             {/* Age Range Filter */}

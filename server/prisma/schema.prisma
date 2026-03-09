@@ -79,6 +79,7 @@ model Pets {
   organization   Organization @relation(fields: [organizationId], references: [id])
 
   name   String
+  species Species
   isMale Boolean
   age    Int
   size   Size
@@ -123,9 +124,14 @@ enum AdoptionStatus {
   ADOPTED
 }
 
+enum Species {
+  CAT
+  DOG
+}
+
 model Breed {
   id    Int     @id @default(autoincrement())
-  name  String
+  name  String @unique
   isCat Boolean
 
   pets Pets[]
