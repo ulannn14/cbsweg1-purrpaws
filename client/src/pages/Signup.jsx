@@ -184,6 +184,29 @@ function SignUpPage() {
             Already have an account? <a href="/">Log in</a>
           </p>
 
+          <div className="org-invite">
+
+            <p>
+              Are you an <strong>animal welfare organization</strong> interested in
+              partnering with us?
+            </p>
+
+            <p>
+              You can apply to register your organization by filling out our
+              registration form.
+            </p>
+
+            <a
+              href="https://forms.gle/fcwdAFCBUVLbXaBG8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="org-btn"
+            >
+              Register Your Organization
+            </a>
+
+          </div>
+
         </div>
 
       </div>
