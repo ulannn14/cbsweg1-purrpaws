@@ -3,6 +3,7 @@
 .profile-section{
   display:flex;
   justify-content:center;
+  box-shadow:0 0px 0px rgba(0.06,0.06,0.06,0.06);
 }
 
 .profile-box{
@@ -95,9 +96,19 @@
   background:white;
 }
 
+.cancel-btn:hover{
+  background:#eaeaea;
+  border:1px solid #444;
+}
+
 .save-btn{
   background:black;
   color:white;
+}
+
+.save-btn:hover{
+  background:#333;
+  border:1px solid #444;
 }
 
 .profile-section-title{
@@ -108,7 +119,9 @@
 }
 
 .profile-input{
+  font-size: 16px;
   border:1px solid #444;
+  border-radius: 10px;
   height:40px;
   padding-left:12px;
   width:100%;

@@ -67,14 +67,14 @@
 }
 
 .filter-btn {
-  padding: 10px;
   border: none;
   background: black;
   color: white;
-  border-radius: 6px;
+  padding:8px 16px;
+  border-radius:20px;
   cursor: pointer;
 }
 
 .filter-btn:hover {
-  opacity: 0.9;
+  background:#333;
 }

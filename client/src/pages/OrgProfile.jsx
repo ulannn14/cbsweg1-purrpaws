@@ -8,16 +8,16 @@ function OrgProfile() {
   const [editing, setEditing] = useState(false);
 
   const [org, setOrg] = useState({
-    email: "",
-    password: "",
-    name: "",
-    birthdate: "",
-    address: "",
-    city: "",
-    province: "",
-    contactName: "",
-    contactPosition: "",
-    contactNumber: "",
+    email: "organization@email.com",
+    password: "********",
+    name: "Organization Name",
+    birthdate: "January 1, 2000",
+    address: "Santa Ana, Manila",
+    city: "Manila",
+    province: "NCR",
+    contactName: "John Doe",
+    contactPosition: "Founder",
+    contactNumber: "09123456789",
     image: ""
   });
 

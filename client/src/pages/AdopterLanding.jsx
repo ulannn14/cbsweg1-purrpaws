@@ -10,7 +10,7 @@ function AdopterLanding() {
 
     const API = import.meta.env.VITE_API_URL;
 
-    // Hardcoded campaign images (for now)
+    // Hardcoded campaign images
     const campaignImages = [
         "/images/campaign/campaign1.jpg",
         "/images/campaign/campaign2.jpg",
@@ -29,6 +29,10 @@ function AdopterLanding() {
 
     useEffect(() => {
 
+        /* ===============================
+           DATABASE FETCH (DISABLED TEMP)
+        ===============================
+
         fetch(`${API}/api/cats`)
         .then(res => res.json())
         .then(data => {
@@ -36,6 +40,53 @@ function AdopterLanding() {
             setFeaturedPets(data);
         })
         .catch(err => console.error(err));
+        */
+
+        // HARDCODED DATA (temporary)
+
+        setFeaturedPets([
+            {
+                _id: "1",
+                name: "Milo",
+                breed: "Shih Tzu",
+                image: "/images/pets/dog.jpg",
+                tags: [
+                    { label: "Male" },
+                    { label: "2 yrs old" },
+                    { label: "Vaccinated", dark: true }
+                ]
+            },
+            {
+                _id: "2",
+                name: "Luna",
+                breed: "Persian Cat",
+                image: "/images/pets/cat1.jpg",
+                tags: [
+                    { label: "Female" },
+                    { label: "1 yr old" }
+                ]
+            },
+            {
+                _id: "3",
+                name: "Rocky",
+                breed: "Aspin",
+                image: "/images/pets/dog.jpg",
+                tags: [
+                    { label: "Male" },
+                    { label: "3 yrs old" }
+                ]
+            },
+            {
+                _id: "4",
+                name: "Snow",
+                breed: "British Shorthair",
+                image: "/images/pets/cat2.jpg",
+                tags: [
+                    { label: "Female" },
+                    { label: "Kitten" }
+                ]
+            }
+        ]);
 
         const timer = setInterval(() => {
             setCurrentSlide(prev => (prev + 1) % campaignImages.length);
@@ -50,10 +101,7 @@ function AdopterLanding() {
 
         <main className="main">
 
-            {/* ========================= */}
-            {/* Campaigns Section */}
-            {/* ========================= */}
-
+            {/* Campaigns */}
             <section className="section campaigns">
 
             <div className="carousel-wrapper">
@@ -64,10 +112,7 @@ function AdopterLanding() {
 
                 <div className="carousel">
                     <div className="campaign-card">
-                        <img
-                            src={campaignImages[currentSlide]}
-                            alt="Campaign"
-                        />
+                        <img src={campaignImages[currentSlide]} alt="Campaign"/>
                     </div>
                 </div>
 
@@ -77,8 +122,7 @@ function AdopterLanding() {
 
             </div>
 
-            {/* DOTS */}
-
+            {/* Dots */}
             <div className="carousel-dots">
                 {campaignImages.map((_, index) => (
                     <span
@@ -91,10 +135,7 @@ function AdopterLanding() {
 
             </section>
 
-            {/* ========================= */}
             {/* Adopt Section */}
-            {/* ========================= */}
-
             <section className="section adopt">
 
             <div className="section-header">
@@ -106,21 +147,13 @@ function AdopterLanding() {
             </div>
 
             <div className="adopt-grid">
+
             {featuredPets.map(pet => (
                 <Link key={pet._id} to={`/adopt/${pet._id}`} style={{ textDecoration: "none" }}>
                 <div className="adopt-card">
 
-                <div className="pet-photo">
-                    <img
-                    src={pet.image ? `${API}/images/${pet.image}` : '/images/placeholder-cat.svg'}
-                    onError={(e) => {e.target.src = '/images/placeholder-cat.svg'}}
-                    alt={pet.name}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover"
-                    }}
-                    />
+                <div className="adopt-pet-photo">
+                    <img src={pet.image} alt={pet.name} />
                 </div>
 
                 <div className="pet-info">
@@ -129,11 +162,8 @@ function AdopterLanding() {
 
                     <div className="tags">
                     {pet.tags?.map((tag, index) => (
-                        <span
-                        key={index}
-                        className={`tag ${tag.dark ? "dark" : ""}`}
-                        >
-                        {tag.label}
+                        <span key={index} className={`tag ${tag.dark ? "dark" : ""}`}>
+                            {tag.label}
                         </span>
                     ))}
                     </div>
@@ -142,14 +172,12 @@ function AdopterLanding() {
                 </div>
                 </Link>
             ))}
+
             </div>
 
             </section>
 
-            {/* ========================= */}
-            {/* More Info Section */}
-            {/* ========================= */}
-
+            {/* More Info */}
             <section className="section more-info">
 
             <div className="section-header">
@@ -164,10 +192,7 @@ function AdopterLanding() {
                 <h2>Pet Adoption and Stray Animal Situation in ASEAN</h2>
                 <p>
                 Stray animal populations remain a major concern across many
-                Southeast Asian countries. Limited shelter capacity, lack of
-                awareness on responsible pet ownership, and rapid urbanization
-                contribute to the growing number of stray cats and dogs in
-                cities across the region.
+                Southeast Asian countries.
                 </p>
             </div>
 
