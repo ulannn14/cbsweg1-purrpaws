@@ -13,11 +13,11 @@ function OrgSidebar() {
         <nav className="nav">
 
             <Link to="/org" className="nav-item">
-            <img src="/images/icons/application.png" alt="Applications" />
+            <img src="/images/icons/orgapplication.png" alt="Applications" />
             </Link>
 
             <Link to="/org/pets" className="nav-item">
-            <img src="/images/icons/shelter.png" alt="Home" />
+            <img src="/images/icons/orgshelter.png" alt="Home" />
             </Link>
 
             <Link to="/org/profile" className="nav-item">

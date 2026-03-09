@@ -6,17 +6,29 @@ function AdopterLanding() {
 
     const [campaigns, setCampaigns] = useState([]);
     const [featuredPets, setFeaturedPets] = useState([]);
+    const [currentSlide, setCurrentSlide] = useState(0);
 
     const API = import.meta.env.VITE_API_URL;
 
-    // Fetch Campaigns + Pet Data
+    // Hardcoded campaign images (for now)
+    const campaignImages = [
+        "/images/campaign/campaign1.jpg",
+        "/images/campaign/campaign2.jpg",
+        "/images/campaign/campaign3.jpg"
+    ];
+
+    const nextSlide = () => {
+        setCurrentSlide((prev) => (prev + 1) % campaignImages.length);
+    };
+
+    const prevSlide = () => {
+        setCurrentSlide((prev) =>
+            prev === 0 ? campaignImages.length - 1 : prev - 1
+        );
+    };
+
     useEffect(() => {
-        /*
-        fetch(`${API}/api/campaigns`)
-        .then(res => res.json())
-        .then(data => setCampaigns(data))
-        .catch(err => console.error(err));
-        */
+
         fetch(`${API}/api/cats`)
         .then(res => res.json())
         .then(data => {
@@ -25,10 +37,11 @@ function AdopterLanding() {
         })
         .catch(err => console.error(err));
 
-        fetch(`${API}/api/featured-pet`)
-        .then(res => res.json())
-        .then(data => setFeaturedPet(data))
-        .catch(err => console.error(err));
+        const timer = setInterval(() => {
+            setCurrentSlide(prev => (prev + 1) % campaignImages.length);
+        }, 3000);
+
+        return () => clearInterval(timer);
 
     }, []);
 
@@ -43,35 +56,38 @@ function AdopterLanding() {
 
             <section className="section campaigns">
 
-            {/* <h2>CAMPAIGNS</h2> */}
-
             <div className="carousel-wrapper">
 
-                {/* <button className="carousel-btn prev">❮</button> */}
+                <button className="carousel-btn prev" onClick={prevSlide}>
+                    ❮
+                </button>
 
                 <div className="carousel">
-
-                {campaigns.length > 0 ? (
-                    campaigns.map(campaign => (
-                    <div key={campaign._id} className="campaign-card">
-                        {campaign.title}
-                    </div>
-                    ))
-                ) : (
-                    <>
                     <div className="campaign-card">
-                    <img src="/images/campaign.jpg" alt="Campaign 1" />
+                        <img
+                            src={campaignImages[currentSlide]}
+                            alt="Campaign"
+                        />
                     </div>
-                    </>
-                )}
-
                 </div>
 
-                {/* <button className="carousel-btn next">❯</button> */}
+                <button className="carousel-btn next" onClick={nextSlide}>
+                    ❯
+                </button>
 
             </div>
 
-            <div className="carousel-dots"></div>
+            {/* DOTS */}
+
+            <div className="carousel-dots">
+                {campaignImages.map((_, index) => (
+                    <span
+                        key={index}
+                        className={index === currentSlide ? "dot active" : "dot"}
+                        onClick={() => setCurrentSlide(index)}
+                    ></span>
+                ))}
+            </div>
 
             </section>
 
@@ -96,7 +112,6 @@ function AdopterLanding() {
 
                 <div className="pet-photo">
                     <img
-                    //src={pet.image ? `http://localhost:5000${pet.image}` : '/images/placeholder-cat.svg'}
                     src={pet.image ? `${API}/images/${pet.image}` : '/images/placeholder-cat.svg'}
                     onError={(e) => {e.target.src = '/images/placeholder-cat.svg'}}
                     alt={pet.name}

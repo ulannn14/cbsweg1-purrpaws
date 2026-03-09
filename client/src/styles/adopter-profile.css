@@ -9,7 +9,7 @@
   width:100%;
   max-width:900px;
 
-  border:1px solid #ccc;
+  box-shadow:0 4px 12px rgba(0.06,0.06,0.06,0.06);
   border-radius:10px;
 
   padding:50px 60px;
@@ -39,7 +39,7 @@
 /* INPUT STYLE BOX */
 
 .profile-field{
-  border:1px solid #444;
+  box-shadow:0 4px 12px rgba(0.06,0.06,0.06,0.06);
   height:40px;
   width:500px;
 
@@ -49,6 +49,7 @@
 
   font-size:16px;
   background:#fff;
+  border-radius: 10px;
 }
 
 /* EDIT BUTTON */
@@ -72,4 +73,43 @@
 .edit-btn:hover{
   background:#eaeaea;
   border:1px solid #444;
+}
+
+.profile-actions{
+  position:absolute;
+  top:20px;
+  right:20px;
+  display:flex;
+  gap:10px;
+}
+
+.cancel-btn,
+.save-btn{
+  padding:8px 16px;
+  border-radius:20px;
+  border:1px solid #444;
+  cursor:pointer;
+}
+
+.cancel-btn{
+  background:white;
+}
+
+.save-btn{
+  background:black;
+  color:white;
+}
+
+.profile-section-title{
+  grid-column:1 / -1;
+  font-size:18px;
+  font-weight:600;
+  margin-top:30px;
+}
+
+.profile-input{
+  border:1px solid #444;
+  height:40px;
+  padding-left:12px;
+  width:100%;
 }

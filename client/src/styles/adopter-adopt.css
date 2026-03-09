@@ -30,7 +30,7 @@
   top: 0;
   width: 240px;
   height: 100vh;
-  border-left: 1px solid #ddd;
+  box-shadow:0 4px 12px rgba(0.06,0.06,0.06,0.06);
   padding: 20px;
   background: white;
 }

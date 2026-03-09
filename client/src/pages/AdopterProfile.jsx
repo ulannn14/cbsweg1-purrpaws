@@ -3,16 +3,38 @@ import AppLayout from "../components/AppLayout";
 
 function AdopterProfile() {
 
-  // Hardcoded user data
-  const [user] = useState({
+  const [editing, setEditing] = useState(false);
+
+  const [user, setUser] = useState({
     email: "leigh@email.com",
+    username: "leighalbo",
     password: "********",
     name: "Leigh Albo",
+    contactNumber: "09123456789",
     birthdate: "April 15, 2003",
     address: "Santa Ana, Manila"
   });
 
-    return (
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setUser(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSave = () => {
+    // later connect to backend
+    console.log("Saving user:", user);
+    setEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditing(false);
+  };
+
+  return (
     <AppLayout>
 
       <main className="main">
@@ -21,28 +43,97 @@ function AdopterProfile() {
 
           <div className="profile-box">
 
-            <h2>PROFILE INFORMATION</h2>
+            {/* ACTION BUTTONS */}
 
-            <a href="/org">
-            <button className="edit-btn">EDIT</button>
-            </a>
+            {!editing ? (
+
+              <button
+                className="edit-btn"
+                onClick={() => setEditing(true)}
+              >
+                EDIT
+              </button>
+
+            ) : (
+
+              <div className="profile-actions">
+
+                <button
+                  className="cancel-btn"
+                  onClick={handleCancel}
+                >
+                  CANCEL
+                </button>
+
+                <button
+                  className="save-btn"
+                  onClick={handleSave}
+                >
+                  SAVE
+                </button>
+
+              </div>
+
+            )}
 
             <div className="profile-grid">
 
+              {/* ACCOUNT */}
+
+              <h2 className="profile-section-title">Account Details</h2>
+
               <label>Email</label>
-              <div className="profile-field">{user.email}</div>
+              {editing ? (
+                <input name="email" value={user.email} onChange={handleChange} className="profile-input"/>
+              ) : (
+                <div className="profile-field">{user.email}</div>
+              )}
+
+              <label>Username</label>
+              {editing ? (
+                <input name="username" value={user.username} onChange={handleChange} className="profile-input"/>
+              ) : (
+                <div className="profile-field">{user.username}</div>
+              )}
 
               <label>Password</label>
-              <div className="profile-field">{user.password}</div>
+              {editing ? (
+                <input name="password" value={user.password} onChange={handleChange} className="profile-input"/>
+              ) : (
+                <div className="profile-field">{user.password}</div>
+              )}
+
+              {/* PERSONAL */}
+
+              <h2 className="profile-section-title">Personal Information</h2>
 
               <label>Name</label>
-              <div className="profile-field">{user.name}</div>
+              {editing ? (
+                <input name="name" value={user.name} onChange={handleChange} className="profile-input"/>
+              ) : (
+                <div className="profile-field">{user.name}</div>
+              )}
+
+              <label>Contact Number</label>
+              {editing ? (
+                <input name="contactNumber" value={user.contactNumber} onChange={handleChange} className="profile-input"/>
+              ) : (
+                <div className="profile-field">{user.contactNumber}</div>
+              )}
 
               <label>Birthdate</label>
-              <div className="profile-field">{user.birthdate}</div>
+              {editing ? (
+                <input name="birthdate" value={user.birthdate} onChange={handleChange} className="profile-input"/>
+              ) : (
+                <div className="profile-field">{user.birthdate}</div>
+              )}
 
               <label>Address</label>
-              <div className="profile-field">{user.address}</div>
+              {editing ? (
+                <input name="address" value={user.address} onChange={handleChange} className="profile-input"/>
+              ) : (
+                <div className="profile-field">{user.address}</div>
+              )}
 
             </div>
 

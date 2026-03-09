@@ -10,7 +10,7 @@
   width:100%;
   max-width:1000px;
 
-  border:1px solid #ccc;
+  box-shadow:0 4px 12px rgba(0.06,0.06,0.06,0.06);
   border-radius:30px;
 
   padding:80px 60px 60px 60px;
@@ -86,4 +86,52 @@
 
   background:#f4f4f4;
   cursor:pointer;
+}
+
+.profile-actions{
+  position:absolute;
+  top:20px;
+  right:20px;
+  display:flex;
+  gap:10px;
+}
+
+.cancel-btn,
+.save-btn{
+  padding:10px 24px;
+  border-radius:25px;
+  border:1px solid #444;
+  cursor:pointer;
+}
+
+.cancel-btn{
+  background:white;
+  color:black;
+}
+
+.save-btn{
+  background:black;
+  color:white;
+}
+
+.org-avatar img{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.profile-input{
+  border:1px solid #444;
+  height:40px;
+  padding-left:12px;
+  width:100%;
+}
+
+.profile-section-title{
+  grid-column: 1 / -1;   /* span entire grid */
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 30px;
+  margin-bottom: 10px;
 }
