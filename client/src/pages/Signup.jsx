@@ -5,18 +5,7 @@ function SignUpPage() {
 
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    firstName: "Leigh",
-    lastName: "Albo",
-    email: "leigh@email.com",
-    mobile: "09123456789",
-    username: "leighalbo",
-    password: "********",
-    birthdate: "2003-04-15",
-    city: "Manila",
-    province: "Metro Manila",
-    address: "2401 Taft Ave., Malate"
-  });
+  const [formData, setFormData] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
