@@ -103,7 +103,7 @@ function AdopterAdopt() {
 
                 <div className="adopt-card">
 
-                <div className="pet-photo">
+                <div className="adopt-pet-photo">
                     <img
                         src="/images/placeholder-cat.svg"
                         alt={pet.name}

@@ -6,8 +6,26 @@ function AdopterLanding() {
 
     const [campaigns, setCampaigns] = useState([]);
     const [featuredPets, setFeaturedPets] = useState([]);
+    const [currentSlide, setCurrentSlide] = useState(0);
 
     const API = import.meta.env.VITE_API_URL;
+
+    // Hardcoded campaign images
+    const campaignImages = [
+        "/images/campaign/campaign1.jpg",
+        "/images/campaign/campaign2.jpg",
+        "/images/campaign/campaign3.jpg"
+    ];
+
+    const nextSlide = () => {
+        setCurrentSlide((prev) => (prev + 1) % campaignImages.length);
+    };
+
+    const prevSlide = () => {
+        setCurrentSlide((prev) =>
+            prev === 0 ? campaignImages.length - 1 : prev - 1
+        );
+    };
 
     useEffect(() => {
 
@@ -18,6 +36,12 @@ function AdopterLanding() {
             setFeaturedPets(data);
         })
         .catch(err => console.error(err));
+
+        const timer = setInterval(() => {
+            setCurrentSlide(prev => (prev + 1) % campaignImages.length);
+        }, 3000);
+
+        return () => clearInterval(timer);
 
     }, []);
 
@@ -34,25 +58,32 @@ function AdopterLanding() {
 
             <div className="carousel-wrapper">
 
+                <button className="carousel-btn prev" onClick={prevSlide}>
+                    ❮
+                </button>
+
                 <div className="carousel">
-
-                {campaigns.length > 0 ? (
-                    campaigns.map(campaign => (
-                    <div key={campaign.id} className="campaign-card">
-                        {campaign.title}
-                    </div>
-                    ))
-                ) : (
                     <div className="campaign-card">
-                        <img src="/images/campaign.jpg" alt="Campaign" />
+                        <img src={campaignImages[currentSlide]} alt="Campaign"/>
                     </div>
-                )}
-
                 </div>
+
+                <button className="carousel-btn next" onClick={nextSlide}>
+                    ❯
+                </button>
 
             </div>
 
-            <div className="carousel-dots"></div>
+            {/* Dots */}
+            <div className="carousel-dots">
+                {campaignImages.map((_, index) => (
+                    <span
+                        key={index}
+                        className={index === currentSlide ? "dot active" : "dot"}
+                        onClick={() => setCurrentSlide(index)}
+                    ></span>
+                ))}
+            </div>
 
             </section>
 
@@ -82,7 +113,7 @@ function AdopterLanding() {
 
                 <div className="adopt-card">
 
-                <div className="pet-photo">
+                <div className="adopt-pet-photo">
                     <img
                     src="/images/placeholder-cat.svg"
                     alt={pet.name}
