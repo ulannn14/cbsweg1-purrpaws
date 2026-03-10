@@ -15,6 +15,7 @@ import './styles/org-pets.css';
 import './styles/org-profile.css';
 import './styles/login.css';
 import './styles/signup.css';
+import './styles/org-detail.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
