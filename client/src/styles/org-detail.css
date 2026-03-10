@@ -1,0 +1,36 @@
+.org-profile {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.org-profile-photo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.org-profile-photo img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+}
+
+.org-profile-box {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+.org-profile-box h2 {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.org-profile-desc {
+  margin-top: 6px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
