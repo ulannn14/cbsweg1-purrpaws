@@ -126,8 +126,33 @@
   display:block;
 }
 
-.pet-info {
-  padding: 12px;
+.pet-info{
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.pet-text{
+  display:flex;
+  flex-direction:column;
+}
+
+.pet-type{
+  width:40px;
+  height:40px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.pet-type img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 .tags {

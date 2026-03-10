@@ -124,22 +124,37 @@ function AdopterLanding() {
 
                 <div className="adopt-card">
 
-                <div className="adopt-pet-photo">
-                    <img
-                    src="/images/placeholder-cat.svg"
-                    alt={pet.name}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover"
-                    }}
-                    />
-                </div>
+                    <div className="adopt-pet-photo">
+                        <img
+                        src="/images/placeholder-cat.svg"
+                        alt={pet.name}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover"
+                        }}
+                        />
+                    </div>
 
-                <div className="pet-info">
-                    <h3>{pet.name}</h3>
-                    <p>{pet.breed?.name}</p>
-                </div>
+                    <div className="pet-info">
+
+                        <div className="pet-text">
+                        <h3>{pet.name}</h3>
+                        <p>{pet.breed?.name}</p>
+                        </div>
+
+                        <div className="pet-type">
+                        <img
+                            src={
+                            pet.species === "dog"
+                                ? "/images/flags/dog.jpg"
+                                : "/images/flags/cat.jpg"
+                            }
+                            alt={pet.species}
+                        />
+                        </div>
+
+                    </div>
 
                 </div>
 
