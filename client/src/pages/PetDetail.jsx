@@ -51,14 +51,31 @@ function PetDetail() {
           <p><strong>Breed:</strong> {pet.breed?.name || "Unknown"}</p>
           <p><strong>Age:</strong> {pet.age ?? "Unknown"}</p>
           <p><strong>Color:</strong> {pet.color ?? "Unknown"}</p>
+          <p><strong>Sex:</strong> {pet.breed?.isMale || "Unknown"}</p>
+          <p><strong>Size:</strong> {pet.size || "Unknown"}</p>
+          <p><strong>Weight:</strong> {pet.weight?.toFixed(2) || "Unknown"}</p>
 
           {pet.temperament && (
             <p><strong>Temperament:</strong> {pet.temperament}</p>
           )}
 
+          <p><strong>Rescued </strong> {pet.dateRescued || "Unknown"}</p>
+
           {pet.rescueStory && (
             <p className="pet-detail-desc">{pet.rescueStory}</p>
           )}
+
+          <p><strong>Adoption Reason: </strong> {pet.adoptionReason || "Unknown"}</p>
+
+          <p><strong>MEDICAL DETAILS</strong></p>
+          <p><strong>Good with Dogs:</strong> {pet.isGoodWithDogs ? "Yes" : "No"}</p>
+          <p><strong>Good with Cats:</strong> {pet.isGoodWithCats ? "Yes" : "No"}</p>
+          <p><strong>Good with Kids:</strong> {pet.isGoodWithKids ? "Yes" : "No"}</p>
+          <p><strong>House Trained:</strong> {pet.isHouseTrained ? "Yes" : "No"}</p>
+          <p><strong>Leash Trained:</strong> {pet.isLeashTrained ? "Yes" : "No"}</p>
+          <p><strong>Adoption Fee:</strong> ₱{pet.adoptionFee?.toFixed(2) || "Not specified"}</p>
+          <p><strong>Adoption Requirements:</strong> {pet.adoptionRequirements|| "Not specified"}</p>
+          <p><strong>Adoption Status:</strong> {pet.adoptionStatus|| "Not specified"}</p>
 
         <Link to={`/apply/${pet.id}`}>
           <button

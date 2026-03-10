@@ -6,6 +6,7 @@ function AdopterLanding() {
 
     const [campaigns, setCampaigns] = useState([]);
     const [featuredPets, setFeaturedPets] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
 
     const API = import.meta.env.VITE_API_URL;
@@ -34,8 +35,12 @@ function AdopterLanding() {
         .then(data => {
             console.debug("Fetched pets:", data);
             setFeaturedPets(data);
+            setLoading(false);
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            setLoading(false);
+        });
 
         const timer = setInterval(() => {
             setCurrentSlide(prev => (prev + 1) % campaignImages.length);
@@ -102,6 +107,12 @@ function AdopterLanding() {
             </div>
 
             <div className="adopt-grid">
+
+            {loading && <p>Loading pets...</p>}
+
+            {!loading && featuredPets.length === 0 && (
+              <p>Failed to load.</p>
+            )}
 
             {featuredPets.map(pet => (
 

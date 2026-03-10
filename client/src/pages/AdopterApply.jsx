@@ -102,14 +102,11 @@ function AdopterApply() {
                   Open Adoption Form
                 </button>
               </a>
+            
 
               {/* DONE BUTTON */}
               <Link to="/applications">
-                <button
-                  style={{
-                    marginTop: "15px",
-                    padding: "10px 16px"
-                  }}
+                <button className="done-btn"
                   onClick={handleDone}
                 >
                   I Am Done

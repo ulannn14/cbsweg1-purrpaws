@@ -78,3 +78,28 @@
 .filter-btn:hover {
   background:#333;
 }
+
+.application-card {
+  margin-top: 12px;
+}
+.apply-btn{
+  margin-right:12px;
+}
+
+.apply-btn, .done-btn {
+  margin-top: 12px;
+  color: #000;
+
+  padding:10px 26px;
+  border-radius:25px;
+  border:1px solid #444;
+
+  background:#f4f4f4;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.apply-btn:hover, .done-btn:hover{
+  background:#eaeaea;
+  border:1px solid #444;
+}

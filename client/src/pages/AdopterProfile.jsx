@@ -4,6 +4,7 @@ import AppLayout from "../components/AppLayout";
 function AdopterProfile() {
 
   const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
   // Load user from backend
@@ -16,9 +17,14 @@ function AdopterProfile() {
     fetch(`http://localhost:5000/users/${storedUser.id}`)
       .then(res => res.json())
       .then(data => {
+        console.log("Fetched user:", data);
         setUser(data);
+        setLoading(false);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
 
   }, []);
 
@@ -52,7 +58,6 @@ function AdopterProfile() {
 
       setUser(updatedUser);
       setEditing(false);
-
     } catch (err) {
       console.error(err);
     }
@@ -64,7 +69,7 @@ function AdopterProfile() {
   };
 
   if (!user) {
-    return <div>Loading profile...</div>;
+    return;
   }
 
   return (
@@ -73,6 +78,12 @@ function AdopterProfile() {
       <main className="main">
 
         <section className="section profile-section">
+
+          {loading && <p>Loading profile...</p>}
+
+            {!loading && user.length == 0 && (
+              <p>Failed to load.</p>
+            )}
 
           <div className="profile-box">
 

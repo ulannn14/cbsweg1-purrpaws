@@ -14,3 +14,9 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## How to Run Locally:
+1. Open the command prompt in the client folder and run "npm install".
+2. Open the command prompt in the server folder and run "npx prisma db push", "npx prisma generate", and "npm install".
+3. Open the command prompt in the root folder and run "npm install" and "npm dev run".
+4. Go to the localhost displayed from step 3.

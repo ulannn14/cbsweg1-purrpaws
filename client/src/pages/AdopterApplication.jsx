@@ -5,21 +5,26 @@ import AppLayout from "../components/AppLayout";
 function AdopterApplication() {
 
   const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const API = import.meta.env.VITE_API_URL;
 
   const user = JSON.parse(localStorage.getItem("user"));
-
+  
   useEffect(() => {
 
-    if (!user) return;
+  if (!user) return;
 
-    fetch(`${API}/api/applications/user/${user.id}`)
-      .then(res => res.json())
-      .then(data => {
-        console.log("Applications:", data);
-        setApplications(data);
-      })
-      .catch(err => console.error(err));
+  fetch(`${API}/api/applications/user/${user.id}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("Applications:", data);
+      setApplications(data);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
 
   }, [API, user]);
 
@@ -34,7 +39,9 @@ function AdopterApplication() {
 
           <div className="applications-list">
 
-            {applications.length === 0 && (
+            {loading && <p>Loading applications...</p>}
+
+            {!loading && applications.length === 0 && (
               <p>No applications yet.</p>
             )}
 
