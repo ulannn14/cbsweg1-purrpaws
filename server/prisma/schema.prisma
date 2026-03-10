@@ -204,5 +204,6 @@ model AdoptionApplication {
 enum AdoptionApplicationStatus {
   PENDING
   APPROVED
+  ADOPTED
   REJECTED
 }

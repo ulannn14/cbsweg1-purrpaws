@@ -6,7 +6,8 @@ const {
   getPetById,
   createPet,
   updatePet,
-  deletePet
+  deletePet,
+  getOrgPets
 } = require('../controllers/petController');
 
 // GET all pets
@@ -23,5 +24,7 @@ router.put('/:id', updatePet);
 
 // DELETE pet
 router.delete('/:id', deletePet);
+
+router.get('/org/:orgId', getOrgPets);
 
 module.exports = router;

@@ -132,3 +132,29 @@ exports.deletePet = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// get pets by organization
+exports.getOrgPets = async (req, res) => {
+  try {
+
+    const { orgId } = req.params;
+
+    const pets = await prisma.pets.findMany({
+      where: {
+        organizationId: orgId
+      },
+      include: {
+        breed: true
+      },
+      orderBy: {
+        name: "asc"
+      }
+    });
+
+    res.json(pets);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch pets" });
+  }
+};

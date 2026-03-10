@@ -1,52 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import OrgAppLayout from "../components/OrgAppLayout";
 
 function OrgPets() {
 
   const [activeTab, setActiveTab] = useState("all");
+  const [pets, setPets] = useState([]);
 
-  const pets = [
-    {
-      id: 1,
-      name: "Milo",
-      type: "dog",
-      birthdate: "Jan 12 2022",
-      surrendered: "Mar 5 2024",
-      breed: "Shih Tzu",
-      status: "Available"
-    },
-    {
-      id: 2,
-      name: "Luna",
-      type: "cat",
-      birthdate: "Feb 20 2023",
-      surrendered: "Apr 1 2024",
-      breed: "Persian",
-      status: "Pending"
-    },
-    {
-      id: 3,
-      name: "Rocky",
-      type: "dog",
-      birthdate: "Aug 5 2021",
-      surrendered: "May 11 2024",
-      breed: "Aspins",
-      status: "Adopted"
-    }
-  ];
+  const API = import.meta.env.VITE_API_URL;
+  const org = JSON.parse(localStorage.getItem("org"));
+
+  useEffect(() => {
+
+    if (!org) return;
+
+    fetch(`${API}/api/pets/org/${org.id}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log("Org Pets:", data);
+        setPets(data);
+      })
+      .catch(err => console.error(err));
+
+  }, [API, org]);
 
   const filteredPets =
     activeTab === "all"
       ? pets
-      : pets.filter(pet => pet.type === activeTab);
+      : pets.filter(pet => pet.species.toLowerCase() === activeTab);
 
   return (
     <OrgAppLayout>
 
       <main className="org-main">
 
-        <h1 className="org-title">ORGANIZATION NAME</h1>
+        <h1 className="org-title">{org?.name}</h1>
 
         {/* Tabs */}
 
@@ -81,8 +69,8 @@ function OrgPets() {
 
           <span></span>
           <span>NAME</span>
-          <span>BIRTHDATE</span>
-          <span>DATE SURRENDERED</span>
+          <span>AGE</span>
+          <span>DATE RESCUED</span>
           <span>BREED</span>
           <span>STATUS</span>
           <span></span>
@@ -100,10 +88,16 @@ function OrgPets() {
               <div className="pet-img"></div>
 
               <div>{pet.name}</div>
-              <div>{pet.birthdate}</div>
-              <div>{pet.surrendered}</div>
-              <div>{pet.breed}</div>
-              <div>{pet.status}</div>
+
+              <div>{pet.age}</div>
+
+              <div>
+                {new Date(pet.dateRescued).toLocaleDateString()}
+              </div>
+
+              <div>{pet.breed?.name}</div>
+
+              <div>{pet.adoptionStatus}</div>
 
               <button className="edit-icon">
                 <FaEdit />
@@ -118,7 +112,9 @@ function OrgPets() {
         {/* Add Button */}
 
         <div className="add-pet-container">
-          <button className="add-pet-btn">Add New +</button>
+          <button className="add-pet-btn">
+            Add New +
+          </button>
         </div>
 
       </main>
