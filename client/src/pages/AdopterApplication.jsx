@@ -28,6 +28,26 @@ function AdopterApplication() {
 
   }, [API, user]);
 
+  if (loading) {
+    return (
+      <AppLayout>
+      <div className="page-loading">
+        <p>Loading applications...</p>
+      </div>
+      </AppLayout>
+    );
+  }
+
+  if (applications.length === 0) {
+    return (
+      <AppLayout>
+      <div className="page-loading">
+        <p>No applications yet.</p>
+      </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
 
@@ -38,12 +58,6 @@ function AdopterApplication() {
           <h2>APPLICATION HISTORY</h2>
 
           <div className="applications-list">
-
-            {loading && <p>Loading applications...</p>}
-
-            {!loading && applications.length === 0 && (
-              <p>No applications yet.</p>
-            )}
 
             {applications.map(app => (
 

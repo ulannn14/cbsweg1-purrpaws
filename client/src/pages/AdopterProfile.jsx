@@ -11,6 +11,7 @@ function AdopterProfile() {
   const [user, setUser] = useState(null);
   const [originalUser, setOriginalUser] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Fetch profile
   useEffect(() => {
@@ -26,6 +27,14 @@ function AdopterProfile() {
       .catch(err => console.error(err));
 
   }, [API, id]);
+
+  if (loading) return (
+    <AppLayout>
+      <div className="page-loading">
+        <p>Loading profile...</p>
+      </div>
+    </AppLayout>
+  );
 
   // Handle input changes
   const handleChange = (e) => {
