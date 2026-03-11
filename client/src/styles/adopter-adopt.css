@@ -52,6 +52,12 @@
   border-radius: 6px;
 }
 
+.filter-group select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
 .age-range {
   display: flex;
   align-items: center;
