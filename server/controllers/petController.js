@@ -137,6 +137,9 @@ exports.deletePet = async (req, res) => {
   }
 };
 
+
+/*
+
 // get pets by organization
 exports.getOrgPets = async (req, res) => {
   try {
@@ -175,3 +178,5 @@ exports.getOrgPets = async (req, res) => {
 
   res.json(org);
 };
+
+*/

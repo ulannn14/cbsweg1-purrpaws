@@ -26,6 +26,6 @@ router.put('/:id', updatePet);
 // DELETE pet
 router.delete('/:id', deletePet);
 
-router.get('/org/:orgId', getOrgPets);
+//router.get('/org/:orgId', getOrgPets);
 
 module.exports = router;
