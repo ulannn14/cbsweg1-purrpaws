@@ -9,7 +9,10 @@ exports.getOrganizations = async (req, res) => {
     const organizations = await prisma.organization.findMany({
       include: {
         province: true,
-        pets: true
+        pets: {
+          include: {
+            breed: true}
+          }
       }
     });
 
@@ -20,7 +23,6 @@ exports.getOrganizations = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch organizations" });
   }
 };
-
 
 // LOGIN organization
 exports.loginOrganization = async (req, res) => {
@@ -51,5 +53,61 @@ exports.loginOrganization = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// GET single organization by ID
+exports.getOrganizationById = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const org = await prisma.organization.findUnique({
+      where: { id },
+      include: {
+        province: true,
+        pets: {
+          include: {
+            breed: true}
+          }
+      }
+    });
+
+    if (!org) {
+      return res.status(404).json(null);
+    }
+
+    res.json(org);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch organization" });
+  }
+};
+
+exports.updateOrganization = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const updatedOrg = await prisma.organization.update({
+      where: { id: id }, // DO NOT convert to Number
+      data: {
+        email: req.body.email,
+        name: req.body.name,
+        yearEstablished: req.body.yearEstablished,
+        city: req.body.city,
+        address: req.body.address,
+        contactPerson: req.body.contactPerson,
+        contactPersonRole: req.body.contactPersonRole,
+        contactNumber: req.body.contactNumber
+      }
+    });
+
+    res.json(updatedOrg);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update organization" });
   }
 };

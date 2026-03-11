@@ -102,20 +102,27 @@ function PetDetail() {
 
     <div className="pet-org-box">
 
-      <div className="org-circle">
-        <img
-          src={
-            pet.organization?.logo
-              ? `${API}/images/${pet.organization.logo}`
-              : "/images/org-placeholder.png"
-          }
-          alt={pet.organization?.name}
-        />
-      </div>
+      <Link 
+        to={`/organizations/${pet.organizationId}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
 
-      <div className="org-name">
-        <h3>{pet.organization?.name || "Unknown Organization"}</h3>
-      </div>
+        <div className="org-circle">
+          <img
+            src={
+              pet.organization?.logo
+                ? `${API}/images/${pet.organization.logo}`
+                : "/images/org-placeholder.png"
+            }
+            alt={pet.organization?.name}
+          />
+        </div>
+
+        <div className="org-name">
+          <h3>{pet.organization?.name || "Unknown Organization"}</h3>
+        </div>
+
+      </Link>
 
       <div className="org-details">
 

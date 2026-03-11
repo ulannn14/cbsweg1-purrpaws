@@ -20,7 +20,7 @@ function OrganizationDetail() {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, API]);
 
   if (loading)
     return (

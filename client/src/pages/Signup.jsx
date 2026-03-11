@@ -1,11 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function SignUpPage() {
 
+  const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState(false);
+  const [provinces, setProvinces] = useState([]);
+  
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    mobile: "",
+    userName: "",
+    password: "",
+    birthdate: "",
+    city: "",
+    provinceId: "",
+    address: ""
+  });
+
+  useEffect(() => {
+    fetch(`${API}/api/provinces`)
+      .then(res => res.json())
+      .then(data => setProvinces(data))
+      .catch(err => console.error(err));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +50,7 @@ function SignUpPage() {
     return age;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const age = calculateAge(formData.birthdate);
@@ -38,8 +59,31 @@ function SignUpPage() {
       return;
     }
 
-    console.log(formData);
-    navigate("/adopter");
+    try {
+      const res = await fetch(`${API}/api/users/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Registration failed");
+        return;
+      }
+
+      console.log(formData);
+      navigate("/adopter");
+
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
+    
+
   };
 
   return (
@@ -104,8 +148,8 @@ function SignUpPage() {
             <label>Username</label>
             <input
               type="text"
-              name="username"
-              value={formData.username}
+              name="userName"
+              value={formData.userName}
               onChange={handleChange}
               className="signup-input"
             />
@@ -143,14 +187,21 @@ function SignUpPage() {
 
               <div style={{ flex: 1 }}>
                 <label>Province</label>
-                <input
-                  type="text"
-                  name="province"
-                  value={formData.province}
+                <select
+                  name="provinceId"
+                  value={formData.provinceId}
                   onChange={handleChange}
                   className="signup-input"
-                />
+                >
+                  <option value="">Select a province</option>
+                  {provinces.map(province => (
+                    <option key={province.id} value={province.id}>
+                      {province.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+
 
             </div>
 

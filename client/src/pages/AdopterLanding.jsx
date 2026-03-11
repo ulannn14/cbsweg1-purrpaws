@@ -30,7 +30,7 @@ function AdopterLanding() {
 
     useEffect(() => {
 
-        fetch(`${API}/api/pets`)
+        fetch(`${API}/api/pets?limit=4`)
         .then(res => res.json())
         .then(data => {
             console.debug("Fetched pets:", data);
@@ -111,33 +111,32 @@ function AdopterLanding() {
             {loading && <p>Loading pets...</p>}
 
             {!loading && featuredPets.length === 0 && (
-              <p>Failed to load.</p>
+                <p>Failed to load.</p>
             )}
 
-            {featuredPets.map(pet => (
+            {!loading && featuredPets.slice(0, 4).map(pet => (
 
                 <Link
-                    key={pet.id}
-                    to={`/adopt/${pet.id}`}
-                    style={{ textDecoration: "none" }}
+                key={pet.id}
+                to={`/adopt/${pet.id}`}
+                style={{ textDecoration: "none" }}
                 >
 
                 <div className="adopt-card">
 
                     <div className="adopt-pet-photo">
-                        <img
+                    <img
                         src="/images/placeholder-cat.svg"
                         alt={pet.name}
                         style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover"
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover"
                         }}
-                        />
+                    />
                     </div>
 
                     <div className="pet-info">
-
                         <div className="pet-text">
                             <h3>{pet.name}</h3>
                             <p>{pet.breed?.name}</p>
@@ -167,7 +166,6 @@ function AdopterLanding() {
                             alt={pet.species}
                             />
                         </div>
-
                     </div>
                 </div>
 

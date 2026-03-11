@@ -5,31 +5,27 @@ function OrgProfile() {
 
   const API = import.meta.env.VITE_API_URL;
 
+  const orgUser = JSON.parse(localStorage.getItem("org"));
+  const id = orgUser?.id;
+
+  const [org, setOrg] = useState(null);
+  const [originalOrg, setOriginalOrg] = useState(null);
   const [editing, setEditing] = useState(false);
-
-  const [org, setOrg] = useState({
-    email: "organization@email.com",
-    password: "********",
-    name: "Organization Name",
-    birthdate: "January 1, 2000",
-    address: "Santa Ana, Manila",
-    city: "Manila",
-    province: "NCR",
-    contactName: "John Doe",
-    contactPosition: "Founder",
-    contactNumber: "09123456789",
-    image: ""
-  });
-
-  const [previewImage, setPreviewImage] = useState(null);
 
   // Fetch organization profile
   useEffect(() => {
-    fetch(`${API}/api/organization`)
+
+    if (!id) return;
+
+    fetch(`${API}/api/organizations/${id}`)
       .then(res => res.json())
-      .then(data => setOrg(data))
+      .then(data => {
+        setOrg(data);
+        setOriginalOrg(data);
+      })
       .catch(err => console.error(err));
-  }, []);
+
+  }, [API, id]);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -41,38 +37,25 @@ function OrgProfile() {
     }));
   };
 
-  // Handle image upload
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-
-    if (!file) return;
-
-    setPreviewImage(URL.createObjectURL(file));
-
-    setOrg(prev => ({
-      ...prev,
-      image: file
-    }));
-  };
-
   // Save profile
   const handleSave = async () => {
 
-    const formData = new FormData();
-
-    Object.keys(org).forEach(key => {
-      formData.append(key, org[key]);
-    });
-
     try {
 
-      const res = await fetch(`${API}/api/organization`, {
+      const res = await fetch(`${API}/api/organizations/${id}`, {
         method: "PUT",
-        body: formData
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(org)
       });
 
       if (!res.ok) throw new Error("Update failed");
 
+      const updated = await res.json();
+
+      setOrg(updated);
+      setOriginalOrg(updated);
       setEditing(false);
 
     } catch (err) {
@@ -83,9 +66,17 @@ function OrgProfile() {
 
   // Cancel editing
   const handleCancel = () => {
+    setOrg(originalOrg);
     setEditing(false);
-    setPreviewImage(null);
   };
+
+  if (!org) {
+    return (
+      <OrgAppLayout>
+        <div className="org-main">Loading profile...</div>
+      </OrgAppLayout>
+    );
+  }
 
   return (
     <OrgAppLayout>
@@ -129,32 +120,18 @@ function OrgProfile() {
 
             )}
 
-            {/* PROFILE IMAGE */}
+            {/* PROFILE IMAGE (placeholder only for now) */}
 
             <div className="org-profile-image">
 
               <div className="org-avatar">
 
                 <img
-                  src={
-                    previewImage
-                      ? previewImage
-                      : org.image
-                      ? `${API}/images/${org.image}`
-                      : "/images/org-placeholder.png"
-                  }
+                  src="/images/org-placeholder.png"
                   alt="Organization Logo"
                 />
 
               </div>
-
-              {editing && (
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                />
-              )}
 
             </div>
 
@@ -163,77 +140,103 @@ function OrgProfile() {
             <div className="profile-grid">
 
               <h2 className="profile-section-title">Account Details</h2>
-              
+
               <label>Email</label>
               {editing ? (
-                <input name="email" value={org.email} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="email"
+                  value={org.email || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{org.email}</div>
               )}
 
-              <label>Password</label>
-              {editing ? (
-                <input name="password" value={org.password} onChange={handleChange} className="profile-input"/>
-              ) : (
-                <div className="profile-field">{org.password}</div>
-              )}
-
               <h2 className="profile-section-title">Organization Details</h2>
+
               <label>Organization Name</label>
               {editing ? (
-                <input name="name" value={org.name} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="name"
+                  value={org.name || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{org.name}</div>
               )}
 
               <label>Date Established</label>
               {editing ? (
-                <input name="birthdate" value={org.birthdate} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="yearEstablished"
+                  value={org.yearEstablished || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
-                <div className="profile-field">{org.birthdate}</div>
+                <div className="profile-field">{org.yearEstablished}</div>
               )}
 
               <label>City</label>
               {editing ? (
-                <input name="city" value={org.city} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="city"
+                  value={org.city || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{org.city}</div>
               )}
 
-              <label>Province</label>
-              {editing ? (
-                <input name="province" value={org.province} onChange={handleChange} className="profile-input"/>
-              ) : (
-                <div className="profile-field">{org.province}</div>
-              )}
-
               <label>Address</label>
               {editing ? (
-                <input name="address" value={org.address} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="address"
+                  value={org.address || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{org.address}</div>
               )}
 
-              {/* CONTACT PERSON */}
+              <h2 className="profile-section-title">Contact Person</h2>
 
-              <h2 className="profile-section-title">Contact Person Details</h2>
               <label>Contact Name</label>
               {editing ? (
-                <input name="contactName" value={org.contactName} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="contactPerson"
+                  value={org.contactPerson || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
-                <div className="profile-field">{org.contactName}</div>
+                <div className="profile-field">{org.contactPerson}</div>
               )}
 
-              <label>Contact Position</label>
+              <label>Contact Role</label>
               {editing ? (
-                <input name="contactPosition" value={org.contactPosition} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="contactPersonRole"
+                  value={org.contactPersonRole || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
-                <div className="profile-field">{org.contactPosition}</div>
+                <div className="profile-field">{org.contactPersonRole}</div>
               )}
 
               <label>Contact Number</label>
               {editing ? (
-                <input name="contactNumber" value={org.contactNumber} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="contactNumber"
+                  value={org.contactNumber || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{org.contactNumber}</div>
               )}

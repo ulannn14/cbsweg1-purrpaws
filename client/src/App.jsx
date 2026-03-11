@@ -5,6 +5,7 @@ import AdopterLanding from "./pages/AdopterLanding";
 import AdopterAdopt from "./pages/AdopterAdopt";
 import AdopterAsean from "./pages/AdopterAsean";
 import PetDetail from "./pages/PetDetail";
+import OrgDetail from "./pages/OrgDetail";
 import AdopterApplication from "./pages/AdopterApplication";
 import AdopterApplicationDetail from "./pages/AdopterApplicationDetail";
 import AdopterProfile from "./pages/AdopterProfile"
@@ -23,6 +24,7 @@ function App() {
         <Route path="/adopter" element={<AdopterLanding />} />
         <Route path="/adopt" element={<AdopterAdopt />} />
         <Route path="/adopt/:id" element={<PetDetail />} />
+        <Route path="/organizations/:id" element={<OrgDetail />} />
         <Route path="/apply/:id" element={<AdopterApply />} />
         <Route path="/asean-info" element={<AdopterAsean />} />
         <Route path="/applications" element={<AdopterApplication />} />
