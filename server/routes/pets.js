@@ -9,6 +9,7 @@ const {
   deletePet,
   getOrgPets
 } = require('../controllers/petController');
+const { getOrganizations } = require('../controllers/organizationController');
 
 // GET all pets
 router.get('/', getPets);

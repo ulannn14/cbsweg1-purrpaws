@@ -21,7 +21,6 @@ exports.getOrganizations = async (req, res) => {
   }
 };
 
-
 // LOGIN organization
 exports.loginOrganization = async (req, res) => {
   try {
@@ -51,5 +50,31 @@ exports.loginOrganization = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// GET single organization by ID
+exports.getOrganizationById = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const org = await prisma.organization.findUnique({
+      where: { id },
+      include: {
+        province: true,
+        pets: true
+      }
+    });
+
+    if (!org) {
+      return res.status(404).json(null);
+    }
+
+    res.json(org);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch organization" });
   }
 };

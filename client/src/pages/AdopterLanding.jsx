@@ -111,48 +111,48 @@ function AdopterLanding() {
             {loading && <p>Loading pets...</p>}
 
             {!loading && featuredPets.length === 0 && (
-              <p>Failed to load.</p>
+                <p>Failed to load.</p>
             )}
 
-            {featuredPets.map(pet => (
+            {!loading && featuredPets.slice(0, 4).map(pet => (
 
                 <Link
-                    key={pet.id}
-                    to={`/adopt/${pet.id}`}
-                    style={{ textDecoration: "none" }}
+                key={pet.id}
+                to={`/adopt/${pet.id}`}
+                style={{ textDecoration: "none" }}
                 >
 
                 <div className="adopt-card">
 
                     <div className="adopt-pet-photo">
-                        <img
+                    <img
                         src="/images/placeholder-cat.svg"
                         alt={pet.name}
                         style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover"
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover"
                         }}
-                        />
+                    />
                     </div>
 
                     <div className="pet-info">
 
-                        <div className="pet-text">
+                    <div className="pet-text">
                         <h3>{pet.name}</h3>
                         <p>{pet.breed?.name}</p>
-                        </div>
+                    </div>
 
-                        <div className="pet-type">
+                    <div className="pet-type">
                         <img
-                            src={
+                        src={
                             pet.species === "dog"
-                                ? "/images/flags/dog.jpg"
-                                : "/images/flags/cat.jpg"
-                            }
-                            alt={pet.species}
+                            ? "/images/flags/dog.jpg"
+                            : "/images/flags/cat.jpg"
+                        }
+                        alt={pet.species}
                         />
-                        </div>
+                    </div>
 
                     </div>
 

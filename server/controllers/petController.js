@@ -158,3 +158,16 @@ exports.getOrgPets = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch pets" });
   }
 };
+
+exports.getOrgPets = async (req, res) => {
+
+  const org = await prisma.organization.findUnique({
+    where: { id: req.params.id },
+    include: {
+      province: true,
+      pets: true
+    }
+  });
+
+  res.json(org);
+};
