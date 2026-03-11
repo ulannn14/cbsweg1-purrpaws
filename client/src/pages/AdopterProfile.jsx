@@ -3,31 +3,31 @@ import AppLayout from "../components/AppLayout";
 
 function AdopterProfile() {
 
-  const [editing, setEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const API = import.meta.env.VITE_API_URL;
 
-  // Load user from backend
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const id = storedUser?.id;
+
+  const [user, setUser] = useState(null);
+  const [originalUser, setOriginalUser] = useState(null);
+  const [editing, setEditing] = useState(false);
+
+  // Fetch profile
   useEffect(() => {
 
-    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!id) return;
 
-    if (!storedUser) return;
-
-    fetch(`http://localhost:5000/users/${storedUser.id}`)
+    fetch(`${API}/api/users/${id}`)
       .then(res => res.json())
       .then(data => {
-        console.log("Fetched user:", data);
         setUser(data);
-        setLoading(false);
+        setOriginalUser(data);
       })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+      .catch(err => console.error(err));
 
-  }, []);
+  }, [API, id]);
 
+  // Handle input changes
   const handleChange = (e) => {
 
     const { name, value } = e.target;
@@ -39,11 +39,12 @@ function AdopterProfile() {
 
   };
 
+  // Save profile
   const handleSave = async () => {
 
     try {
 
-      const res = await fetch(`http://localhost:5000/users/${user.id}`, {
+      const res = await fetch(`${API}/api/users/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
@@ -51,25 +52,34 @@ function AdopterProfile() {
         body: JSON.stringify(user)
       });
 
-      const updatedUser = await res.json();
+      if (!res.ok) throw new Error("Update failed");
 
-      // update localStorage
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      const updated = await res.json();
 
-      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updated));
+
+      setUser(updated);
+      setOriginalUser(updated);
       setEditing(false);
+
     } catch (err) {
       console.error(err);
     }
 
   };
 
+  // Cancel editing
   const handleCancel = () => {
+    setUser(originalUser);
     setEditing(false);
   };
 
   if (!user) {
-    return;
+    return (
+      <AppLayout>
+        <div className="main">Loading profile...</div>
+      </AppLayout>
+    );
   }
 
   return (
@@ -79,13 +89,9 @@ function AdopterProfile() {
 
         <section className="section profile-section">
 
-          {loading && <p>Loading profile...</p>}
-
-            {!loading && user.length == 0 && (
-              <p>Failed to load.</p>
-            )}
-
           <div className="profile-box">
+
+            {/* ACTION BUTTONS */}
 
             {!editing ? (
 
@@ -118,20 +124,32 @@ function AdopterProfile() {
 
             )}
 
+            {/* PROFILE INFO */}
+
             <div className="profile-grid">
 
               <h2 className="profile-section-title">Account Details</h2>
 
               <label>Email</label>
               {editing ? (
-                <input name="email" value={user.email} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="email"
+                  value={user.email || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{user.email}</div>
               )}
 
               <label>Username</label>
               {editing ? (
-                <input name="userName" value={user.userName} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="userName"
+                  value={user.userName || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{user.userName}</div>
               )}
@@ -140,14 +158,24 @@ function AdopterProfile() {
 
               <label>First Name</label>
               {editing ? (
-                <input name="firstName" value={user.firstName} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="firstName"
+                  value={user.firstName || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{user.firstName}</div>
               )}
 
               <label>Last Name</label>
               {editing ? (
-                <input name="lastName" value={user.lastName} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="lastName"
+                  value={user.lastName || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{user.lastName}</div>
               )}
@@ -157,7 +185,7 @@ function AdopterProfile() {
                 <input
                   type="date"
                   name="birthdate"
-                  value={user.birthdate?.split("T")[0]}
+                  value={user.birthdate?.split("T")[0] || ""}
                   onChange={handleChange}
                   className="profile-input"
                 />
@@ -169,14 +197,24 @@ function AdopterProfile() {
 
               <label>City</label>
               {editing ? (
-                <input name="city" value={user.city} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="city"
+                  value={user.city || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{user.city}</div>
               )}
 
               <label>Address</label>
               {editing ? (
-                <input name="address" value={user.address} onChange={handleChange} className="profile-input"/>
+                <input
+                  name="address"
+                  value={user.address || ""}
+                  onChange={handleChange}
+                  className="profile-input"
+                />
               ) : (
                 <div className="profile-field">{user.address}</div>
               )}
