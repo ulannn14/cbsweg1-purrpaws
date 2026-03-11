@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
 
 function OrgPets() {
@@ -9,6 +10,7 @@ function OrgPets() {
 
   const API = import.meta.env.VITE_API_URL;
   const org = JSON.parse(localStorage.getItem("org"));
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -85,7 +87,12 @@ function OrgPets() {
 
             <div key={pet.id} className="pet-row">
 
-              <div className="pet-img"></div>
+              <div className="pet-img">
+                <img
+                  src={pet.image ? `${API}/images/${pet.image}` : "/images/placeholder-cat.svg"}
+                  alt={pet.name}
+                />
+              </div>
 
               <div>{pet.name}</div>
 
@@ -99,7 +106,10 @@ function OrgPets() {
 
               <div>{pet.adoptionStatus}</div>
 
-              <button className="edit-icon">
+              <button
+                className="edit-icon"
+                onClick={() => navigate(`/edit-pet/${pet.id}`)}
+              >
                 <FaEdit />
               </button>
 
