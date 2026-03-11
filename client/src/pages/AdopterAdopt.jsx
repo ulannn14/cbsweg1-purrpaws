@@ -5,15 +5,21 @@ import AppLayout from "../components/AppLayout";
 function AdopterAdopt() {
 
     const [organizations, setOrganizations] = useState([]);
+    const [loadingPets, setLoadingPets] = useState(false);
     const [pets, setPets] = useState([]);
     const [provinces, setProvinces] = useState([]);
 
     const [selectedOrg, setSelectedOrg] = useState(null);
 
     const [filters, setFilters] = useState({
-        provinceId: "",
-        age_min: "",
-        age_max: ""
+    provinceId: "",
+    species: "",
+    isMale: "",
+    isNeutered: "",
+    age_min: "",
+    age_max: "",
+    fee_min: "",
+    fee_max: ""
     });
 
     const API = import.meta.env.VITE_API_URL;
@@ -25,15 +31,18 @@ function AdopterAdopt() {
         .then(data => setOrganizations(data))
         .catch(err => console.error(err));
 
-        fetch(`${API}/api/pets`)
-        .then(res => res.json())
-        .then(data => setPets(data))
-        .catch(err => console.error(err));
-
         fetch(`${API}/api/provinces`)
         .then(res => res.json())
         .then(data => setProvinces(data))
         .catch(err => console.error(err));
+
+        setLoadingPets(true);
+
+        fetch(`${API}/api/pets`)
+        .then(res => res.json())
+        .then(data => setPets(data))
+        .catch(err => console.error(err))
+        .finally(() => setLoadingPets(false));
 
     }, []);
 
@@ -46,26 +55,45 @@ function AdopterAdopt() {
 
     function handleOrgClick(orgId) {
 
-        setSelectedOrg(orgId);
+    setLoadingPets(true);
 
-        fetch(`${API}/api/pets?organizationId=${orgId}`)
+    // if same org clicked again -> reset filter
+    if (selectedOrg === orgId) {
+
+        setSelectedOrg(null);
+
+        fetch(`${API}/api/pets`)
         .then(res => res.json())
         .then(data => setPets(data))
-        .catch(err => console.error(err));
+        .catch(err => console.error(err))
+        .finally(() => setLoadingPets(false));
 
+        return;
+    }
+
+    // otherwise apply org filter
+    setSelectedOrg(orgId);
+
+    fetch(`${API}/api/pets?organizationId=${orgId}`)
+        .then(res => res.json())
+        .then(data => setPets(data))
+        .catch(err => console.error(err))
+        .finally(() => setLoadingPets(false));
     }
 
     function handleFilterSubmit(e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        setSelectedOrg(null); // disable org filtering
+    setSelectedOrg(null);
+    setLoadingPets(true);
 
-        fetch(
+    fetch(
         `${API}/api/pets?provinceId=${filters.provinceId}&age_min=${filters.age_min}&age_max=${filters.age_max}`
-        )
+    )
         .then(res => res.json())
         .then(data => setPets(data))
-        .catch(err => console.error(err));
+        .catch(err => console.error(err))
+        .finally(() => setLoadingPets(false));
     }
 
     return (
@@ -94,7 +122,11 @@ function AdopterAdopt() {
             {/* Adopt Grid */}
             <section className="section adopt-grid">
 
-            {pets.map(pet => (
+            {loadingPets && (
+                <p className="pets-loading">Loading pets...</p>
+            )}
+
+            {!loadingPets && pets.map(pet => (
                 <Link
                     key={pet.id}
                     to={`/adopt/${pet.id}`}
@@ -116,9 +148,38 @@ function AdopterAdopt() {
                 </div>
 
                 <div className="pet-info">
-                    <h3>{pet.name}</h3>
-                    <p>{pet.breed?.name}</p>
-                </div>
+
+                        <div className="pet-text">
+                            <h3>{pet.name}</h3>
+                            <p>{pet.breed?.name}</p>
+
+                            <div className="pet-tags">
+                            {pet.age && <span className="tag">{pet.age} yrs</span>}
+                            {pet.isSpayedOrNeutered && <span className="tag dark">Neutered</span>}
+                            </div>
+                        </div>
+
+                        {/* SPECIES INDICATOR */}
+                        <div
+                            className={`pet-type ${
+                            pet.isMale === true
+                                ? "male"
+                                : pet.isMale === false
+                                ? "female"
+                                : ""
+                            }`}
+                        >
+                            <img
+                            src={
+                                pet.species === "DOG"
+                                ? "/images/flags/dog.jpg"
+                                : "/images/flags/cat.jpg"
+                            }
+                            alt={pet.species}
+                            />
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -157,6 +218,51 @@ function AdopterAdopt() {
                 </select>
             </div>
 
+            {/* Species Filter */}
+            <div className="filter-group">
+            <label>Species</label>
+
+            <select
+                name="species"
+                value={filters.species}
+                onChange={handleChange}
+            >
+                <option value="">All</option>
+                <option value="DOG">Dog</option>
+                <option value="CAT">Cat</option>
+            </select>
+            </div>
+
+            {/* Sex Filter */}
+            <div className="filter-group">
+            <label>Sex</label>
+
+            <select
+                name="isMale"
+                value={filters.isMale}
+                onChange={handleChange}
+            >
+                <option value="">All</option>
+                <option value="true">Male</option>
+                <option value="false">Female</option>
+            </select>
+            </div>
+
+            {/* Neutered Filter */}
+            <div className="filter-group">
+            <label>Neutered</label>
+
+            <select
+                name="isNeutered"
+                value={filters.isNeutered}
+                onChange={handleChange}
+            >
+                <option value="">All</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+            </div>
+
             {/* Age Range Filter */}
             <div className="filter-group">
                 <label>Age Range</label>
@@ -184,6 +290,35 @@ function AdopterAdopt() {
                 />
 
                 </div>
+            </div>
+
+            {/* Adoption Fee Range */}
+            <div className="filter-group">
+            <label>Adoption Fee Range</label>
+
+            <div className="age-range">
+
+                <input
+                type="number"
+                name="fee_min"
+                placeholder="Min"
+                min="0"
+                value={filters.fee_min}
+                onChange={handleChange}
+                />
+
+                <span className="age-separator">-</span>
+
+                <input
+                type="number"
+                name="fee_max"
+                placeholder="Max"
+                min="0"
+                value={filters.fee_max}
+                onChange={handleChange}
+                />
+
+            </div>
             </div>
 
             <button type="submit" className="filter-btn">

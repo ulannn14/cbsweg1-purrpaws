@@ -18,5 +18,5 @@ If you are developing a production application, we recommend using TypeScript wi
 ## How to Run Locally:
 1. Open the command prompt in the client folder and run "npm install".
 2. Open the command prompt in the server folder and run "npx prisma db push", "npx prisma generate", and "npm install".
-3. Open the command prompt in the root folder and run "npm install" and "npm dev run".
+3. Open the command prompt in the root folder and run "npm install" and "npm run dev".
 4. Go to the localhost displayed from step 3.

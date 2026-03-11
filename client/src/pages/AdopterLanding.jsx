@@ -139,23 +139,36 @@ function AdopterLanding() {
                     <div className="pet-info">
 
                         <div className="pet-text">
-                        <h3>{pet.name}</h3>
-                        <p>{pet.breed?.name}</p>
+                            <h3>{pet.name}</h3>
+                            <p>{pet.breed?.name}</p>
+
+                            <div className="pet-tags">
+                            {pet.age && <span className="tag">{pet.age} yrs</span>}
+                            {pet.isSpayedOrNeutered && <span className="tag dark">Neutered</span>}
+                            </div>
                         </div>
 
-                        <div className="pet-type">
-                        <img
+                        {/* SPECIES INDICATOR */}
+                        <div
+                            className={`pet-type ${
+                            pet.isMale === true
+                                ? "male"
+                                : pet.isMale === false
+                                ? "female"
+                                : ""
+                            }`}
+                        >
+                            <img
                             src={
-                            pet.species === "dog"
+                                pet.species === "DOG"
                                 ? "/images/flags/dog.jpg"
                                 : "/images/flags/cat.jpg"
                             }
                             alt={pet.species}
-                        />
+                            />
                         </div>
 
                     </div>
-
                 </div>
 
                 </Link>
