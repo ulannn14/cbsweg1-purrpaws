@@ -9,7 +9,10 @@ exports.getOrganizations = async (req, res) => {
     const organizations = await prisma.organization.findMany({
       include: {
         province: true,
-        pets: true
+        pets: {
+          include: {
+            breed: true}
+          }
       }
     });
 
@@ -63,7 +66,10 @@ exports.getOrganizationById = async (req, res) => {
       where: { id },
       include: {
         province: true,
-        pets: true
+        pets: {
+          include: {
+            breed: true}
+          }
       }
     });
 
