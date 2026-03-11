@@ -24,7 +24,9 @@ function PetDetail() {
 
   if (loading) return (
     <AppLayout>
-      <div>Loading...</div>
+      <div className="page-loading">
+        <p>Loading pet...</p>
+      </div>
     </AppLayout>
   );
 

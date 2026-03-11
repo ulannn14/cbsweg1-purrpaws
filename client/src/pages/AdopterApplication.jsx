@@ -48,27 +48,59 @@ function AdopterApplication() {
             {applications.map(app => (
 
                 <div key={app.id} className="application-card">
+                <div className="adopt-card">
 
-                  {/* PET CARD */}
-                  <div className="pet-preview">
-
-                    <div className="pet-photo">
-                      <img
-                        src={
-                          app.pet?.image
+                  <div className="adopt-pet-photo">
+                    <img
+                      src={
+                        app.pet?.image
                           ? `${API}/images/${app.pet.image}`
                           : "/images/placeholder-cat.svg"
+                      }
+                      alt={app.pet?.name}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover"
+                      }}
+                    />
+                  </div>
+
+                  <div className="pet-info">
+
+                    <div className="pet-text">
+                      <h3>{app.pet?.name}</h3>
+                      <p>{app.pet?.breed?.name}</p>
+
+                      <div className="pet-tags">
+                        {app.pet?.age && <span className="tag">{app.pet.age} yrs</span>}
+                        {app.pet?.isSpayedOrNeutered && <span className="tag dark">Neutered</span>}
+                      </div>
+                    </div>
+
+                    {/* SPECIES INDICATOR */}
+                    <div
+                      className={`pet-type ${
+                        app.pet?.isMale === true
+                          ? "male"
+                          : app.pet?.isMale === false
+                          ? "female"
+                          : ""
+                      }`}
+                    >
+                      <img
+                        src={
+                          app.pet?.species === "DOG"
+                            ? "/images/flags/dog.jpg"
+                            : "/images/flags/cat.jpg"
                         }
-                        alt={app.pet?.name}
+                        alt={app.pet?.species}
                       />
                     </div>
 
-                    <div className="pet-info">
-                      <h3>{app.pet?.name}</h3>
-                      <p>{app.pet?.breed?.name}</p>
-                    </div>
-
                   </div>
+
+                </div>
 
                   {/* APPLICATION INFO */}
                   <div className="application-info">
