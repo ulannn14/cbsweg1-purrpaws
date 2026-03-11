@@ -2,6 +2,9 @@ const prisma = require("../config/prisma");
 
 
 exports.getPets = async (req, res) => {
+
+  const { limit } = req.query;
+
   try {
 
     const { provinceId, age_min, age_max, organizationId } = req.query;
@@ -29,8 +32,9 @@ exports.getPets = async (req, res) => {
             ...(age_max && { lte: Number(age_max) })
           }
         })
-
       },
+
+      ...(limit && { take: Number(limit) }),
 
       include: {
         breed: true,
@@ -38,7 +42,7 @@ exports.getPets = async (req, res) => {
       },
 
       orderBy: {
-        name: "asc"
+        age: "desc"
       }
 
     });
