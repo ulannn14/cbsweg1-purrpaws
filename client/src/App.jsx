@@ -11,6 +11,7 @@ import AdopterApplicationDetail from "./pages/AdopterApplicationDetail";
 import AdopterProfile from "./pages/AdopterProfile"
 import OrgLanding from "./pages/OrgLanding";  
 import OrgPets from "./pages/OrgPets";
+import EditPet from "./pages/EditPet";
 import OrgProfile from "./pages/OrgProfile";
 import NotFound from "./pages/NotFound"
 import AdopterApply from "./pages/AdopterApply";
@@ -32,6 +33,7 @@ function App() {
         <Route path="/profile" element={<AdopterProfile />} />
         <Route path="/org" element={<OrgLanding />} />
         <Route path="/org/pets" element={<OrgPets />} />
+        <Route path="/edit-pet/:id" element={<EditPet />} />
         <Route path="/org/profile" element={<OrgProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
