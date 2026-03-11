@@ -110,6 +110,8 @@ model Pets {
   adoptionStatus AdoptionStatus @default(AVAILABLE)
 
   adoptionApplications AdoptionApplication[]
+
+  petImage String
 }
 
 enum Size {
@@ -132,7 +134,6 @@ enum Species {
 model Breed {
   id    Int     @id @default(autoincrement())
   name  String @unique
-  isCat Boolean
 
   pets Pets[]
 }
@@ -198,7 +199,56 @@ model AdoptionApplication {
   status AdoptionApplicationStatus @default(PENDING)
   createdAt DateTime @default(now())
 
+  applicantFirstName String
+  applicantLastName String
+  applicantAddress String
+  applicantPhoneNumber String
+  applicantEmail String
+  applicantEmail String
+  applicantBirthdate DateTime
+  applicantOccupation String
+  applicantCompany String?
+  applicantSocialMedia String? //Link to applicant's social media account
+  applicantCivilStatus CivilStatus 
+
+  adoptionPrompt AdoptionPrompt //What prompted adopter to adopt from PurrPaws
+
+  alternateContactName String
+  alternateContactRelationship String
+  alternateContactNumber String
+  alternateContactEmail String
+
+  response1 String
+  response2 Boolean //TRUE if yes: NO
+  response3 String
+  response4 String
+  response5 Boolean
+  response6 String
+  response7 String
+  response8 String
+  response9 String
+  response10 String
+  response11 Boolean
+  response12 String
+  response13 Boolean
+  response14 Boolean
+  response15 String[]
+  response16 DateTime
+
   @@unique([userId, petId])
+}
+
+enum AdoptionPrompt {
+  FRIENDS
+  SOCIALMEDIA
+  WEBSITE
+  OTHER
+}
+
+enum CivilStatus {
+  SINGLE
+  MARRIED
+  OTHERS
 }
 
 enum AdoptionApplicationStatus {
