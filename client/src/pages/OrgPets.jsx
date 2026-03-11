@@ -14,15 +14,15 @@ function OrgPets() {
 
     if (!org) return;
 
-    fetch(`${API}/api/pets/org/${org.id}`)
+    fetch(`${API}/api/organizations/${org.id}`)
       .then(res => res.json())
       .then(data => {
-        console.log("Org Pets:", data);
-        setPets(data);
+        console.log("Organization:", data);
+        setPets(data.pets);
       })
       .catch(err => console.error(err));
 
-  }, [API, org]);
+  }, [API, org?.id]);
 
   const filteredPets =
     activeTab === "all"

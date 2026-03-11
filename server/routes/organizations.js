@@ -11,4 +11,6 @@ router.get("/:id", organizationController.getOrganizationById);
 // LOGIN organization
 router.post("/login", organizationController.loginOrganization);
 
+router.put("/:id", organizationController.updateOrganization);
+
 module.exports = router;

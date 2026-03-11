@@ -78,3 +78,30 @@ exports.getOrganizationById = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch organization" });
   }
 };
+
+exports.updateOrganization = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const updatedOrg = await prisma.organization.update({
+      where: { id: id }, // DO NOT convert to Number
+      data: {
+        email: req.body.email,
+        name: req.body.name,
+        yearEstablished: req.body.yearEstablished,
+        city: req.body.city,
+        address: req.body.address,
+        contactPerson: req.body.contactPerson,
+        contactPersonRole: req.body.contactPersonRole,
+        contactNumber: req.body.contactNumber
+      }
+    });
+
+    res.json(updatedOrg);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update organization" });
+  }
+};
