@@ -11,6 +11,7 @@ function OrgPets() {
   const API = import.meta.env.VITE_API_URL;
   const org = JSON.parse(localStorage.getItem("org"));
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
@@ -21,8 +22,12 @@ function OrgPets() {
       .then(data => {
         console.log("Organization:", data);
         setPets(data.pets);
+        setLoading(false);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
 
   }, [API, org?.id]);
 
@@ -83,7 +88,13 @@ function OrgPets() {
 
         <div className="pets-list">
 
-          {filteredPets.map(pet => (
+          {loading ? (
+            <p className="loading-text">Loading pets...</p>
+          ) : filteredPets.length === 0 ? (
+            <p className="empty-text">No pets available.</p>
+          ) : (
+
+          filteredPets.map(pet => (
 
             <div key={pet.id} className="pet-row">
 
@@ -115,7 +126,7 @@ function OrgPets() {
 
             </div>
 
-          ))}
+          )))}
 
         </div>
 
