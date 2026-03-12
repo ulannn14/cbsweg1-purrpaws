@@ -62,38 +62,44 @@ function AdopterAdopt() {
 
         setSelectedOrg(null);
 
-        fetch(`${API}/api/pets`)
-        .then(res => res.json())
-        .then(data => setPets(data))
-        .catch(err => console.error(err))
-        .finally(() => setLoadingPets(false));
+           fetch(`${API}/api/pets`)
+           .then(res => res.json())
+           .then(data => setPets(data))
+           .catch(err => console.error(err))
+           .finally(() => setLoadingPets(false));
 
-        return;
+            return;
+        }
+
+        // otherwise apply org filter
+        setSelectedOrg(orgId);
+
+        fetch(`${API}/api/pets?organizationId=${orgId}`)
+            .then(res => res.json())
+            .then(data => setPets(data))
+            .catch(err => console.error(err))
+            .finally(() => setLoadingPets(false));
     }
-
-    // otherwise apply org filter
-    setSelectedOrg(orgId);
-
-    fetch(`${API}/api/pets?organizationId=${orgId}`)
-        .then(res => res.json())
-        .then(data => setPets(data))
-        .catch(err => console.error(err))
-        .finally(() => setLoadingPets(false));
-    }
-
+    
     function handleFilterSubmit(e) {
-    e.preventDefault();
+        e.preventDefault();
 
-    setSelectedOrg(null);
-    setLoadingPets(true);
+        setSelectedOrg(null);
+        setLoadingPets(true);
 
-    fetch(
-        `${API}/api/pets?provinceId=${filters.provinceId}&age_min=${filters.age_min}&age_max=${filters.age_max}`
-    )
-        .then(res => res.json())
-        .then(data => setPets(data))
-        .catch(err => console.error(err))
-        .finally(() => setLoadingPets(false));
+        const params = new URLSearchParams();
+
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== "") {
+                params.append(key, value);
+            }
+        });
+
+        fetch(`${API}/api/pets?${params.toString()}`)
+            .then(res => res.json())
+            .then(data => setPets(data))
+            .catch(err => console.error(err))
+            .finally(() => setLoadingPets(false));
     }
 
     return (

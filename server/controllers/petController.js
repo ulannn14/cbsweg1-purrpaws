@@ -7,13 +7,23 @@ exports.getPets = async (req, res) => {
 
   try {
 
-    const { provinceId, age_min, age_max, organizationId } = req.query;
+    const {
+      provinceId,
+      age_min,
+      age_max,
+      organizationId,
+      species,
+      isMale,
+      isNeutered,
+      fee_min,
+      fee_max
+    } = req.query;
 
     const pets = await prisma.pets.findMany({
 
       where: {
 
-        // org filter (for clickable org header)
+        // org filter
         ...(organizationId && {
           organizationId: organizationId
         }),
@@ -25,13 +35,37 @@ exports.getPets = async (req, res) => {
           }
         }),
 
+        // species filter
+        ...(species && {
+          species: species
+        }),
+
+        // sex filter
+        ...(isMale !== undefined && isMale !== "" && {
+          isMale: isMale === "true"
+        }),
+
+        // neutered filter
+        ...(isNeutered !== undefined && isNeutered !== "" && {
+          isSpayedOrNeutered: isNeutered === "true"
+        }),
+
         // age filter
         ...((age_min || age_max) && {
           age: {
             ...(age_min && { gte: Number(age_min) }),
             ...(age_max && { lte: Number(age_max) })
           }
+        }),
+
+        // adoption fee filter
+        ...((fee_min || fee_max) && {
+          adoptionFee: {
+            ...(fee_min && { gte: Number(fee_min) }),
+            ...(fee_max && { lte: Number(fee_max) })
+          }
         })
+
       },
 
       ...(limit && { take: Number(limit) }),
@@ -53,6 +87,7 @@ exports.getPets = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
+
 };
 
 // Get single pet
