@@ -16,7 +16,8 @@ exports.getUsers = async (req, res) => {
         birthdate: true,
         city: true,
         address: true,
-        provinceId: true
+        provinceId: true,
+        phoneNumber: true
       }
     });
 
@@ -50,7 +51,8 @@ exports.getUserById = async (req, res) => {
         birthdate: true,
         city: true,
         address: true,
-        provinceId: true
+        provinceId: true,
+        phoneNumber: true
       }
     });
 
@@ -82,7 +84,8 @@ exports.createUser = async (req, res) => {
     birthdate,
     city,
     provinceId,
-    address
+    address,
+    phoneNumber
   } = req.body;
 
   try {
@@ -112,7 +115,8 @@ exports.createUser = async (req, res) => {
         birthdate: new Date(birthdate),
         city,
         provinceId: Number(provinceId),
-        address
+        address,
+        phoneNumber
       }
     });
 
@@ -172,9 +176,18 @@ exports.updateUser = async (req, res) => {
 
   try {
 
+    // Remove id from body so it can't overwrite the primary key
+    const { id: _, birthdate, ...rest } = req.body;
+
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: req.body
+      data: {
+        ...rest,
+
+        ...(birthdate && {
+          birthdate: new Date(birthdate)
+        })
+      }
     });
 
     const { password, ...userWithoutPassword } = updatedUser;
@@ -183,16 +196,15 @@ exports.updateUser = async (req, res) => {
 
   } catch (err) {
 
-    if (err.code === 'P2025') {
-      return res.status(404).json({ message: 'User not found' });
+    if (err.code === "P2025") {
+      return res.status(404).json({ message: "User not found" });
     }
 
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
 
   }
 };
-
 
 
 // DELETE USER

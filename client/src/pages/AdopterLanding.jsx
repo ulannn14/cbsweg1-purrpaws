@@ -30,7 +30,7 @@ function AdopterLanding() {
 
     useEffect(() => {
 
-        fetch(`${API}/api/pets?limit=4`)
+        fetch(`${API}/api/pets?status=AVAILABLE&limit=4`)
         .then(res => res.json())
         .then(data => {
             console.debug("Fetched pets:", data);
@@ -160,11 +160,11 @@ function AdopterLanding() {
                         >
                             <img
                             src={
-                                pet.species === "DOG"
-                                ? "/images/flags/dog.jpg"
-                                : "/images/flags/cat.jpg"
+                                pet.breed?.isCat
+                                ? "/images/flags/cat.jpg"
+                                : "/images/flags/dog.jpg"
                             }
-                            alt={pet.species}
+                            alt={pet.breed?.isCat ? "Cat" : "Dog"}
                             />
                         </div>
                     </div>

@@ -5,12 +5,86 @@ const prisma = require("../config/prisma");
 exports.createApplication = async (req, res) => {
   try {
 
-    const { userId, petId } = req.body;
+    const {
+      userId,
+      petId,
+
+      applicantFirstName,
+      applicantLastName,
+      applicantAddress,
+      applicantPhoneNumber,
+      applicantEmail,
+      applicantBirthdate,
+
+      applicantOccupation,
+      applicantCompany,
+      applicantSocialMedia,
+      applicantCivilStatus,
+      adoptionPrompt,
+
+      alternateContactName,
+      alternateContactRelationship,
+      alternateContactNumber,
+      alternateContactEmail,
+
+      response1,
+      response2,
+      response3,
+      response4,
+      response5,
+      response6,
+      response7,
+      response8,
+      response9,
+      response10,
+      response11,
+      response12,
+      response13,
+      response14,
+      response15,
+      response16
+
+    } = req.body;
 
     const application = await prisma.adoptionApplication.create({
       data: {
         userId,
-        petId
+        petId,
+
+        applicantFirstName,
+        applicantLastName,
+        applicantAddress,
+        applicantPhoneNumber,
+        applicantEmail,
+        applicantBirthdate: new Date(applicantBirthdate),
+
+        applicantOccupation,
+        applicantCompany,
+        applicantSocialMedia,
+        applicantCivilStatus,
+        adoptionPrompt,
+
+        alternateContactName,
+        alternateContactRelationship,
+        alternateContactNumber,
+        alternateContactEmail,
+
+        response1,
+        response2,
+        response3,
+        response4,
+        response5,
+        response6,
+        response7,
+        response8,
+        response9,
+        response10,
+        response11,
+        response12,
+        response13,
+        response14,
+        response15,
+        response16: new Date(response16)
       },
       include: {
         user: true,
@@ -26,15 +100,7 @@ exports.createApplication = async (req, res) => {
     res.status(201).json(application);
 
   } catch (error) {
-
-    // prevents duplicate applications
-    if (error.code === "P2002") {
-      return res.status(400).json({
-        message: "You have already applied for this pet."
-      });
-    }
-
-    console.error(error);
+    console.error("Create application error:", error);
     res.status(500).json({ message: "Failed to create application" });
   }
 };
