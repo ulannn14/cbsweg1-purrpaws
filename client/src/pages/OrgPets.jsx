@@ -122,7 +122,10 @@ function OrgPets() {
         {/* Add Button */}
 
         <div className="add-pet-container">
-          <button className="add-pet-btn">
+          <button
+            className="add-pet-btn"
+            onClick={() => navigate("/new-pet")}
+          >
             Add New +
           </button>
         </div>
