@@ -140,7 +140,7 @@ function OrgApplication() {
                   src={
                     pet?.petImage
                       ? `${API}/images/${pet.petImage}`
-                      : "/images/placeholder-cat.svg"
+                      : `/temp-photos/pets/pet-main-${app.pet?.id}.jpg`
                   }
                   alt={pet?.name}
                 />

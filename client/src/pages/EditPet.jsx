@@ -12,7 +12,7 @@ function EditPet() {
   const [loading, setLoading] = useState(true);
   const [breeds, setBreeds] = useState([]);
   const [imageFile, setImageFile] = useState(null); // new image
-  const [preview, setPreview] = useState("/images/placeholder-cat.svg"); // image preview
+  const [preview, setPreview] = useState(`/temp-photos/pets/pet-main-${id}.jpg`); // image preview
 
   useEffect(() => {
     if (!id) return;
@@ -23,7 +23,7 @@ function EditPet() {
       .then(data => {
         setPet(data);
         setForm(data);
-        setPreview(data.image ? `${API}/images/${data.image}` : "/images/placeholder-cat.svg");
+        setPreview(data.image ? `${API}/images/${data.image}` : `/temp-photos/pets/pet-main-${id}.jpg`);
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));

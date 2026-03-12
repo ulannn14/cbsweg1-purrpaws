@@ -129,7 +129,14 @@ function AdopterAdopt() {
                     className={`org-icon ${selectedOrg === org.id ? "active" : ""}`}
                     onClick={() => handleOrgClick(org.id)}
                 >
-                    {org.name}
+                <img
+                src={`/temp-photos/orgs/org-profile-${org.id}.png`}
+                alt={org.name}
+                className="org-profile-img"
+                onError={(e) => {
+                    e.target.src = "/images/org-placeholder.png";
+                }}
+                />
                 </div>
                 ))}
 
@@ -154,7 +161,7 @@ function AdopterAdopt() {
 
                 <div className="adopt-pet-photo">
                     <img
-                        src="/images/placeholder-cat.svg"
+                        src={`/temp-photos/pets/pet-main-${pet.id}.jpg`}
                         alt={pet.name}
                         style={{
                             width: "100%",

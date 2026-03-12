@@ -118,7 +118,7 @@ function OrgLanding() {
                       src={
                         app.pet?.petImage
                           ? `${API}/images/${app.pet.petImage}`
-                          : "/images/placeholder-cat.svg"
+                          : `/temp-photos/pets/pet-main-${app.pet?.id}.jpg`
                       }
                       alt={app.pet?.name}
                       style={{

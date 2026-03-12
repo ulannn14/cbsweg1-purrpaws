@@ -127,7 +127,7 @@ function AdopterLanding() {
 
                     <div className="adopt-pet-photo">
                     <img
-                        src="/images/placeholder-cat.svg"
+                        src={`/temp-photos/pets/pet-main-${pet.id}.jpg`}
                         alt={pet.name}
                         style={{
                         width: "100%",

@@ -104,7 +104,8 @@ function OrgPets() {
 
               <div className="pet-img">
                 <img
-                  src={pet.image ? `${API}/images/${pet.image}` : "/images/placeholder-cat.svg"}
+                  src={pet.image ? `${API}/images/${pet.image}` 
+                  : `/temp-photos/pets/pet-main-${pet.id}.jpg`}
                   alt={pet.name}
                 />
               </div>
