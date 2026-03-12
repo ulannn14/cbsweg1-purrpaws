@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,48 +9,41 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  firstName String
-  lastName  String
-  userName  String   @unique
-  password  String
-  birthdate DateTime
-  city      String
-
-  provinceId Int
-  province   Province @relation(fields: [provinceId], references: [id])
-
-  address String
-
-  userImage String
-  userImages String[]
-
+  id                   String                @id @default(uuid())
+  email                String                @unique
+  firstName            String
+  lastName             String
+  userName             String                @unique
+  password             String
+  birthdate            DateTime
+  city                 String
+  provinceId           Int
+  address              String
+  userImage            String?
+  userImages           String[]
+  phoneNumber          String
   adoptionApplications AdoptionApplication[]
+  province             Province              @relation(fields: [provinceId], references: [id])
 }
 
 model Province {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
-  users         User[]
+  id            Int            @id @default(autoincrement())
+  name          String         @unique
   organizations Organization[]
+  users         User[]
 }
 
 model Organization {
-  id                String  @id @default(uuid())
-  name              String
-  email             String  @unique
-  contactPerson     String?
-  contactPersonRole String?
-  contactNumber     String
-  password          String
-  organizationType  String
-  city              String
-
-  provinceId Int
-  province   Province @relation(fields: [provinceId], references: [id])
-
+  id                 String            @id @default(uuid())
+  name               String
+  email              String            @unique
+  contactPerson      String?
+  contactPersonRole  String?
+  contactNumber      String
+  password           String
+  organizationType   String
+  city               String
+  provinceId         Int
   address            String
   yearEstablished    DateTime
   registrationNumber String?           @unique
@@ -65,59 +52,132 @@ model Organization {
   status             OperationalStatus
   numberOfAnimals    Int
   description        String
-
-  organizationImage String
+  organizationImage  String
   organizationImages String[]
+  province           Province          @relation(fields: [provinceId], references: [id])
+  pets               Pet[]
+}
 
-  pets Pet[]
+model Pet {
+  id                   String                @id @default(uuid())
+  organizationId       String
+  name                 String
+  isMale               Boolean
+  age                  Int
+  size                 Size
+  weight               Float
+  color                String
+  breedId              Int
+  rescueStory          String
+  dateRescued          DateTime
+  adoptionReason       String
+  temperament          Temperament
+  isSpayedOrNeutered   Boolean
+  isGoodWithDogs       Boolean
+  isGoodWithCats       Boolean
+  isGoodWithKids       Boolean
+  isHouseTrained       Boolean
+  isLeashTrained       Boolean
+  adoptionFee          Float
+  adoptionRequirements String[]
+  adoptionStatus       AdoptionStatus        @default(AVAILABLE)
+  petImage             String
+  petImages            String[]
+  adoptionApplications AdoptionApplication[]
+  breed                Breed                 @relation(fields: [breedId], references: [id])
+  organization         Organization          @relation(fields: [organizationId], references: [id])
+  petConditions        PetCondition[]
+  vaccinations         PetVaccination[]
+}
+
+model Breed {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  isCat Boolean
+  pets  Pet[]
+}
+
+model PetVaccination {
+  id               Int      @id @default(autoincrement())
+  petId            String
+  vaccineId        Int
+  dateAdministered DateTime
+  remarks          String?
+  pet              Pet      @relation(fields: [petId], references: [id])
+  vaccine          Vaccine  @relation(fields: [vaccineId], references: [id])
+
+  @@unique([petId, vaccineId])
+}
+
+model Vaccine {
+  id           Int              @id @default(autoincrement())
+  name         String
+  vaccinations PetVaccination[]
+}
+
+model PetCondition {
+  id          Int              @id @default(autoincrement())
+  petId       String
+  conditionId Int
+  condition   MedicalCondition @relation(fields: [conditionId], references: [id])
+  pet         Pet              @relation(fields: [petId], references: [id])
+
+  @@unique([petId, conditionId])
+}
+
+model MedicalCondition {
+  id            Int            @id @default(autoincrement())
+  name          String
+  petConditions PetCondition[]
+}
+
+model AdoptionApplication {
+  id                           String                    @id @default(uuid())
+  userId                       String
+  petId                        String
+  status                       AdoptionApplicationStatus @default(PENDING)
+  createdAt                    DateTime                  @default(now())
+  applicantFirstName           String
+  applicantLastName            String
+  applicantAddress             String
+  applicantPhoneNumber         String
+  applicantEmail               String
+  applicantBirthdate           DateTime
+  applicantOccupation          String
+  applicantCompany             String?
+  applicantSocialMedia         String?
+  applicantCivilStatus         CivilStatus
+  adoptionPrompt               AdoptionPrompt
+  alternateContactName         String
+  alternateContactRelationship String
+  alternateContactNumber       String
+  alternateContactEmail        String
+  response1                    String
+  response2                    Boolean
+  response3                    String
+  response4                    String
+  response5                    Boolean
+  response6                    String
+  response7                    String
+  response8                    String
+  response9                    String
+  response10                   String
+  response11                   Boolean
+  response12                   String
+  response13                   Boolean
+  response14                   Boolean
+  response15                   String[]
+  response16                   DateTime
+  pet                          Pet                       @relation(fields: [petId], references: [id])
+  user                         User                      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, petId])
 }
 
 enum OperationalStatus {
   CATS
   DOGS
   BOTH
-}
-
-model Pet {
-  id String @id @default(uuid())
-
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-
-  name   String
-  isMale Boolean
-  age    Int
-  size   Size
-  weight Float
-  color  String
-
-  breedId Int
-  breed   Breed @relation(fields: [breedId], references: [id])
-
-  rescueStory    String
-  dateRescued    DateTime
-  adoptionReason String
-  temperament    Temperament
-
-  isSpayedOrNeutered Boolean
-  isGoodWithDogs     Boolean
-  isGoodWithCats     Boolean
-  isGoodWithKids     Boolean
-  isHouseTrained     Boolean
-  isLeashTrained     Boolean
-
-  vaccinations  PetVaccination[]
-  petConditions PetCondition[]
-
-  adoptionFee          Float
-  adoptionRequirements String[]
-
-  adoptionStatus AdoptionStatus @default(AVAILABLE)
-
-  adoptionApplications AdoptionApplication[]
-
-  petImage String
-  petImages String[]
 }
 
 enum Size {
@@ -137,111 +197,12 @@ enum Species {
   DOG
 }
 
-model Breed {
-  id    Int     @id @default(autoincrement())
-  name  String @unique
-  isCat Boolean //TRUE if cat breed, FALSE if dog breed
-
-  pets Pet[]
-}
-
 enum Temperament {
   CALM
   PLAYFUL
   SHY
   FRIENDLY
   AGGRESSIVE
-}
-
-model PetVaccination {
-  id Int @id @default(autoincrement())
-
-  petId String
-  pet   Pet   @relation(fields: [petId], references: [id])
-
-  vaccineId Int
-  vaccine   Vaccine @relation(fields: [vaccineId], references: [id])
-
-  dateAdministered DateTime
-  remarks          String?
-
-  @@unique([petId, vaccineId])
-}
-
-model Vaccine {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  vaccinations PetVaccination[]
-}
-
-model PetCondition {
-  id Int @id @default(autoincrement())
-
-  petId String
-  pet   Pet   @relation(fields: [petId], references: [id])
-
-  conditionId Int
-  condition   MedicalCondition @relation(fields: [conditionId], references: [id])
-
-  @@unique([petId, conditionId])
-}
-
-model MedicalCondition {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  petConditions PetCondition[]
-}
-
-model AdoptionApplication {
-  id String @id @default(uuid())
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  petId String
-  pet   Pet   @relation(fields: [petId], references: [id])
-
-  status AdoptionApplicationStatus @default(PENDING)
-  createdAt DateTime @default(now())
-
-  applicantFirstName String
-  applicantLastName String
-  applicantAddress String
-  applicantPhoneNumber String
-  applicantEmail String
-  applicantBirthdate DateTime
-  applicantOccupation String
-  applicantCompany String?
-  applicantSocialMedia String? //Link to applicant's social media account
-  applicantCivilStatus CivilStatus 
-
-  adoptionPrompt AdoptionPrompt //What prompted adopter to adopt from PurrPaws
-
-  alternateContactName String
-  alternateContactRelationship String
-  alternateContactNumber String
-  alternateContactEmail String
-
-  response1 String
-  response2 Boolean //TRUE if yes: NO
-  response3 String
-  response4 String
-  response5 Boolean
-  response6 String
-  response7 String
-  response8 String
-  response9 String
-  response10 String
-  response11 Boolean
-  response12 String
-  response13 Boolean
-  response14 Boolean
-  response15 String[]
-  response16 DateTime
-
-  @@unique([userId, petId])
 }
 
 enum AdoptionPrompt {
@@ -260,6 +221,6 @@ enum CivilStatus {
 enum AdoptionApplicationStatus {
   PENDING
   APPROVED
-  ASSESSMENT 
+  ASSESSMENT
   REJECTED
 }
