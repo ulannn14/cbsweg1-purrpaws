@@ -14,7 +14,7 @@ PurrPaws is a full-stack web application built using React and Express. It aims 
 - Nodemon (Development)
 
 **Database:**
-- PostgreSQL (Mongoose)
+- PostgreSQL (Prisma)
 
 ---
 

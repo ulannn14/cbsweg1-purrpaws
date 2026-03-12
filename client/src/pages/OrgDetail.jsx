@@ -22,12 +22,13 @@ function OrganizationDetail() {
       .finally(() => setLoading(false));
   }, [id, API]);
 
-  if (loading)
-    return (
-      <AppLayout>
-        <div>Loading...</div>
-      </AppLayout>
-    );
+  if (loading) return (
+    <AppLayout>
+      <div className="page-loading">
+        <p>Loading organization...</p>
+      </div>
+    </AppLayout>
+  );
 
   if (!org)
     return (
