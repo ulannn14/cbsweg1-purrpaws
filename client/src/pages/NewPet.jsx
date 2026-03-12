@@ -11,8 +11,8 @@ function NewPet() {
 
     const [breeds, setBreeds] = useState([]);
 
-    const [imageFile, setImageFile] = useState(null);
-    const [preview, setPreview] = useState("/images/placeholder-cat.svg");
+    // const [imageFile, setImageFile] = useState(null);
+    // const [preview, setPreview] = useState("/images/placeholder-cat.svg");
 
     const [form, setForm] = useState({
         name: "",
@@ -73,6 +73,7 @@ function NewPet() {
 
     };
 
+    /*
     const handleImageUpload = (e) => {
 
         const file = e.target.files[0];
@@ -82,11 +83,13 @@ function NewPet() {
         setPreview(URL.createObjectURL(file));
 
     };
+    */
 
     const handleSave = async () => {
 
         try {
 
+        /*
         const formData = new FormData();
 
         Object.entries(form).forEach(([key, value]) => {
@@ -104,10 +107,17 @@ function NewPet() {
         if (imageFile) {
             formData.append("image", imageFile);
         }
+        */
 
         const res = await fetch(`${API}/api/pets`, {
             method: "POST",
-            body: formData
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ...form,
+                organizationId: org.id
+            })
         });
 
         if (!res.ok) throw new Error("Failed to create pet");
@@ -137,6 +147,7 @@ function NewPet() {
 
             <div className="pet-header">
 
+                {/* 
                 <div className="upload-container">
                     <img src={preview} alt="pet preview" className="upload-preview" />
                     
@@ -152,6 +163,7 @@ function NewPet() {
 
                     {imageFile && <span className="upload-filename">{imageFile.name}</span>}
                 </div>
+                */}
 
                 <input
                 className="edit-input pet-name"

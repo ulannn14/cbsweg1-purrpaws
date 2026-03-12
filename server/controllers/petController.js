@@ -1,5 +1,41 @@
+const e = require("express");
 const prisma = require("../config/prisma");
 
+exports.addPet = async (req, res) => {
+
+  try {
+
+    const data = { ...req.body };
+
+    // Convert JSON array
+    if (data.adoptionRequirements) {
+      data.adoptionRequirements = JSON.parse(data.adoptionRequirements);
+    }
+
+    // Convert date
+    if (data.dateRescued) {
+      data.dateRescued = new Date(data.dateRescued);
+    }
+
+    // Convert empty numbers
+    if (data.age === "") data.age = null;
+    if (data.weight === "") data.weight = null;
+    if (data.adoptionFee === "") data.adoptionFee = null;
+
+    const newPet = await prisma.pets.create({
+      data
+    });
+
+    res.status(201).json(newPet);
+
+  } catch (error) {
+
+    console.error(error);
+    res.status(500).json({ error: "Failed to create pet" });
+
+  }
+
+};
 
 exports.getPets = async (req, res) => {
 
@@ -122,14 +158,56 @@ exports.createPet = async (req, res) => {
   try {
 
     const newPet = await prisma.pets.create({
-      data: req.body
+      data: {
+
+        organization: {
+          connect: { id: req.body.organizationId }
+        },
+
+        name: req.body.name,
+        species: req.body.species,
+        isMale: req.body.isMale,
+
+        age: Number(req.body.age),
+        size: req.body.size,
+        weight: Number(req.body.weight),
+        color: req.body.color,
+
+        breed: {
+          connect: { id: Number(req.body.breedId) }
+        },
+
+        rescueStory: req.body.rescueStory,
+        adoptionReason: req.body.adoptionReason,
+        temperament: req.body.temperament,
+
+        isSpayedOrNeutered: req.body.isSpayedOrNeutered,
+        isGoodWithDogs: req.body.isGoodWithDogs,
+        isGoodWithCats: req.body.isGoodWithCats,
+        isGoodWithKids: req.body.isGoodWithKids,
+        isHouseTrained: req.body.isHouseTrained,
+        isLeashTrained: req.body.isLeashTrained,
+        // isDewormed: req.body.isDewormed,
+
+        adoptionFee: Number(req.body.adoptionFee),
+
+        adoptionRequirements: req.body.adoptionRequirements,
+
+        adoptionStatus: req.body.adoptionStatus || "AVAILABLE",
+
+        dateRescued: req.body.dateRescued
+          ? new Date(req.body.dateRescued)
+          : null
+      }
     });
 
     res.status(201).json(newPet);
 
   } catch (error) {
+
     console.error(error);
     res.status(400).json({ message: error.message });
+
   }
 };
 
