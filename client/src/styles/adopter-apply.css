@@ -1,0 +1,140 @@
+/* ============================= */
+/* Apply Page */
+/* ============================= */
+
+.apply-page{
+  max-width:900px;
+  margin:auto;
+}
+
+.apply-title{
+  font-size:22px;
+  font-weight:600;
+  margin-top:25px;
+  margin-bottom:12px;
+}
+
+/* Main white box */
+
+.apply-box{
+  border:1px solid #ccc;
+  border-radius:10px;
+  background:white;
+  padding:20px;
+  margin-bottom:25px;
+}
+
+/* Header with update button */
+
+.apply-box-header{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:10px;
+}
+
+.apply-actions{
+  display:flex;
+  gap:10px;
+}
+
+/* Personal info grid */
+
+.personal-grid{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.info-row{
+  display:grid;
+  grid-template-columns:140px 1fr;
+  align-items:center;
+}
+
+.info-row label{
+  font-weight:600;
+}
+
+.info-row span{
+  color:#333;
+}
+
+/* Form styling */
+
+.form-box{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+}
+
+.form-group label{
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.apply-box{
+  border:1px solid #ccc;
+  border-radius:10px;
+  background:white;
+  padding:20px;
+  margin-bottom:25px;
+
+  display:flex;
+  flex-direction:column;
+}
+
+/* bottom right buttons */
+
+.apply-box-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:20px;
+}
+
+/* ============================= */
+/* File Upload */
+/* ============================= */
+
+.file-upload{
+  position:relative;
+  display:inline-block;
+}
+
+.file-upload input{
+  display:none;
+}
+
+/* custom button */
+
+.file-upload-btn{
+  display:inline-block;
+
+  padding:10px 20px;
+  border-radius:25px;
+
+  border:1px solid #444;
+  background:#f4f4f4;
+
+  cursor:pointer;
+  font-size:14px;
+
+  transition:all 0.15s ease;
+}
+
+.file-upload-btn:hover{
+  background:#eaeaea;
+}
+
+/* small helper text */
+
+.file-upload-note{
+  margin-top:6px;
+  font-size:13px;
+  color:#666;
+}
