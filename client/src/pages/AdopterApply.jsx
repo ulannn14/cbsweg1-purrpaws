@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 
 function AdopterApply() {
     const API = import.meta.env.VITE_API_URL;
     const storedUser = JSON.parse(localStorage.getItem("user"));
+    const navigate = useNavigate();
     const id = storedUser?.id;
 
     const [editing, setEditing] = useState(false);
@@ -377,7 +378,7 @@ function AdopterApply() {
     Submit
     </button>
 
-    <button type="button" className="cancel-btn">
+    <button type="button" className="cancel-btn" onClick={() => navigate(-1)}>
     Cancel
     </button>
 
