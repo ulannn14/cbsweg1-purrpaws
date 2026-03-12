@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AppLayout from "../components/AppLayout";
+import OrgAppLayout from "../components/OrgAppLayout";
 
 function EditPet() {
   const { id } = useParams();
@@ -95,19 +95,19 @@ function EditPet() {
   };
 
   if (loading) return (
-    <AppLayout>
+    <OrgAppLayout>
       <div>Loading...</div>
-    </AppLayout>
+    </OrgAppLayout>
   );
 
   if (!pet) return (
-    <AppLayout>
+    <OrgAppLayout>
       <div>Pet not found.</div>
-    </AppLayout>
+    </OrgAppLayout>
   );
 
   return (
-    <AppLayout>
+    <OrgAppLayout>
       <main className="main">
         <section className="section pet-detail">
 
@@ -295,7 +295,7 @@ function EditPet() {
 
         </section>
       </main>
-    </AppLayout>
+    </OrgAppLayout>
   );
 }
 
