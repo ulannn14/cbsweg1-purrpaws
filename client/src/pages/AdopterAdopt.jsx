@@ -118,7 +118,11 @@ function AdopterAdopt() {
             <section className="section organizations">
             <div className="org-carousel">
 
-                {organizations.map(org => (
+                {loadingPets && (
+                    <p className="orgs-loading">Loading organizations...</p>
+                )}
+                
+                {!loadingPets && organizations.map(org => (
                 <div
                     key={org.id}
                     className={`org-icon ${selectedOrg === org.id ? "active" : ""}`}

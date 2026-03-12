@@ -24,8 +24,8 @@ function AdopterApply() {
   if (!pet) {
     return (
       <AppLayout>
-        <div className="main">
-          <p>Loading...</p>
+        <div className="page-loading">
+          <p>Loading adoption application...</p>
         </div>
       </AppLayout>
     );
@@ -77,7 +77,7 @@ function AdopterApply() {
                 />
               </div>
 
-              <div className="pet-info">
+              <div className="apply-pet-info">
                 <h3>{pet.name}</h3>
                 <p>{pet.breed?.name}</p>
               </div>
