@@ -268,3 +268,49 @@ input[type="date"][name="dateRescued"]:focus {
   width: 100%;
   box-sizing: border-box;
 }
+
+.edit-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.edit-upload-preview {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #ccc;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.edit-upload-preview:hover {
+  border-color: #4f46e5;
+  transform: scale(1.05);
+}
+
+.edit-upload-input {
+  display: none;
+}
+
+.edit-upload-label {
+  background-color: #4f46e5;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s all ease;
+}
+
+.edit-upload-label:hover {
+  background-color: #4338ca;
+}
+
+.edit-upload-filename {
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #555;
+}

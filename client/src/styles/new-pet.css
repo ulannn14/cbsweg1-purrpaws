@@ -1,0 +1,50 @@
+/* Container for the image + upload button */
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* Large image preview */
+.upload-preview {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #ccc;
+  margin-bottom: 0.5rem;
+  transition: 0.3s all ease;
+}
+
+.upload-preview:hover {
+  border-color: #4f46e5; /* nice accent on hover */
+  transform: scale(1.05);
+}
+
+/* Hidden actual file input */
+.upload-input {
+  display: none;
+}
+
+/* Styled upload button */
+.upload-label {
+  background-color: #4f46e5; /* violet-600 */
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s all ease;
+}
+
+.upload-label:hover {
+  background-color: #4338ca; /* darker violet */
+}
+
+/* Optional: show filename text */
+.upload-filename {
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #555;
+}

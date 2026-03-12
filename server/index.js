@@ -41,6 +41,19 @@ app.get("/api/provinces", async (req, res) => {
   }
 });
 
+app.get("/api/breeds", async (req, res) => {
+  try {
+    const breeds = await prisma.breed.findMany({
+      orderBy: { name: "asc" }
+    });
+
+    res.json(breeds);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Start server
 const PORT = process.env.PORT || 5000;
 
