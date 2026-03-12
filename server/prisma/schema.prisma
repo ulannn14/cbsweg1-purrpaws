@@ -29,6 +29,8 @@ model User {
 
   address String
 
+  userImage String
+
   adoptionApplications AdoptionApplication[]
 }
 
@@ -63,6 +65,8 @@ model Organization {
   numberOfAnimals    Int
   description        String
 
+  organizationImage String
+
   pets Pets[]
 }
 
@@ -79,7 +83,6 @@ model Pets {
   organization   Organization @relation(fields: [organizationId], references: [id])
 
   name   String
-  species Species
   isMale Boolean
   age    Int
   size   Size
@@ -122,7 +125,7 @@ enum Size {
 
 enum AdoptionStatus {
   AVAILABLE
-  PENDING
+  UNAVAILABLE
   ADOPTED
 }
 
@@ -134,6 +137,7 @@ enum Species {
 model Breed {
   id    Int     @id @default(autoincrement())
   name  String @unique
+  isCat Boolean //TRUE if cat breed, FALSE if dog breed
 
   pets Pets[]
 }
@@ -204,7 +208,6 @@ model AdoptionApplication {
   applicantAddress String
   applicantPhoneNumber String
   applicantEmail String
-  applicantEmail String
   applicantBirthdate DateTime
   applicantOccupation String
   applicantCompany String?
@@ -240,7 +243,7 @@ model AdoptionApplication {
 
 enum AdoptionPrompt {
   FRIENDS
-  SOCIALMEDIA
+  SOCIAL_MEDIA
   WEBSITE
   OTHER
 }
@@ -254,6 +257,6 @@ enum CivilStatus {
 enum AdoptionApplicationStatus {
   PENDING
   APPROVED
-  ADOPTED
+  UNDER_REVIEW
   REJECTED
 }
