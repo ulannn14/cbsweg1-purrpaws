@@ -108,11 +108,12 @@ function AdopterLanding() {
 
             <div className="adopt-grid">
 
-            {loading && <p>Loading pets...</p>}
+             {loading && <p className="pets-message">Loading pets...</p>}
 
             {!loading && featuredPets.length === 0 && (
-                <p>Failed to load.</p>
+                <p className="pets-message">Failed to load.</p>
             )}
+
 
             {!loading && featuredPets.slice(0, 4).map(pet => (
 
