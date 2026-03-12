@@ -13,6 +13,7 @@ import "./styles/adopter-profile.css";
 import './styles/org-landing.css';
 import './styles/org-pets.css';
 import './styles/edit-pet.css';
+import './styles/new-pet.css';
 import './styles/org-profile.css';
 import './styles/login.css';
 import './styles/signup.css';
