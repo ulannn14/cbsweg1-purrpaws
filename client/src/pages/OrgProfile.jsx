@@ -73,7 +73,7 @@ function OrgProfile() {
   if (!org) {
     return (
       <OrgAppLayout>
-        <div className="org-main">Loading profile...</div>
+        <div className="org-profile-loading">Loading profile...</div>
       </OrgAppLayout>
     );
   }
