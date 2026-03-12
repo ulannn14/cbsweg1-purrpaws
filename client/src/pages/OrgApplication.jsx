@@ -159,25 +159,35 @@ function OrgApplication() {
           {/* ACTION BUTTONS */}
           <div className="org-app-actions">
 
+            {/* BUTTON 1 */}
             <button
               className="decline-btn"
+              disabled={status === "REJECTED" || status === "APPROVED"}
               onClick={() => setStatus("REJECTED")}
             >
-              Decline
+              Reject
             </button>
 
+            {/* BUTTON 2 */}
             <button
-              className="pending-btn"
-              onClick={() => setStatus("PENDING")}
-            >
-              Pending
-            </button>
+              className="action-btn"
+              disabled={status === "REJECTED" || status === "APPROVED"}
+              onClick={() => {
 
-            <button
-              className="accept-btn"
-              onClick={() => setStatus("APPROVED")}
+                if (status === "PENDING") {
+                  setStatus("FOR_ASSESSMENT");
+                }
+
+                else if (status === "FOR_ASSESSMENT") {
+                  setStatus("APPROVED");
+                }
+
+              }}
             >
-              Accept
+              {status === "PENDING" && "For Assessment"}
+              {status === "FOR_ASSESSMENT" && "Approve"}
+              {status === "REJECTED" && "For Assessment"}
+              {status === "APPROVED" && "Approve"}
             </button>
 
           </div>
