@@ -30,6 +30,7 @@ model User {
   address String
 
   userImage String
+  userImages String[]
 
   adoptionApplications AdoptionApplication[]
 }
@@ -66,8 +67,9 @@ model Organization {
   description        String
 
   organizationImage String
+  organizationImages String[]
 
-  pets Pets[]
+  pets Pet[]
 }
 
 enum OperationalStatus {
@@ -76,7 +78,7 @@ enum OperationalStatus {
   BOTH
 }
 
-model Pets {
+model Pet {
   id String @id @default(uuid())
 
   organizationId String
@@ -115,6 +117,7 @@ model Pets {
   adoptionApplications AdoptionApplication[]
 
   petImage String
+  petImages String[]
 }
 
 enum Size {
@@ -139,7 +142,7 @@ model Breed {
   name  String @unique
   isCat Boolean //TRUE if cat breed, FALSE if dog breed
 
-  pets Pets[]
+  pets Pet[]
 }
 
 enum Temperament {
@@ -154,7 +157,7 @@ model PetVaccination {
   id Int @id @default(autoincrement())
 
   petId String
-  pet   Pets   @relation(fields: [petId], references: [id])
+  pet   Pet   @relation(fields: [petId], references: [id])
 
   vaccineId Int
   vaccine   Vaccine @relation(fields: [vaccineId], references: [id])
@@ -176,7 +179,7 @@ model PetCondition {
   id Int @id @default(autoincrement())
 
   petId String
-  pet   Pets   @relation(fields: [petId], references: [id])
+  pet   Pet   @relation(fields: [petId], references: [id])
 
   conditionId Int
   condition   MedicalCondition @relation(fields: [conditionId], references: [id])
@@ -198,7 +201,7 @@ model AdoptionApplication {
   user   User   @relation(fields: [userId], references: [id])
 
   petId String
-  pet   Pets   @relation(fields: [petId], references: [id])
+  pet   Pet   @relation(fields: [petId], references: [id])
 
   status AdoptionApplicationStatus @default(PENDING)
   createdAt DateTime @default(now())
@@ -257,6 +260,6 @@ enum CivilStatus {
 enum AdoptionApplicationStatus {
   PENDING
   APPROVED
-  UNDER_REVIEW
+  ASSESSMENT 
   REJECTED
 }
