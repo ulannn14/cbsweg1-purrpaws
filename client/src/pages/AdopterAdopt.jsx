@@ -11,16 +11,20 @@ function AdopterAdopt() {
 
     const [selectedOrg, setSelectedOrg] = useState(null);
 
-    const [filters, setFilters] = useState({
-    provinceId: "",
-    species: "",
-    isMale: "",
-    isNeutered: "",
-    age_min: "",
-    age_max: "",
-    fee_min: "",
-    fee_max: ""
-    });
+    const defaultFilters = {
+        provinceId: "",
+        species: "",
+        isMale: "",
+        isNeutered: "",
+        age_min: "",
+        age_max: "",
+        fee_min: "",
+        fee_max: ""
+    };
+
+    const [filters, setFilters] = useState(defaultFilters);
+
+
 
     const API = import.meta.env.VITE_API_URL;
 
@@ -55,6 +59,8 @@ function AdopterAdopt() {
 
     function handleOrgClick(orgId) {
 
+      // reset sidebar filters
+    setFilters(defaultFilters);
     setLoadingPets(true);
 
     // if same org clicked again -> reset filter
@@ -80,7 +86,7 @@ function AdopterAdopt() {
             .catch(err => console.error(err))
             .finally(() => setLoadingPets(false));
     }
-    
+
     function handleFilterSubmit(e) {
         e.preventDefault();
 
