@@ -1,0 +1,270 @@
+/* ============================= */
+/* Edit Pet Inputs */
+/* ============================= */
+
+.edit-input {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  font-size: 14px;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  background: #fff;
+  color: #000;
+
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+.edit-input:focus {
+  outline: none;
+  border: 1px solid #666;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+}
+
+/* Textareas */
+
+textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px 10px;
+  margin-top: 6px;
+
+  border-radius: 6px;
+  border: 1px solid #ccc;
+
+  resize: vertical;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Select fields */
+
+select {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+/* ============================= */
+/* Checkbox alignment */
+/* ============================= */
+
+.pet-details-box li input[type="checkbox"]{
+  margin-left: 10px;
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+/* Align checkbox rows nicely */
+
+.pet-details-box li{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+/* ============================= */
+/* Editable pet name */
+/* ============================= */
+
+.pet-name.edit-input{
+  text-align:center;
+  font-size:26px;
+  font-weight:600;
+  border:none;
+  border-bottom:1px solid #ccc;
+  border-radius:0;
+  width:260px;
+}
+
+.pet-name.edit-input:focus{
+  border-bottom:1px solid #000;
+}
+
+/* ============================= */
+/* Adoption fee input */
+/* ============================= */
+
+.pet-fee input{
+  width:120px;
+  border:none;
+  background:transparent;
+  font-weight:600;
+  font-size:14px;
+}
+
+.pet-fee input:focus{
+  outline:none;
+}
+
+/* ============================= */
+/* Action Buttons */
+/* ============================= */
+
+.pet-apply{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  margin-top:25px;
+}
+
+.save-btn{
+  padding:12px 30px;
+  border-radius:25px;
+  border:1px solid #4caf50;
+
+  background:#4caf50;
+  color:white;
+
+  font-size:16px;
+  cursor:pointer;
+}
+
+.save-btn:hover{
+  background:#43a047;
+}
+
+.cancel-btn{
+  padding:12px 30px;
+  border-radius:25px;
+
+  border:1px solid #999;
+  background:#f4f4f4;
+
+  font-size:16px;
+  cursor:pointer;
+}
+
+.cancel-btn:hover{
+  background:#eaeaea;
+}
+
+/* ============================= */
+/* Better form spacing */
+/* ============================= */
+
+.pet-details-box li strong{
+  min-width:150px;
+}
+
+.pet-org-box textarea{
+  margin-top:6px;
+}
+
+/* ============================= */
+/* Fix inputs and dropdowns for specific fields */
+/* ============================= */
+
+/* Number inputs: age, weight */
+input[type="number"][name="age"],
+input[type="number"][name="weight"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #fff;
+  color: #000;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="number"][name="age"]:focus,
+input[type="number"][name="weight"]:focus {
+  outline: none;
+  border: 1px solid #666;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+}
+
+/* Text input: color */
+input[name="color"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #fff;
+  color: #000;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[name="color"]:focus {
+  outline: none;
+  border: 1px solid #666;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+}
+
+/* Textarea fields: adoptionRequirements, rescueStory, adoptionReason */
+textarea[name="adoptionRequirements"],
+textarea[name="rescueStory"],
+textarea[name="adoptionReason"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #fff;
+  color: #000;
+  resize: vertical;
+  min-height: 80px;
+}
+
+textarea[name="adoptionRequirements"]:focus,
+textarea[name="rescueStory"]:focus,
+textarea[name="adoptionReason"]:focus {
+  outline: none;
+  border: 1px solid #666;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+}
+
+/* Date input: dateRescued */
+input[type="date"][name="dateRescued"] {
+  width: 200px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #fff;
+  color: #000;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="date"][name="dateRescued"]:focus {
+  outline: none;
+  border: 1px solid #666;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+}
+
+/* Default layout for rescue/adoption textareas */
+.pet-org-box p {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Make Date Rescued inline */
+.pet-org-box p:has(input[name="dateRescued"]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Textareas full width */
+.pet-org-box textarea[name="rescueStory"],
+.pet-org-box textarea[name="adoptionReason"] {
+  width: 100%;
+  box-sizing: border-box;
+}
