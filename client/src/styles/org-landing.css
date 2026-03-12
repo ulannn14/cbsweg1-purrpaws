@@ -107,3 +107,38 @@
   background:#eaeaea;
   border:1px solid #444;
 }
+
+.decline-btn{
+  border:1px solid #444;
+  background:#d04141;
+  color: #000;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}
+
+.pending-btn{
+  border:1px solid #444;
+  background:#eaeaea;
+  color: #000;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}
+.accept-btn{
+  border:1px solid #444;
+  background:#44d44e;
+  color: #000;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}
+
+.applied-pet-section {
+  margin-top: 10px;
+}
+
+.org-app-top {
+  display: flex;
+  flex-direction: column;
+}

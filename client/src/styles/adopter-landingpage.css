@@ -218,3 +218,92 @@
 .pets-message{
   color:#666;
 }
+
+
+/* Application Page */
+
+/* ORG APPLICATION PAGE */
+
+.org-application{
+  position:relative;
+}
+
+/* status pill */
+.org-application .status-pill{
+  position:absolute;
+  right:20px;
+  top:20px;
+
+  padding:8px 20px;
+  border-radius:20px;
+  border:1px solid #444;
+  font-size:13px;
+}
+
+/* layout */
+.org-app-top{
+  display:flex;
+  gap:30px;
+  margin-bottom:30px;
+}
+
+/* photo */
+.applicant-photo{
+  width:160px;
+  height:160px;
+  border:1px solid #ccc;
+}
+
+.applicant-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* name */
+.applicant-main-info{
+  flex:1;
+}
+
+.applicant-main-info label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:500;
+}
+
+.applicant-name{
+  border:2px solid #7b4bff;
+  height:40px;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+}
+
+/* details */
+.applicant-details{
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+/* buttons */
+
+.org-app-actions{
+  margin-top:40px;
+  display:flex;
+  justify-content:center;
+  gap:20px;
+}
+
+.org-app-actions button{
+  padding:10px 24px;
+  border-radius:12px;
+  border:1px solid #444;
+  background:#f4f4f4;
+  cursor:pointer;
+}
+
+.org-app-actions button:hover{
+  background:#eaeaea;
+}

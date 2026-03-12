@@ -15,6 +15,7 @@ import EditPet from "./pages/EditPet";
 import OrgProfile from "./pages/OrgProfile";
 import NotFound from "./pages/NotFound"
 import AdopterApply from "./pages/AdopterApply";
+import OrgApplication from "./pages/OrgApplication";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/org/pets" element={<OrgPets />} />
         <Route path="/edit-pet/:id" element={<EditPet />} />
         <Route path="/org/profile" element={<OrgProfile />} />
+        <Route path="/org/applications/:id" element={<OrgApplication />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
