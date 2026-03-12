@@ -3,62 +3,14 @@ import { useParams } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 
 function AdopterApply() {
-
     const API = import.meta.env.VITE_API_URL;
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const id = storedUser?.id;
 
-    const [editing, setEditing] = useState(false); // ⚠ must add
-    const [personalInfo, setPersonalInfo] = useState({
-        firstName: "",
-        lastName: "",
-        userName: "",
-        email: "",
-        birthdate: "",
-        city: "",
-        provinceId: null,
-        address: ""
-    });
+    const [editing, setEditing] = useState(false);
+    const [personalInfo, setPersonalInfo] = useState(null);
     const [provinces, setProvinces] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    /*useEffect(() => {
-        if (!id) return;
-
-        const fetchData = async () => {
-            try {
-                const [userRes, provincesRes] = await Promise.all([
-                fetch(`${API}/api/users/${id}`),
-                fetch(`${API}/api/provinces`)
-                ]);
-
-                const userData = await userRes.json();
-                const provincesData = await provincesRes.json();
-
-                setPersonalInfo({
-                ...personalInfo,
-                ...userData
-                });
-                setProvinces(provincesData);
-            } catch (err) {
-                console.error("Error fetching data:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [API, id]);
-
-    if (loading || !personalInfo) {
-        return (
-            <AppLayout>
-            <div className="page-loading">
-                <p>Loading adoption application...</p>
-            </div>
-            </AppLayout>
-        );
-    }*/
 
     const [formData, setFormData] = useState({
         buildingType: "",
@@ -78,6 +30,41 @@ function AdopterApply() {
         housePhotos: "",
         interviewTime: ""
     });
+
+    useEffect(() => {
+        if (!id) return;
+
+        const fetchData = async () => {
+        try {
+            const [userRes, provincesRes] = await Promise.all([
+            fetch(`${API}/api/users/${id}`),
+            fetch(`${API}/api/provinces`)
+            ]);
+
+            const userData = await userRes.json();
+            const provincesData = await provincesRes.json();
+
+            setPersonalInfo(userData);
+            setProvinces(provincesData);
+        } catch (err) {
+            console.error("Error fetching data:", err);
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        fetchData();
+    }, [API, id]);
+
+    if (loading || !personalInfo) {
+        return (
+        <AppLayout>
+            <div className="page-loading">
+            <p>Loading adoption application...</p>
+            </div>
+        </AppLayout>
+        );
+    }
 
     const handleChange = (e) => {
         setFormData({
@@ -181,7 +168,7 @@ function AdopterApply() {
         onChange={handlePersonalChange}
     />
     ) : (
-    <span>{personalInfo.birthdate}</span>
+    <span>{new Date(personalInfo.birthdate).toLocaleDateString()}</span>
     )}
     </div>
 
@@ -199,7 +186,7 @@ function AdopterApply() {
     )}
     </div>
 
-    {/* <div className="info-row">
+    <div className="info-row">
     <label>Province</label>
     {editing ? (
         <select
@@ -219,7 +206,7 @@ function AdopterApply() {
         {provinces.find(p => p.id === personalInfo.provinceId)?.name}
         </span>
     )}
-    </div>*/}
+    </div>
 
     <div className="info-row">
     <label>Address</label>
