@@ -64,6 +64,7 @@ function EditPet() {
     setPreview(URL.createObjectURL(file));
   };
 
+  {/*
   const handleSave = async () => {
     try {
       const { breed, organization, ...payload } = form;
@@ -88,6 +89,34 @@ function EditPet() {
       setForm(updated);
       if (updated.image) setPreview(`${API}/images/${updated.image}`);
       alert("Pet updated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save changes");
+    }
+  };
+  */}
+
+    const handleSave = async () => {
+    try {
+
+      const { breed, organization, ...payload } = form;
+
+      const res = await fetch(`${API}/api/pets/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error("Failed to update pet");
+
+      const updated = await res.json();
+      setPet(updated);
+      setForm(updated);
+
+      alert("Pet updated successfully!");
+
     } catch (err) {
       console.error(err);
       alert("Failed to save changes");

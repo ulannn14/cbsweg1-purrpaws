@@ -34,8 +34,12 @@ function OrgPets() {
   const filteredPets =
     activeTab === "all"
       ? pets
-      : pets.filter(pet => pet.species.toLowerCase() === activeTab);
-
+      : pets.filter(pet =>
+          activeTab === "dog"
+            ? pet.breed?.isCat === false
+            : pet.breed?.isCat === true
+        );
+        
   return (
     <OrgAppLayout>
 

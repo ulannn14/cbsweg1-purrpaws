@@ -214,3 +214,65 @@ exports.getApplicationById = async (req, res) => {
     });
   }
 };
+
+exports.approveApplication = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const application = await prisma.adoptionApplication.update({
+      where: { id },
+      data: {
+        status: "APPROVED"
+      }
+    });
+
+    // mark pet as adopted
+    await prisma.pet.update({
+      where: { id: application.petId },
+      data: {
+        adoptionStatus: "ADOPTED"
+      }
+    });
+
+    // reject other applications for the same pet
+    await prisma.adoptionApplication.updateMany({
+      where: {
+        petId: application.petId,
+        id: { not: id }
+      },
+      data: {
+        status: "REJECTED"
+      }
+    });
+
+    res.json({ message: "Application approved. Pet adopted." });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to approve application" });
+  }
+};
+
+exports.updateApplicationStatus = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const application = await prisma.adoptionApplication.update({
+      where: { id },
+      data: { status }
+    });
+
+    res.json(application);
+
+  } catch (error) {
+
+    console.error(error);
+    res.status(500).json({ message: "Failed to update application status" });
+
+  }
+
+};

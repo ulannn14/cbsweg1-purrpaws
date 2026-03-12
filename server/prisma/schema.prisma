@@ -81,7 +81,7 @@ model Pet {
   adoptionFee          Float
   adoptionRequirements String[]
   adoptionStatus       AdoptionStatus        @default(AVAILABLE)
-  petImage             String
+  petImage             String?
   petImages            String[]
   adoptionApplications AdoptionApplication[]
   breed                Breed                 @relation(fields: [breedId], references: [id])
@@ -221,6 +221,6 @@ enum CivilStatus {
 enum AdoptionApplicationStatus {
   PENDING
   APPROVED
-  ASSESSMENT
   REJECTED
+  ASSESSMENT
 }
