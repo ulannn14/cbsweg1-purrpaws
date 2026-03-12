@@ -13,7 +13,6 @@ function AdopterProfile() {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Fetch profile
   useEffect(() => {
 
     if (!id) return;
@@ -23,8 +22,12 @@ function AdopterProfile() {
       .then(data => {
         setUser(data);
         setOriginalUser(data);
+        setLoading(false); 
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        setLoading(false); // 
+      });
 
   }, [API, id]);
 
