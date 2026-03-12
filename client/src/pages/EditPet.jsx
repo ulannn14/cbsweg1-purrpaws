@@ -34,11 +34,19 @@ function EditPet() {
     }, [id]);
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setForm(prev => ({
+    const { name, value, type, checked } = e.target;
+
+    setForm(prev => ({
         ...prev,
-        [name]: type === "checkbox" ? checked : value
-        }));
+        [name]:
+        type === "checkbox"
+            ? checked
+            : type === "number" || name === "breedId"
+            ? Number(value)
+            : name === "dateRescued"
+            ? value   // keep as YYYY-MM-DD, backend converts to Date
+            : value
+    }));
     };
 
     const handleArrayChange = (e) => {
@@ -49,18 +57,27 @@ function EditPet() {
     };
 
     const handleSave = async () => {
-        try {
+    try {
+
+        const { breed, organization, ...payload } = form;
+
         const res = await fetch(`${API}/api/pets/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form)
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
         });
+
         if (!res.ok) throw new Error("Failed to update pet");
-        navigate(`/pets/${id}`);
-        } catch (err) {
+
+        const updated = await res.json();
+
+        setPet(updated);
+        setForm(updated);
+
+    } catch (err) {
         console.error(err);
         alert("Failed to save changes");
-        }
+    }
     };
 
     if (loading) return (
@@ -137,9 +154,10 @@ function EditPet() {
                     <li>
                     <strong>Breed:</strong>
                     <select name="breedId" value={form.breedId || ""} onChange={handleChange}>
-                        {breeds.map(b => (
+                    <option value="">Select breed</option>
+                    {breeds.map(b => (
                         <option key={b.id} value={b.id}>{b.name}</option>
-                        ))}
+                    ))}
                     </select>
                     </li>
 
