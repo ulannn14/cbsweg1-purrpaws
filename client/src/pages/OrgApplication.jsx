@@ -100,7 +100,7 @@ function OrgApplication() {
 
             <div className="applicant-photo">
               <img
-                src={applicant?.userImage || "/images/profile-placeholder.png"}
+                src={applicant?.userImage || `/temp-photos/users/user-profile-${applicant?.id}.jpg`}
                 alt="Applicant"
               />
             </div>
@@ -140,7 +140,7 @@ function OrgApplication() {
                   src={
                     pet?.petImage
                       ? `${API}/images/${pet.petImage}`
-                      : `/temp-photos/pets/pet-main-${app.pet?.id}.jpg`
+                      : `/temp-photos/pets/pet-main-${pet?.id}.jpg`
                   }
                   alt={pet?.name}
                 />

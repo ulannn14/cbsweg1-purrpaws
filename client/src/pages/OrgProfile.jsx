@@ -127,7 +127,7 @@ function OrgProfile() {
               <div className="org-avatar">
 
                 <img
-                  src={`/temp-photos/orgs/org-profile-${org.id}.jpg`}
+                  src={`/temp-photos/orgs/org-profile-${org.id}.png`}
                   alt="Organization Logo"
                 />
 

@@ -99,7 +99,7 @@ function OrgLanding() {
                 {/* Applicant Picture */}
                 <div className="applicant-pic">
                   <img
-                    src={app.user?.userImage || "/default-user.png"}
+                    src={app.user?.userImage || `/temp-photos/users/user-profile-${app.user?.id}.jpg`}
                     alt="applicant"
                   />
                 </div>
