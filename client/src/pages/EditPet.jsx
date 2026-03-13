@@ -145,7 +145,7 @@ function EditPet() {
             <div className="edit-upload-container">
               <img src={preview} alt="pet preview" className="edit-upload-preview" />
 
-              <label htmlFor="image-upload" className="edit-upload-label">
+              {/*<label htmlFor="image-upload" className="edit-upload-label">
                 Change Photo
               </label>
               <input
@@ -153,7 +153,7 @@ function EditPet() {
                 id="image-upload"
                 className="edit-upload-input"
                 onChange={handleImageUpload}
-              />
+              />*/}
             </div>
 
             <input

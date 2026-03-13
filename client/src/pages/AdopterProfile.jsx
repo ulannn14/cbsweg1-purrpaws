@@ -51,26 +51,32 @@ function AdopterProfile() {
   };
 
   const handleSave = async () => {
+
     try {
-      const formData = new FormData();
-      Object.entries(userInfo).forEach(([key, value]) => formData.append(key, value));
-      if (imageFile) formData.append("photo", imageFile);
 
       const res = await fetch(`${API}/api/users/${id}`, {
         method: "PUT",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userInfo)
       });
 
-      if (!res.ok) throw new Error("Failed to update user");
+      if (!res.ok) throw new Error("Update failed");
+
       const updated = await res.json();
-      setUserInfo(updated);
-      setPreview(updated.photo ? `${API}/images/${updated.photo}` : "/images/avatar-placeholder.png");
+
+      localStorage.setItem("user", JSON.stringify(updated));
+
+      setUser(updated);
+      setOriginalUser(updated);
       setEditing(false);
-      alert("Profile updated successfully!");
+      alert("Profile saved");
+
     } catch (err) {
       console.error(err);
-      alert("Failed to save changes");
     }
+
   };
 
   const handleLogout = () => {
@@ -94,13 +100,17 @@ function AdopterProfile() {
           {/* PROFILE PHOTO */}
           <div className="pet-header">
             <div className="edit-upload-container">
-              <img src={preview} alt="user avatar" className="edit-upload-preview" />
-              {editing && (
+              <img 
+                src={storedUser?.userImage || `/temp-photos/users/user-profile-${storedUser?.id}.jpg`}
+                alt="Profile"
+                className="edit-upload-preview"
+              />
+              {/*editing && (
                 <>
                   <label htmlFor="image-upload" className="edit-upload-label">Change Photo</label>
                   <input type="file" id="image-upload" className="edit-upload-input" onChange={handleImageUpload} />
                 </>
-              )}
+              )*/}
             </div>
           </div>
 
