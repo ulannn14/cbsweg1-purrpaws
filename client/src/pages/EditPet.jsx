@@ -125,13 +125,13 @@ function EditPet() {
 
   if (loading) return (
     <OrgAppLayout>
-      <div>Loading...</div>
+      <div className="org-profile-loading">Loading pet...</div>
     </OrgAppLayout>
   );
 
   if (!pet) return (
     <OrgAppLayout>
-      <div>Pet not found.</div>
+      <div className="org-profile-loading">Pet not found.</div>
     </OrgAppLayout>
   );
 

@@ -5,6 +5,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -15,6 +16,8 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       // try user login first
@@ -48,10 +51,12 @@ function LoginPage() {
       }
 
       setError("Invalid email or password");
+      setLoading(false);
 
     } catch (err) {
       console.error(err);
       setError("Server error, please try again later");
+      setLoading(false);
     }
   };
 
@@ -85,7 +90,9 @@ function LoginPage() {
               className="login-input"
             />
 
-            <button type="submit" className="login-btn">LOG IN</button>
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading ? <span className="spinner"></span> : "LOG IN"}
+            </button>
           </form>
 
           <p className="signup-text">
