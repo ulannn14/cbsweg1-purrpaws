@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 
 function AdopterApply() {
     const API = import.meta.env.VITE_API_URL;
+    const { id } = useParams();   // petId
+    const navigate = useNavigate();
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    const id = storedUser?.id;
+    const userId = storedUser?.id;
 
     const [editing, setEditing] = useState(false);
     const [personalInfo, setPersonalInfo] = useState(null);
@@ -32,12 +34,12 @@ function AdopterApply() {
     });
 
     useEffect(() => {
-        if (!id) return;
+        if (!userId) return;
 
         const fetchData = async () => {
         try {
             const [userRes, provincesRes] = await Promise.all([
-            fetch(`${API}/api/users/${id}`),
+            fetch(`${API}/api/users/${userId}`),
             fetch(`${API}/api/provinces`)
             ]);
 
@@ -54,7 +56,7 @@ function AdopterApply() {
         };
 
         fetchData();
-    }, [API, id]);
+    }, [API, userId]);
 
     if (loading || !personalInfo) {
         return (
@@ -80,9 +82,58 @@ function AdopterApply() {
         });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Application submitted", formData);
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    await fetch(`${API}/api/applications`, {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+        petId: id,
+        userId: userId,
+
+        applicantFirstName: personalInfo.firstName,
+        applicantLastName: personalInfo.lastName,
+        applicantAddress: personalInfo.address,
+        applicantPhoneNumber: personalInfo.phoneNumber,
+        applicantEmail: personalInfo.email,
+        applicantBirthdate: personalInfo.birthdate,
+
+        // REQUIRED FIELDS
+        applicantOccupation: "N/A",
+        applicantCompany: null,
+        applicantSocialMedia: null,
+        applicantCivilStatus: "SINGLE",
+        adoptionPrompt: "WEBSITE",
+
+        alternateContactName: "N/A",
+        alternateContactRelationship: "N/A",
+        alternateContactNumber: "0000000000",
+        alternateContactEmail: "placeholder@email.com",
+
+        // Map your current fields to schema
+        response1: formData.buildingType,
+        response2: formData.rent === "yes",
+        response3: formData.movePet,
+        response4: formData.liveWith,
+        response5: formData.allergies === "yes",
+        response6: formData.carePerson,
+        response7: formData.financialPerson,
+        response8: formData.emergencyCare,
+        response9: formData.hoursAlone,
+        response10: formData.introductionSteps,
+        response11: formData.familySupport === "yes",
+        response12: formData.familyExplain,
+        response13: formData.otherPets === "yes",
+        response14: formData.pastPets === "yes",
+        response15: [],
+        response16: formData.interviewTime
+        })
+    });
+
+    navigate("/applications");
     };
 
     return (
@@ -196,7 +247,7 @@ function AdopterApply() {
         onChange={handlePersonalChange}
         >
         {provinces.map((p) => (
-            <option key={p.id} value={p.id}>
+            <option key={p.id} value={p.id}>            
             {p.name}
             </option>
         ))}
@@ -238,17 +289,17 @@ function AdopterApply() {
     {editing && (
     <>
         <button
-        className="save-btn"
-        onClick={() => setEditing(false)}
-        >
-        Save
-        </button>
-
-        <button
         className="cancel-btn"
         onClick={() => setEditing(false)}
         >
         Cancel
+        </button>
+        
+        <button
+        className="save-btn"
+        onClick={() => setEditing(false)}
+        >
+        Save
         </button>
     </>
     )}
@@ -336,6 +387,8 @@ function AdopterApply() {
     </div>
 
     <div className="form-group">
+    
+    {/*
     <label>Attach photos of your home</label>
 
     <label className="file-upload">
@@ -355,6 +408,8 @@ function AdopterApply() {
     <p className="file-upload-note">
         You may upload multiple photos.
     </p>
+    */}
+
     </div>
 
     <div className="form-group">
@@ -373,12 +428,12 @@ function AdopterApply() {
 
     <div className="pet-apply">
 
-    <button className="save-btn" type="submit">
-    Submit
-    </button>
-
     <button type="button" className="cancel-btn">
     Cancel
+    </button>
+
+    <button className="save-btn" type="submit">
+    Submit
     </button>
 
     </div>

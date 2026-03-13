@@ -34,7 +34,7 @@ function ApplicationDetail(){
               src={
                 application.pet?.image
                 ? `${API}/images/${application.pet.image}`
-                : "/images/placeholder-cat.svg"
+                : `/temp-photos/pets/pet-main-${application.pet?.id}.jpg`
               }
               alt={application.pet?.name}
             />

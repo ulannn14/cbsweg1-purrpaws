@@ -5,6 +5,7 @@ function SignUpPage() {
 
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [provinces, setProvinces] = useState([]);
   
@@ -59,6 +60,8 @@ function SignUpPage() {
       return;
     }
 
+    setLoading(true);
+
     try {
       const res = await fetch(`${API}/api/users/signup`, {
         method: "POST",
@@ -72,6 +75,7 @@ function SignUpPage() {
 
       if (!res.ok) {
         alert(data.message || "Registration failed");
+        setLoading(false);
         return;
       }
 
@@ -81,9 +85,8 @@ function SignUpPage() {
     } catch (error) {
       console.error(error);
       alert("Server error");
+      setLoading(false);
     }
-    
-
   };
 
   return (
@@ -214,8 +217,8 @@ function SignUpPage() {
               className="signup-input"
             />
 
-            <button type="submit" className="signup-btn">
-              CREATE ACCOUNT
+            <button type="submit" className="signup-btn" disabled={loading}>
+              {loading ? <span className="spinner"></span> : "CREATE ACCOUNT"}
             </button>
 
           </form>

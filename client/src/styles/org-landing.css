@@ -117,6 +117,15 @@
   cursor:pointer;
 }
 
+.action-btn{
+  border:1px solid #444;
+  background:#d04141;
+  color: #000;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}
+
 .pending-btn{
   border:1px solid #444;
   background:#eaeaea;
@@ -125,6 +134,8 @@
   border-radius:20px;
   cursor:pointer;
 }
+
+
 .accept-btn{
   border:1px solid #444;
   background:#44d44e;

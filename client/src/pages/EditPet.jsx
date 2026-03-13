@@ -12,7 +12,7 @@ function EditPet() {
   const [loading, setLoading] = useState(true);
   const [breeds, setBreeds] = useState([]);
   const [imageFile, setImageFile] = useState(null); // new image
-  const [preview, setPreview] = useState("/images/placeholder-cat.svg"); // image preview
+  const [preview, setPreview] = useState(`/temp-photos/pets/pet-main-${id}.jpg`); // image preview
 
   useEffect(() => {
     if (!id) return;
@@ -23,7 +23,7 @@ function EditPet() {
       .then(data => {
         setPet(data);
         setForm(data);
-        setPreview(data.image ? `${API}/images/${data.image}` : "/images/placeholder-cat.svg");
+        setPreview(data.image ? `${API}/images/${data.image}` : `/temp-photos/pets/pet-main-${id}.jpg`);
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
@@ -64,6 +64,7 @@ function EditPet() {
     setPreview(URL.createObjectURL(file));
   };
 
+  {/*
   const handleSave = async () => {
     try {
       const { breed, organization, ...payload } = form;
@@ -93,16 +94,44 @@ function EditPet() {
       alert("Failed to save changes");
     }
   };
+  */}
+
+    const handleSave = async () => {
+    try {
+
+      const { breed, organization, ...payload } = form;
+
+      const res = await fetch(`${API}/api/pets/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error("Failed to update pet");
+
+      const updated = await res.json();
+      setPet(updated);
+      setForm(updated);
+
+      alert("Pet updated successfully!");
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save changes");
+    }
+  };
 
   if (loading) return (
     <OrgAppLayout>
-      <div>Loading...</div>
+      <div className="org-profile-loading">Loading pet...</div>
     </OrgAppLayout>
   );
 
   if (!pet) return (
     <OrgAppLayout>
-      <div>Pet not found.</div>
+      <div className="org-profile-loading">Pet not found.</div>
     </OrgAppLayout>
   );
 
@@ -116,7 +145,7 @@ function EditPet() {
             <div className="edit-upload-container">
               <img src={preview} alt="pet preview" className="edit-upload-preview" />
 
-              <label htmlFor="image-upload" className="edit-upload-label">
+              {/*<label htmlFor="image-upload" className="edit-upload-label">
                 Change Photo
               </label>
               <input
@@ -124,7 +153,7 @@ function EditPet() {
                 id="image-upload"
                 className="edit-upload-input"
                 onChange={handleImageUpload}
-              />
+              />*/}
             </div>
 
             <input

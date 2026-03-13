@@ -1,0 +1,62 @@
+name,isCat
+Aspin,false
+Mixed Breed,false
+Unknown,false
+American Bully,false
+Australian Shepherd,false
+Basset Hound,false
+Beagle,false
+Belgian Malinois,false
+Bernese Mountain Dog,false
+Border Collie,false
+Boston Terrier,false
+Boxer,false
+Bulldog,false
+Cane Corso,false
+Chihuahua,false
+Chow Chow,false
+Cocker Spaniel,false
+Dachshund,false
+Dalmatian,false
+Doberman Pinscher,false
+French Bulldog,false
+German Shepherd,false
+Golden Retriever,false
+Great Dane,false
+Greyhound,false
+Jack Russell Terrier,false
+Japanese Spitz,false
+Labrador Retriever,false
+Maltese,false
+Pit Bull,false
+Pomeranian,false
+Poodle,false
+Pug,false
+Rottweiler,false
+Saint Bernard,false
+Samoyed,false
+Shih Tzu,false
+Siberian Husky,false
+Whippet,false
+Yorkshire Terrier,false
+Puspin,true
+Mixed Breed,true
+Unknown,true
+American Shorthair,true
+Bengal,true
+Birman,true
+Bombay,true
+British Shorthair,true
+Cornish Rex,true
+Devon Rex,true
+Exotic Shorthair,true
+Maine Coon,true
+Norwegian Forest Cat,true
+Oriental Shorthair,true
+Persian,true
+Ragdoll,true
+Russian Blue,true
+Scottish Fold,true
+Siamese,true
+Sphynx,true
+Turkish Angora,true

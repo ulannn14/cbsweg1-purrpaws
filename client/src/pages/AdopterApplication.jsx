@@ -69,7 +69,7 @@ function AdopterApplication() {
                       src={
                         app.pet?.image
                           ? `${API}/images/${app.pet.image}`
-                          : "/images/placeholder-cat.svg"
+                          : `/temp-photos/pets/pet-main-${app.pet?.id}.jpg`
                       }
                       alt={app.pet?.name}
                       style={{
