@@ -289,17 +289,17 @@ function AdopterApply() {
     {editing && (
     <>
         <button
-        className="save-btn"
-        onClick={() => setEditing(false)}
-        >
-        Save
-        </button>
-
-        <button
         className="cancel-btn"
         onClick={() => setEditing(false)}
         >
         Cancel
+        </button>
+        
+        <button
+        className="save-btn"
+        onClick={() => setEditing(false)}
+        >
+        Save
         </button>
     </>
     )}
@@ -428,12 +428,12 @@ function AdopterApply() {
 
     <div className="pet-apply">
 
-    <button className="save-btn" type="submit">
-    Submit
-    </button>
-
     <button type="button" className="cancel-btn">
     Cancel
+    </button>
+
+    <button className="save-btn" type="submit">
+    Submit
     </button>
 
     </div>

@@ -115,22 +115,6 @@ select {
   margin-top:25px;
 }
 
-.save-btn{
-  padding:12px 30px;
-  border-radius:25px;
-  border:1px solid #4caf50;
-
-  background:#4caf50;
-  color:white;
-
-  font-size:16px;
-  cursor:pointer;
-}
-
-.save-btn:hover{
-  background:#43a047;
-}
-
 .cancel-btn{
   padding:12px 30px;
   border-radius:25px;
@@ -325,12 +309,12 @@ input[type="date"][name="dateRescued"]:focus {
 }
 
 .checkbox-row input[type="checkbox"] {
-  appearance: none;          /* remove default checkbox */
+  appearance: none;  
   -webkit-appearance: none;
   width: 18px;
   height: 18px;
-  background-color: #fff;    /* white when unchecked */
-  border: 2px solid #000;    /* black border */
+  background-color: #fff;
+  border: 1px solid #000;
   border-radius: 4px;        /* optional rounded corners */
   cursor: pointer;
   position: relative;
