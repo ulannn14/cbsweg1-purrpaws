@@ -115,11 +115,7 @@ function OrgLanding() {
 
                   <div className="adopt-pet-photo">
                     <img
-                      src={
-                        app.pet?.petImage
-                          ? `${API}/images/${app.pet.petImage}`
-                          : `/temp-photos/pets/pet-main-${app.pet?.id}.jpg`
-                      }
+                      src={`/temp-photos/pets/pet-main-${app.pet?.id}.jpg`}
                       alt={app.pet?.name}
                       style={{
                         width: "100%",
