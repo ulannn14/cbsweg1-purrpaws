@@ -34,8 +34,12 @@ function OrgPets() {
   const filteredPets =
     activeTab === "all"
       ? pets
-      : pets.filter(pet => pet.species.toLowerCase() === activeTab);
-
+      : pets.filter(pet =>
+          activeTab === "dog"
+            ? pet.breed?.isCat === false
+            : pet.breed?.isCat === true
+        );
+        
   return (
     <OrgAppLayout>
 
@@ -100,7 +104,8 @@ function OrgPets() {
 
               <div className="pet-img">
                 <img
-                  src={pet.image ? `${API}/images/${pet.image}` : "/images/placeholder-cat.svg"}
+                  src={pet.image ? `${API}/images/${pet.image}` 
+                  : `/temp-photos/pets/pet-main-${pet.id}.jpg`}
                   alt={pet.name}
                 />
               </div>

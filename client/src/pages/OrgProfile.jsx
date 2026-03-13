@@ -115,7 +115,10 @@ function OrgProfile() {
                 </div>
                 ) : (
                 <div className="pet-photo-large">
-                    <img src={preview} alt={orgInfo.name} />
+                    <img
+                        src={`/temp-photos/orgs/org-profile-${org.id}.png`}
+                        alt="Organization Logo"
+                    />
                 </div>
                 )}
             </div>

@@ -12,7 +12,7 @@ function NewPet() {
     const [breeds, setBreeds] = useState([]);
 
     // const [imageFile, setImageFile] = useState(null);
-    // const [preview, setPreview] = useState("/images/placeholder-cat.svg");
+    // const [preview, setPreview] = useState("/temp-photos/pets/pet-main-${app.pet?.id}.jpg");
 
     const [form, setForm] = useState({
         name: "",

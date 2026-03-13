@@ -5,12 +5,86 @@ const prisma = require("../config/prisma");
 exports.createApplication = async (req, res) => {
   try {
 
-    const { userId, petId } = req.body;
+    const {
+      userId,
+      petId,
+
+      applicantFirstName,
+      applicantLastName,
+      applicantAddress,
+      applicantPhoneNumber,
+      applicantEmail,
+      applicantBirthdate,
+
+      applicantOccupation,
+      applicantCompany,
+      applicantSocialMedia,
+      applicantCivilStatus,
+      adoptionPrompt,
+
+      alternateContactName,
+      alternateContactRelationship,
+      alternateContactNumber,
+      alternateContactEmail,
+
+      response1,
+      response2,
+      response3,
+      response4,
+      response5,
+      response6,
+      response7,
+      response8,
+      response9,
+      response10,
+      response11,
+      response12,
+      response13,
+      response14,
+      response15,
+      response16
+
+    } = req.body;
 
     const application = await prisma.adoptionApplication.create({
       data: {
         userId,
-        petId
+        petId,
+
+        applicantFirstName,
+        applicantLastName,
+        applicantAddress,
+        applicantPhoneNumber,
+        applicantEmail,
+        applicantBirthdate: new Date(applicantBirthdate),
+
+        applicantOccupation,
+        applicantCompany,
+        applicantSocialMedia,
+        applicantCivilStatus,
+        adoptionPrompt,
+
+        alternateContactName,
+        alternateContactRelationship,
+        alternateContactNumber,
+        alternateContactEmail,
+
+        response1,
+        response2,
+        response3,
+        response4,
+        response5,
+        response6,
+        response7,
+        response8,
+        response9,
+        response10,
+        response11,
+        response12,
+        response13,
+        response14,
+        response15,
+        response16: new Date(response16)
       },
       include: {
         user: true,
@@ -26,15 +100,7 @@ exports.createApplication = async (req, res) => {
     res.status(201).json(application);
 
   } catch (error) {
-
-    // prevents duplicate applications
-    if (error.code === "P2002") {
-      return res.status(400).json({
-        message: "You have already applied for this pet."
-      });
-    }
-
-    console.error(error);
+    console.error("Create application error:", error);
     res.status(500).json({ message: "Failed to create application" });
   }
 };
@@ -147,4 +213,66 @@ exports.getApplicationById = async (req, res) => {
       message: "Failed to fetch application"
     });
   }
+};
+
+exports.approveApplication = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const application = await prisma.adoptionApplication.update({
+      where: { id },
+      data: {
+        status: "APPROVED"
+      }
+    });
+
+    // mark pet as adopted
+    await prisma.pet.update({
+      where: { id: application.petId },
+      data: {
+        adoptionStatus: "ADOPTED"
+      }
+    });
+
+    // reject other applications for the same pet
+    await prisma.adoptionApplication.updateMany({
+      where: {
+        petId: application.petId,
+        id: { not: id }
+      },
+      data: {
+        status: "REJECTED"
+      }
+    });
+
+    res.json({ message: "Application approved. Pet adopted." });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to approve application" });
+  }
+};
+
+exports.updateApplicationStatus = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const application = await prisma.adoptionApplication.update({
+      where: { id },
+      data: { status }
+    });
+
+    res.json(application);
+
+  } catch (error) {
+
+    console.error(error);
+    res.status(500).json({ message: "Failed to update application status" });
+
+  }
+
 };

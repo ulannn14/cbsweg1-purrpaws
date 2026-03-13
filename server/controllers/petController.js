@@ -22,7 +22,7 @@ exports.addPet = async (req, res) => {
     if (data.weight === "") data.weight = null;
     if (data.adoptionFee === "") data.adoptionFee = null;
 
-    const newPet = await prisma.pets.create({
+    const newPet = await prisma.pet.create({
       data
     });
 
@@ -36,6 +36,8 @@ exports.addPet = async (req, res) => {
   }
 
 };
+
+
 
 exports.getPets = async (req, res) => {
 
@@ -52,10 +54,11 @@ exports.getPets = async (req, res) => {
       isMale,
       isNeutered,
       fee_min,
-      fee_max
+      fee_max,
+      status
     } = req.query;
 
-    const pets = await prisma.pets.findMany({
+    const pets = await prisma.pet.findMany({
 
       where: {
 
@@ -71,9 +74,11 @@ exports.getPets = async (req, res) => {
           }
         }),
 
-        // species filter
+        // species filter (now using breed.isCat)
         ...(species && {
-          species: species
+          breed: {
+            isCat: species === "cat"
+          }
         }),
 
         // sex filter
@@ -100,6 +105,10 @@ exports.getPets = async (req, res) => {
             ...(fee_min && { gte: Number(fee_min) }),
             ...(fee_max && { lte: Number(fee_max) })
           }
+        }),
+
+        ...(status && {
+          adoptionStatus: status
         })
 
       },
@@ -126,11 +135,13 @@ exports.getPets = async (req, res) => {
 
 };
 
-// Get single pet
+
+
 exports.getPetById = async (req, res) => {
+
   try {
 
-    const pet = await prisma.pets.findUnique({
+    const pet = await prisma.pet.findUnique({
       where: {
         id: req.params.id
       },
@@ -147,17 +158,22 @@ exports.getPetById = async (req, res) => {
     res.status(200).json(pet);
 
   } catch (error) {
+
     console.error(error);
     res.status(500).json({ message: "Server error" });
+
   }
+
 };
+
 
 
 // Create new pet
 exports.createPet = async (req, res) => {
+
   try {
 
-    const newPet = await prisma.pets.create({
+    const newPet = await prisma.pet.create({
       data: {
 
         organization: {
@@ -165,7 +181,6 @@ exports.createPet = async (req, res) => {
         },
 
         name: req.body.name,
-        species: req.body.species,
         isMale: req.body.isMale,
 
         age: Number(req.body.age),
@@ -187,7 +202,6 @@ exports.createPet = async (req, res) => {
         isGoodWithKids: req.body.isGoodWithKids,
         isHouseTrained: req.body.isHouseTrained,
         isLeashTrained: req.body.isLeashTrained,
-        // isDewormed: req.body.isDewormed,
 
         adoptionFee: Number(req.body.adoptionFee),
 
@@ -209,17 +223,22 @@ exports.createPet = async (req, res) => {
     res.status(400).json({ message: error.message });
 
   }
+
 };
 
 
+
 exports.updatePet = async (req, res) => {
+
   try {
 
-    const updatedPet = await prisma.pets.update({
-      where: { id: req.params.id },
+    const updatedPet = await prisma.pet.update({
+      where: { 
+        id: req.params.id 
+      },
       data: {
+
         name: req.body.name,
-        species: req.body.species,
         isMale: req.body.isMale,
 
         age: Number(req.body.age),
@@ -241,7 +260,6 @@ exports.updatePet = async (req, res) => {
         isGoodWithKids: req.body.isGoodWithKids,
         isHouseTrained: req.body.isHouseTrained,
         isLeashTrained: req.body.isLeashTrained,
-        //isDewormed: req.body.isDewormed,
 
         adoptionFee: Number(req.body.adoptionFee),
 
@@ -258,17 +276,22 @@ exports.updatePet = async (req, res) => {
     res.json(updatedPet);
 
   } catch (error) {
+
     console.error(error);
     res.status(400).json({ message: error.message });
+
   }
+
 };
+
 
 
 // Delete pet
 exports.deletePet = async (req, res) => {
+
   try {
 
-    await prisma.pets.delete({
+    await prisma.pet.delete({
       where: {
         id: req.params.id
       }
@@ -277,51 +300,10 @@ exports.deletePet = async (req, res) => {
     res.status(200).json({ message: "Pet deleted successfully" });
 
   } catch (error) {
+
     console.error(error);
     res.status(500).json({ message: error.message });
+
   }
+
 };
-
-
-/*
-
-// get pets by organization
-exports.getOrgPets = async (req, res) => {
-  try {
-
-    const { orgId } = req.params;
-
-    const pets = await prisma.pets.findMany({
-      where: {
-        organizationId: orgId
-      },
-      include: {
-        breed: true
-      },
-      orderBy: {
-        name: "asc"
-      }
-    });
-
-    res.json(pets);
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to fetch pets" });
-  }
-};
-
-exports.getOrgPets = async (req, res) => {
-
-  const org = await prisma.organization.findUnique({
-    where: { id: req.params.id },
-    include: {
-      province: true,
-      pets: true
-    }
-  });
-
-  res.json(org);
-};
-
-*/

@@ -307,3 +307,14 @@
 .org-app-actions button:hover{
   background:#eaeaea;
 }
+
+.org-app-actions button:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+.org-app-actions:hover button:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  background: #f4f4f4;
+}

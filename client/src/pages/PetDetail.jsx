@@ -48,7 +48,7 @@ function PetDetail() {
 
       <div className="pet-photo-large">
       <img
-        src={pet.image ? `${API}/images/${pet.image}` : "/images/placeholder-cat.svg"}
+        src={pet.image ? `${API}/images/${pet.image}` : `/temp-photos/pets/pet-main-${pet.id}.jpg`}
         alt={pet.name}
       />
       </div>
@@ -114,7 +114,7 @@ function PetDetail() {
             src={
               pet.organization?.logo
                 ? `${API}/images/${pet.organization.logo}`
-                : "/images/org-placeholder.png"
+                : `/temp-photos/orgs/org-profile-${pet.organization?.id}.png`
             }
             alt={pet.organization?.name}
           />
