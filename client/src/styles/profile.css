@@ -1,14 +1,55 @@
 .logout-btn {
   padding:12px 30px;
   border-radius:25px;
-  border:1px solid #d32f2f;
   background:#d32f2f;
   color:white;
   font-size:16px;
   cursor:pointer;
   transition:0.2s ease;
+  border:1px solid #d32f2f;
 }
 
 .logout-btn:hover {
   background:#b71c1c;
+  border: #b71c1c;
+}
+
+.update-btn{
+  padding:10px 18px;
+  border-radius:30px;
+  border:1px solid #444;
+  cursor:pointer;
+  color:#000;
+  background:#fff;
+}
+
+.update-btn:hover{
+  background:#eaeaea;
+  border:1px solid #444;
+}
+
+.save-btn{
+  padding:10px 18px;
+  border-radius:30px;
+  border:1px solid #444;
+  cursor:pointer;
+  background:black;
+  color:white;
+}
+
+.save-btn:hover{
+  opacity: 0.9;
+  color: #f4a261;
+  background: #000;
+  border-color: #000;
+  border:1px solid #000;
+}
+
+.cancel-btn{
+  background:white;
+}
+
+.cancel-btn:hover{
+  background:#eaeaea;
+  border:1px solid #444;
 }

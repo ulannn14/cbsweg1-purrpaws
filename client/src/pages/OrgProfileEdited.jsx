@@ -406,7 +406,7 @@ const handleSave = async () => {
             <div className="apply-box-actions">
                 {!editing && (
                 <>
-                    <button className="save-btn" onClick={() => setEditing(true)}>Update</button>
+                    <button className="update-btn" onClick={() => setEditing(true)}>Update</button>
                     <button className="logout-btn" onClick={handleLogout}>Logout</button>
                 </>
                 )}
