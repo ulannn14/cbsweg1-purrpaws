@@ -137,11 +137,7 @@ function OrgApplication() {
 
               <div className="adopt-pet-photo">
                 <img
-                  src={
-                    pet?.petImage
-                      ? `${API}/images/${pet.petImage}`
-                      : `/temp-photos/pets/pet-main-${pet?.id}.jpg`
-                  }
+                  src={`/temp-photos/pets/pet-main-${pet?.id}.jpg`}
                   alt={pet?.name}
                 />
               </div>
