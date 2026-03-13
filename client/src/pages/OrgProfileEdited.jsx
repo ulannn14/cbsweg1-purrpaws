@@ -19,11 +19,11 @@ function OrgProfile() {
     useEffect(() => {
     if (!id) return;
 
-    fetch(${API}/api/organizations/${id})
+    fetch('${API}/api/organizations/${id}')
         .then(res => res.json())
         .then(data => {
         setOrgInfo(data);
-        setPreview(data.logo ? ${API}/images/${data.logo} : "/images/org-avatar.png");
+        setPreview(data.logo ? '${API}/images/${data.logo}' : "/images/org-avatar.png");
         setLoading(false);
         })
         .catch(err => {
@@ -61,7 +61,7 @@ const handleSave = async () => {
 
     try {
 
-      const res = await fetch(${API}/api/organizations/${id}, {
+      const res = await fetch('${API}/api/organizations/${id}', {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
