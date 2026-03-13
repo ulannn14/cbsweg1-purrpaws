@@ -30,7 +30,7 @@ function AdopterLanding() {
 
     useEffect(() => {
 
-        fetch('${API}/api/pets?status=AVAILABLE&limit=4')
+        fetch(`${API}/api/pets?status=AVAILABLE&limit=4`)
         .then(res => res.json())
         .then(data => {
             console.debug("Fetched pets:", data);
