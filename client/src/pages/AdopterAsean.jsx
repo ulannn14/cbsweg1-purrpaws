@@ -1,9 +1,10 @@
 import AppLayout from "../components/AppLayout";
+import BackButton from "../components/BackButton";
 
 function AdopterAsean() {
   return (
     <AppLayout>
-
+      <BackButton />
       <main className="main">
 
         <section className="section asean-info">

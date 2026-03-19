@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import BackButton from "../components/BackButton";
 
 function OrganizationDetail() {
   const { id } = useParams();
@@ -39,6 +40,7 @@ function OrganizationDetail() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="org-profile">
 
         {/* Organization Photo */}

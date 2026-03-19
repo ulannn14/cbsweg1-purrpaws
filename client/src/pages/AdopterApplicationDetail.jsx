@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import BackButton from "../components/BackButton";
 
 function ApplicationDetail(){
 
@@ -21,7 +22,7 @@ function ApplicationDetail(){
 
   return(
     <AppLayout>
-
+      <BackButton />
       <main className="main">
 
         <section className="section">

@@ -50,7 +50,6 @@ function AdopterApplication() {
 
   return (
     <AppLayout>
-
       <main className="main">
 
         <section className="section applications">

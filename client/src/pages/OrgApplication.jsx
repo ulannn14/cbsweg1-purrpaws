@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
+import BackButton from "../components/BackButton";
 
 function OrgApplication() {
 
@@ -81,7 +82,7 @@ function OrgApplication() {
 
   return (
     <OrgAppLayout>
-
+      <BackButton />
       <main className="org-main">
 
         <section className="section org-application">

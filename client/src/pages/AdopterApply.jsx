@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import BackButton from "../components/BackButton";
 
 function AdopterApply() {
     const API = import.meta.env.VITE_API_URL;
@@ -139,6 +140,7 @@ function AdopterApply() {
     return (
 
     <AppLayout>
+        <BackButton />
 
     <main className="main">
 
@@ -428,7 +430,7 @@ function AdopterApply() {
 
     <div className="pet-apply">
 
-    <button type="button" className="cancel-btn">
+    <button type="button" className="cancel-btn" onClick={() => navigate(-1)}>
     Cancel
     </button>
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import BackButton from "../components/BackButton";
 
 function PetDetail() {
   const { id } = useParams();
@@ -38,7 +39,7 @@ function PetDetail() {
 
   return (
     <AppLayout>
-
+      <BackButton />
     <main className="main">
 
     <section className="section pet-detail">

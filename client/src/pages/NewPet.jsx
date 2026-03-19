@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
+import BackButton from "../components/BackButton";
 
 function NewPet() {
 
@@ -138,6 +139,7 @@ function NewPet() {
     return (
 
         <OrgAppLayout>
+            <BackButton />
 
         <main className="main">
 

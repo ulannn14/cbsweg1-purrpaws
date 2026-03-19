@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
+import BackButton from "../components/BackButton";
 
 function EditPet() {
   const { id } = useParams();
@@ -137,6 +138,7 @@ function EditPet() {
 
   return (
     <OrgAppLayout>
+      <BackButton />
       <main className="main">
         <section className="section pet-detail">
 

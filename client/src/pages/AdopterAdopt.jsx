@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import BackButton from "../components/BackButton";
 
 function AdopterAdopt() {
 
@@ -111,6 +112,7 @@ function AdopterAdopt() {
 
     return (
         <AppLayout>
+            <BackButton />
         <div className="has-filter">
 
         <main className="main">
