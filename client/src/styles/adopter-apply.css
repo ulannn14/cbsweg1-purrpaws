@@ -160,3 +160,136 @@
   width: 320px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
+
+/* Fixed height box */
+.fixed-box{
+  min-height: 650px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Section title */
+.section-title{
+  font-size:18px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+/* Radio buttons */
+.radio-group{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:8px;
+}
+
+.radio-group label{
+  display:flex;
+  align-items:center;
+  gap:10px; /* ✅ spacing between circle and text */
+  cursor:pointer;
+  font-weight:400; /* normal */
+}
+
+/* Navigation buttons */
+.carousel-nav{
+  display:flex;
+  justify-content:space-between;
+  margin-top:20px;
+}
+
+/* Disabled submit */
+button:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+.form-content{
+  flex:1; /* pushes nav to bottom */
+}
+
+.carousel-nav{
+  display:flex;
+  justify-content:space-between;
+  margin-top:20px;
+}
+
+/* Link-style buttons */
+.nav-link{
+  background:none;
+  border:none;
+  padding:0;
+
+  font-size:15px;
+  color:#333;
+  cursor:pointer;
+
+  text-decoration:underline;
+}
+
+.nav-link:hover{
+  color:#000;
+}
+
+.nav-link.next{
+  margin-left:auto;
+}
+
+.upload-box{
+  display:inline-block;
+  position:relative;
+  cursor:pointer;
+}
+
+.upload-box input{
+  display:none;
+}
+
+.upload-box span{
+  display:inline-block;
+  padding:10px 18px;
+  border-radius:20px;
+  border:1px solid #444;
+  background:#f4f4f4;
+  font-size:14px;
+  transition:0.2s;
+}
+
+.upload-box span:hover{
+  background:#eaeaea;
+}
+
+/* file list container */
+.file-preview{
+  margin-top:10px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+/* file chip */
+.file-chip{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  padding:6px 10px;
+  border-radius:16px;
+  background:#f1f1f1;
+  border:1px solid #ccc;
+
+  font-size:13px;
+}
+
+/* remove button */
+.file-chip button{
+  border:none;
+  background:none;
+  cursor:pointer;
+  font-size:14px;
+  line-height:1;
+}
+
+.file-chip button:hover{
+  color:red;
+}

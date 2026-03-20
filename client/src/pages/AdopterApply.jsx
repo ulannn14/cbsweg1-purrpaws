@@ -15,23 +15,32 @@ function AdopterApply() {
     const [provinces, setProvinces] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [step, setStep] = useState(0);
 
     const [formData, setFormData] = useState({
-        buildingType: "",
-        rent: "",
-        movePet: "",
-        liveWith: "",
-        allergies: "",
-        carePerson: "",
-        financialPerson: "",
-        emergencyCare: "",
-        hoursAlone: "",
-        introductionSteps: "",
-        familySupport: "",
-        familyExplain: "",
-        otherPets: "",
-        pastPets: "",
-        housePhotos: "",
+        residenceType: "",
+        occupation: "",
+        validId: [],
+
+        reasonAdopt: "",
+        experience: "",
+        preparationSteps: "",
+        vetClinic: "",
+        petDiet: "",
+        otherPetsList: "",
+
+        consent: "",
+        consentProof: [],
+        consentUnderstanding: false,
+        housePhotos: [],
+
+        petsNeutered: "",
+        planNeuter: "",
+
+        agreeUpdates: false,
+        agreeEmergency: false,
+        shareSocial: "",
+
         interviewTime: ""
     });
 
@@ -143,6 +152,49 @@ function AdopterApply() {
     setShowSuccess(true);
 
     navigate("/applications");
+    };
+
+    const sections = [
+        "Basic Information",
+        "Adoption Details",
+        "Residence Details",
+        "Spaying and Neutering",
+        "Updating the Organization",
+        "Interview Schedule"
+    ];
+
+    const isFormComplete = () => {
+        return (
+            formData.residenceType &&
+            formData.occupation &&
+            formData.reasonAdopt &&
+            formData.experience &&
+            formData.preparationSteps &&
+            formData.vetClinic &&
+            formData.petDiet &&
+            formData.otherPetsList &&
+            formData.consent &&
+            formData.petsNeutered &&
+            formData.planNeuter &&
+            formData.interviewTime
+        );
+    };
+
+    const handleFileChange = (e, field) => {
+        const files = Array.from(e.target.files);
+
+        setFormData(prev => ({
+            ...prev,
+            [field]: [...(prev[field] || []), ...files]
+        }));
+        };
+
+        const removeFile = (field, index) => {
+        setFormData(prev => {
+            const updated = [...prev[field]];
+            updated.splice(index, 1);
+            return { ...prev, [field]: updated };
+        });
     };
 
     return (
@@ -336,116 +388,378 @@ function AdopterApply() {
 
     {/* ADOPTION DETAILS */}
 
-    <h2 className="apply-title">Adoption Details</h2>
+    <h2 className="apply-title">Application Details</h2>
 
     <form onSubmit={handleSubmit}>
 
-    <div className="apply-box form-box">
+    <div className="apply-box form-box fixed-box">
 
-    <div className="form-group">
-    <label>What type of building do you live in?</label>
-    <input className="edit-input" name="buildingType" onChange={handleChange}/>
+    <h3 className="section-title">{sections[step]}</h3>
+
+    <div className="form-content">
+
+        {/* ================= BASIC INFO ================= */}
+        {step === 0 && (
+        <>
+            <div className="form-group">
+            <label>
+                What type of residence do you live in? (e.g., House, Apartment, Dormitory, Condominium, etc.)
+            </label>
+            <input
+                className="edit-input"
+                name="residenceType"
+                value={formData.residenceType || ""}
+                onChange={handleChange}
+            />
+            </div>
+
+            <div className="form-group">
+            <label>What is your occupation?</label>
+            <input
+                className="edit-input"
+                name="occupation"
+                value={formData.occupation || ""}
+                onChange={handleChange}
+            />
+            </div>
+
+            <div className="form-group">
+            <label>
+                Kindly submit any valid ID. (e.g., Government, School, or Work)
+            </label>
+
+            <label className="upload-box">
+                <input
+                type="file"
+                multiple
+                onChange={(e)=>handleFileChange(e, "validId")}
+                />
+                <span>Upload file(s)</span>
+            </label>
+
+            <div className="file-preview">
+                {formData.validId.map((file, i) => (
+                <div key={i} className="file-chip">
+                    {file.name}
+                    <button onClick={()=>removeFile("validId", i)}>×</button>
+                </div>
+                ))}
+            </div>
+            </div>
+        </>
+        )}
+
+        {/* ================= ADOPTION DETAILS ================= */}
+        {step === 1 && (
+        <>
+            <div className="form-group">
+            <label>Why would you like to adopt a cat/dog from us?</label>
+            <textarea
+                name="reasonAdopt"
+                value={formData.reasonAdopt || ""}
+                onChange={handleChange}
+            />
+            </div>
+
+            <div className="form-group">
+            <label>Do you have any prior experience taking care of cats/dogs?</label>
+            <div className="radio-group">
+                <label>
+                <input
+                    type="radio"
+                    name="experience"
+                    value="yes"
+                    checked={formData.experience === "yes"}
+                    onChange={handleChange}
+                /> Yes
+                </label>
+                <label>
+                <input
+                    type="radio"
+                    name="experience"
+                    value="no"
+                    checked={formData.experience === "no"}
+                    onChange={handleChange}
+                /> No
+                </label>
+            </div>
+            </div>
+
+            <div className="form-group">
+            <label>What steps are you taking to prepare for adopting a cat/dog?</label>
+            <textarea
+                name="preparationSteps"
+                value={formData.preparationSteps || ""}
+                onChange={handleChange}
+            />
+            </div>
+
+            <div className="form-group">
+            <label>What vet clinic do you plan on taking your chosen cat/dog to?</label>
+            <input
+                className="edit-input"
+                name="vetClinic"
+                value={formData.vetClinic || ""}
+                onChange={handleChange}
+            />
+            </div>
+
+            <div className="form-group">
+            <label>
+                What is the diet that you are planning on feeding to your chosen cat/dog? Please specify the brands.
+            </label>
+            <textarea
+                name="petDiet"
+                value={formData.petDiet || ""}
+                onChange={handleChange}
+            />
+            </div>
+
+            <div className="form-group">
+            <label>
+                Do you have other pets? Please list (e.g., 2 cats, 1 dog). Write “N/A” if none.
+            </label>
+            <input
+                className="edit-input"
+                name="otherPetsList"
+                value={formData.otherPetsList || ""}
+                onChange={handleChange}
+            />
+            </div>
+        </>
+        )}
+
+        {/* ================= RESIDENCE ================= */}
+        {step === 2 && (
+        <>
+            <div className="form-group">
+            <label>
+                If living with others (e.g., family, roommates) or renting, do you have consent from your housemate/s and/or landlord to keep a cat?
+            </label>
+            <div className="radio-group">
+                <label>
+                <input
+                    type="radio"
+                    name="consent"
+                    value="yes"
+                    checked={formData.consent === "yes"}
+                    onChange={handleChange}
+                /> Yes
+                </label>
+                <label>
+                <input
+                    type="radio"
+                    name="consent"
+                    value="no"
+                    checked={formData.consent === "no"}
+                    onChange={handleChange}
+                /> No
+                </label>
+                <label>
+                <input
+                    type="radio"
+                    name="consent"
+                    value="alone"
+                    checked={formData.consent === "alone"}
+                    onChange={handleChange}
+                /> I live alone.
+                </label>
+            </div>
+            </div>
+
+            {formData.consent === "yes" && (
+            <div className="form-group">
+                <label>
+                If yes, please provide proof of their consent (e.g., screenshots, documents).
+                </label>
+
+                <label className="upload-box">
+                <input
+                    type="file"
+                    multiple
+                    onChange={(e)=>handleFileChange(e, "consentProof")}
+                />
+                <span>Upload files</span>
+                </label>
+
+                <div className="file-preview">
+                {formData.consentProof.map((file, i) => (
+                    <div key={i} className="file-chip">
+                    {file.name}
+                    <button onClick={()=>removeFile("consentProof", i)}>×</button>
+                    </div>
+                ))}
+                </div>
+            </div>
+            )}
+
+            {formData.consent === "no" && (
+            <div className="form-group">
+                <label>
+                If not, please understand that their consent is required for the organization to approve your application, and that proof may be provided at a later time or discussed further through Facebook Messenger.
+                </label>
+
+                <div className="radio-group">
+                <label>
+                    <input
+                    type="radio"
+                    name="consentUnderstanding"
+                    value="yes"
+                    checked={formData.consentUnderstanding === "yes"}
+                    onChange={handleChange}
+                    />
+                    Yes, I understand that I must communicate their consent to the organization in further communications.
+                </label>
+                </div>
+            </div>
+            )}
+
+            <div className="form-group">
+            <label>
+                Kindly upload photos of your residence and where the cat will stay, both indoors and outside the house (include facade, garage, or gate, if any).
+            </label>
+
+            <label className="upload-box">
+            <input
+                type="file"
+                multiple
+                onChange={(e)=>handleFileChange(e, "housePhotos")}
+            />
+            <span>Upload files</span>
+            </label>
+
+            <div className="file-preview">
+            {formData.housePhotos.map((file, i) => (
+                <div key={i} className="file-chip">
+                {file.name}
+                <button onClick={()=>removeFile("housePhotos", i)}>×</button>
+                </div>
+            ))}
+            </div>
+            </div>
+        </>
+        )}
+
+        {/* ================= SPAY ================= */}
+        {step === 3 && (
+        <>
+            <div className="form-group">
+            <label>If you have other cats/dogs, are they spayed or neutered?</label>
+            <div className="radio-group">
+                <label>
+                <input type="radio" name="petsNeutered" value="yes"
+                    checked={formData.petsNeutered === "yes"}
+                    onChange={handleChange}/> Yes
+                </label>
+                <label>
+                <input type="radio" name="petsNeutered" value="no"
+                    checked={formData.petsNeutered === "no"}
+                    onChange={handleChange}/> No
+                </label>
+                <label>
+                <input type="radio" name="petsNeutered" value="none"
+                    checked={formData.petsNeutered === "none"}
+                    onChange={handleChange}/> I don’t have other pets.
+                </label>
+            </div>
+            </div>
+
+            <div className="form-group">
+            <label>
+                Do you plan to spay/neuter the cat/dog that you will be adopting (if the cat/dog is not spayed/neutered already)?
+            </label>
+            <div className="radio-group">
+                <label><input type="radio" name="planNeuter" value="yes" checked={formData.planNeuter==="yes"} onChange={handleChange}/> Yes</label>
+                <label><input type="radio" name="planNeuter" value="no" checked={formData.planNeuter==="no"} onChange={handleChange}/> No</label>
+                <label><input type="radio" name="planNeuter" value="undecided" checked={formData.planNeuter==="undecided"} onChange={handleChange}/> I have not decided yet</label>
+                <label><input type="radio" name="planNeuter" value="already" checked={formData.planNeuter==="already"} onChange={handleChange}/> The cat/dog that I’m adopting is already spayed/neutered</label>
+            </div>
+            </div>
+        </>
+        )}
+
+        {/* ================= UPDATES ================= */}
+        {step === 4 && (
+        <>
+            <div className="form-group">
+            <label>
+                Adopters are expected to send updates to the organization as regularly as possible through the organization’s email address.
+            </label>
+            <div className="radio-group">
+                <label>
+                <input type="radio" name="agreeUpdates" value="yes"
+                    checked={formData.agreeUpdates==="yes"}
+                    onChange={handleChange}/>
+                I understand that I must send the organization regular updates as much as possible.
+                </label>
+            </div>
+            </div>
+
+            <div className="form-group">
+            <label>
+                Adopters are expected to update the organization as soon as possible for the following cases: escape, injury, sickness, accidents, and, in worst cases, death.
+            </label>
+            <div className="radio-group">
+                <label>
+                <input type="radio" name="agreeEmergency" value="yes"
+                    checked={formData.agreeEmergency==="yes"}
+                    onChange={handleChange}/>
+                I understand that I must update the organization as soon as possible in case the cat’s safety or health is jeopardized.
+                </label>
+            </div>
+            </div>
+
+            <div className="form-group">
+            <label>
+                Adopters are encouraged to post their adopted pet on Facebook using the official hashtag #AdoptWithPurrPaws to help promote PurrPaws and support pet adoption awareness in reducing the number of stray animals in the country.
+            </label>
+            <div className="radio-group">
+                <label>
+                <input type="radio" name="shareSocial" value="yes"
+                    checked={formData.shareSocial==="yes"}
+                    onChange={handleChange}/>
+                Sure! I am willing to post using the hashtag #AdoptWithPurrPaws to support your advocacy
+                </label>
+                <label>
+                <input type="radio" name="shareSocial" value="no"
+                    checked={formData.shareSocial==="no"}
+                    onChange={handleChange}/>
+                No thanks, I prefer not to post on social media
+                </label>
+            </div>
+            </div>
+        </>
+        )}
+
+        {/* ================= INTERVIEW ================= */}
+        {step === 5 && (
+        <div className="form-group">
+            <label>What is your preferred date and time for a follow-up Zoom interview?</label>
+            <input
+            type="datetime-local"
+            className="edit-input"
+            name="interviewTime"
+            value={formData.interviewTime || ""}
+            onChange={handleChange}
+            />
+        </div>
+        )}
+
     </div>
 
-    <div className="form-group">
-    <label>Do you rent?</label>
-    <input className="edit-input" name="rent" onChange={handleChange}/>
-    </div>
+    {/* NAVIGATION */}
+    <div className="carousel-nav">
+        {step > 0 && (
+        <button type="button" className="nav-link" onClick={()=>setStep(step-1)}>
+            ← Back
+        </button>
+        )}
 
-    <div className="form-group">
-    <label>What happens to your pet if or when you move?</label>
-    <textarea name="movePet" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Who do you live with?</label>
-    <input className="edit-input" name="liveWith" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Are any members of your household allergic to animals?</label>
-    <input className="edit-input" name="allergies" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Who will be responsible for feeding, grooming, and generally caring for your pet?</label>
-    <textarea name="carePerson" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Who will be financially responsible for your pet’s needs?</label>
-    <textarea name="financialPerson" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Who will look after your pet if you go on vacation or emergency?</label>
-    <textarea name="emergencyCare" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>How many hours in an average workday will your pet be left alone?</label>
-    <input className="edit-input" name="hoursAlone" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>What steps will you take to introduce your new pet?</label>
-    <textarea name="introductionSteps" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Does everyone in the family support your decision to adopt a pet?</label>
-    <input className="edit-input" name="familySupport" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Please explain</label>
-    <textarea name="familyExplain" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Do you have other pets?</label>
-    <input className="edit-input" name="otherPets" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    <label>Have you had pets in the past?</label>
-    <input className="edit-input" name="pastPets" onChange={handleChange}/>
-    </div>
-
-    <div className="form-group">
-    
-    {/*
-    <label>Attach photos of your home</label>
-
-    <label className="file-upload">
-        <input
-        type="file"
-        multiple
-        onChange={(e) =>
-            setFormData({
-            ...formData,
-            housePhotos: e.target.files
-            })
-        }
-        />
-        <span className="file-upload-btn">Choose Files</span>
-    </label>
-
-    <p className="file-upload-note">
-        You may upload multiple photos.
-    </p>
-    */}
-
-    </div>
-
-    <div className="form-group">
-    <label>Preferred date and time for Zoom interview</label>
-    <input
-        type="datetime-local"
-        className="edit-input"
-        name="interviewTime"
-        onChange={handleChange}
-    />
+        {step < sections.length - 1 && (
+        <button type="button" className="nav-link next" onClick={()=>setStep(step+1)}>
+            Next →
+        </button>
+        )}
     </div>
 
     </div>
@@ -458,7 +772,7 @@ function AdopterApply() {
     Cancel
     </button>
 
-    <button className="save-btn" type="submit">
+    <button className="save-btn" type="submit" disabled={!isFormComplete()}>
     Submit
     </button>
 

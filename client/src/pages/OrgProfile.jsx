@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AppLayout from "../components/AppLayout";
+import OrgAppLayout from "../components/OrgAppLayout";
 
 function OrgProfile() {
     const API = import.meta.env.VITE_API_URL;
@@ -34,11 +34,11 @@ function OrgProfile() {
 
     if (loading || !orgInfo) {
         return (
-        <AppLayout>
+        <OrgAppLayout>
             <div className="page-loading">
             <p>Loading organization profile...</p>
             </div>
-        </AppLayout>
+        </OrgAppLayout>
         );
     }
 
@@ -89,7 +89,7 @@ const handleSave = async () => {
     };
 
     return (
-        <AppLayout>
+        <OrgAppLayout>
         <main className="main">
             <section className="section apply-page">
 
@@ -420,7 +420,7 @@ const handleSave = async () => {
 
             </section>
         </main>
-        </AppLayout>
+        </OrgAppLayout>
     );
 }
 
