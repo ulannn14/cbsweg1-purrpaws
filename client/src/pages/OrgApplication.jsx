@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
 import BackButton from "../components/BackButton";
 
@@ -92,113 +92,120 @@ function OrgApplication() {
             {status}
           </div>
 
-          {/* APPLICANT HEADER */}
-          <div className="org-app-top">
+          <div className="org-app-grid">
 
-            <div className="applicant-header">
+            {/* COLUMN 1 — APPLICANT */}
+            <div className="column">
+
               <h2>Applicant Details</h2>
-            </div>
 
-            <div className="applicant-photo">
-              <img
-                src={applicant?.userImage || `/temp-photos/users/user-profile-${applicant?.id}.jpg`}
-                alt="Applicant"
-              />
-            </div>
-
-          </div>
-
-          {/* APPLICANT INFO */}
-          <div className="application-section">
-
-            <p><strong>Name:</strong> {application.applicantFirstName} {application.applicantLastName}</p>
-            <p><strong>Email:</strong> {application.applicantEmail}</p>
-            <p><strong>Phone:</strong> {application.applicantPhoneNumber}</p>
-            <p><strong>Address:</strong> {application.applicantAddress}</p>
-
-            <p>
-              <strong>Age:</strong>{" "}
-              {application.applicantBirthdate
-                ? getAge(application.applicantBirthdate)
-                : "Unknown"}
-            </p>
-
-            <p><strong>Occupation:</strong> {application.applicantOccupation}</p>
-            <p><strong>Company:</strong> {application.applicantCompany}</p>
-            <p><strong>Civil Status:</strong> {application.applicantCivilStatus}</p>
-
-          </div>
-
-          {/* PET APPLIED */}
-          <div className="applied-pet-section">
-
-            <h3>Pet Applied</h3>
-
-            <div className="adopt-card applied-pet-card">
-
-              <div className="adopt-pet-photo">
+              <div className="applicant-photo">
                 <img
-                  src={`/temp-photos/pets/pet-main-${pet?.id}.jpg`}
-                  alt={pet?.name}
+                  src={
+                    applicant?.userImage ||
+                    `/temp-photos/users/user-profile-${applicant?.id}.jpg`
+                  }
+                  alt="Applicant"
                 />
               </div>
 
-              <div className="pet-info">
+              <div className="application-section">
+                <p><strong>Name:</strong> {application.applicantFirstName} {application.applicantLastName}</p>
+                <p><strong>Email:</strong> {application.applicantEmail}</p>
+                <p><strong>Phone:</strong> {application.applicantPhoneNumber}</p>
+                <p><strong>Address:</strong> {application.applicantAddress}</p>
 
-                <div className="pet-text">
+                <p>
+                  <strong>Age:</strong>{" "}
+                  {application.applicantBirthdate
+                    ? getAge(application.applicantBirthdate)
+                    : "Unknown"}
+                </p>
 
-                  <h3>{pet?.name}</h3>
-                  <p>{pet?.breed?.name}</p>
+                <p><strong>Occupation:</strong> {application.applicantOccupation}</p>
+                <p><strong>Company:</strong> {application.applicantCompany}</p>
+                <p><strong>Civil Status:</strong> {application.applicantCivilStatus}</p>
+              </div>
 
-                  <div className="pet-tags">
-                    {pet?.age && <span className="tag">{pet.age} yrs</span>}
-                    {pet?.isSpayedOrNeutered && (
-                      <span className="tag dark">Neutered</span>
-                    )}
-                  </div>
+            </div>
 
-                </div>
+            {/* COLUMN 2 — QUESTIONNAIRE */}
+            <div className="column">
+
+              <h2>Adoption Questionnaire</h2>
+
+              <div className="application-section">
+
+                <p><strong>Why do you want to adopt?</strong></p>
+                <p>{application.response1}</p>
+
+                <p><strong>Have you owned pets before?</strong></p>
+                <p>{application.response2 ? "Yes" : "No"}</p>
+
+                <p><strong>Where will the pet stay?</strong></p>
+                <p>{application.response3}</p>
+
+                <p><strong>Who will be responsible for the pet?</strong></p>
+                <p>{application.response4}</p>
+
+                <p><strong>Can you afford vet care?</strong></p>
+                <p>{application.response5 ? "Yes" : "No"}</p>
+
+                <p><strong>What will you do if the pet gets sick?</strong></p>
+                <p>{application.response6}</p>
+
+                <p><strong>How many hours will the pet be alone?</strong></p>
+                <p>{application.response7}</p>
+
+                <p><strong>What will happen if you move?</strong></p>
+                <p>{application.response8}</p>
+
+                <p><strong>Have you surrendered a pet before?</strong></p>
+                <p>{application.response9}</p>
+
+                <p><strong>How will you discipline the pet?</strong></p>
+                <p>{application.response10}</p>
 
               </div>
 
             </div>
 
-          </div>
+            {/* COLUMN 3 — PET */}
+            <div className="column">
 
-          {/* QUESTIONNAIRE */}
-          <div className="application-section">
+              <h2>Pet Applied</h2>
 
-            <h3>Adoption Questionnaire</h3>
+              <Link
+                to={pet ? `/edit-pet/${pet.id}` : "#"}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <div className="adopt-card applied-pet-card">
 
-            <p><strong>Why do you want to adopt?</strong></p>
-            <p>{application.response1}</p>
+                  <div className="adopt-pet-photo">
+                    <img
+                      src={`/temp-photos/pets/pet-main-${pet?.id}.jpg`}
+                      alt={pet?.name}
+                    />
+                  </div>
 
-            <p><strong>Have you owned pets before?</strong></p>
-            <p>{application.response2 ? "Yes" : "No"}</p>
+                  <div className="pet-info">
+                    <div className="pet-text">
+                      <h3>{pet?.name}</h3>
+                      <p>{pet?.breed?.name}</p>
 
-            <p><strong>Where will the pet stay?</strong></p>
-            <p>{application.response3}</p>
+                      <div className="pet-tags">
+                        {pet?.age && <span className="tag">{pet.age} yrs</span>}
+                        {pet?.isSpayedOrNeutered && (
+                          <span className="tag dark">Neutered</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
 
-            <p><strong>Who will be responsible for the pet?</strong></p>
-            <p>{application.response4}</p>
+                </div>
+              </Link>
 
-            <p><strong>Can you afford vet care?</strong></p>
-            <p>{application.response5 ? "Yes" : "No"}</p>
-
-            <p><strong>What will you do if the pet gets sick?</strong></p>
-            <p>{application.response6}</p>
-
-            <p><strong>How many hours will the pet be alone?</strong></p>
-            <p>{application.response7}</p>
-
-            <p><strong>What will happen if you move?</strong></p>
-            <p>{application.response8}</p>
-
-            <p><strong>Have you surrendered a pet before?</strong></p>
-            <p>{application.response9}</p>
-
-            <p><strong>How will you discipline the pet?</strong></p>
-            <p>{application.response10}</p>
+            </div>
 
           </div>
 

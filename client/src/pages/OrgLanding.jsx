@@ -94,6 +94,12 @@ function OrgLanding() {
 
             filteredApps.map(app => (
 
+              <Link
+              key={app.id}
+              to={app.pet ? `/edit-pet/${app.pet.id}` : "#"}
+              style={{ textDecoration: "none", color: "inherit" }}
+              >
+
               <div key={app.id} className="application-card">
 
                 {/* Applicant Picture */}
@@ -172,7 +178,8 @@ function OrgLanding() {
                 </Link>
 
               </div>
-
+              
+            </Link>
             ))
           )}
 

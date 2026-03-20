@@ -59,6 +59,12 @@ function AdopterApplication() {
           <div className="applications-list">
 
             {applications.map(app => (
+          
+            <Link
+              key={app.id}
+              to={app.pet ? `/adopt/${app.pet.id}` : "#"}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
 
                 <div key={app.id} className="application-card">
                 <div className="adopt-card">
@@ -133,7 +139,7 @@ function AdopterApplication() {
                   </div>
 
                 </div>
-
+              </Link>
             ))}
 
           </div>
