@@ -14,6 +14,7 @@ function AdopterApply() {
     const [personalInfo, setPersonalInfo] = useState(null);
     const [provinces, setProvinces] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const [formData, setFormData] = useState({
         buildingType: "",
@@ -86,7 +87,7 @@ function AdopterApply() {
     const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch(`${API}/api/applications`, {
+    const res = await fetch(`${API}/api/applications`, {
         method: "POST",
         headers: {
         "Content-Type": "application/json"
@@ -134,10 +135,33 @@ function AdopterApply() {
         })
     });
 
+    if (!res.ok) {
+    alert("Submission failed");
+    return;
+    }
+
+    setShowSuccess(true);
+
     navigate("/applications");
     };
 
     return (
+    <>
+    { showSuccess && (
+        <div className="popup-overlay">
+            <div className="popup-box">
+            <h3>Application Submitted!</h3>
+            <p>Your adoption application has been successfully sent.</p>
+
+            <button
+                className="save-btn"
+                onClick={() => navigate("/applications")}
+            >
+                Go to Applications
+            </button>
+            </div>
+        </div>
+    )}
 
     <AppLayout>
         <BackButton />
@@ -447,7 +471,7 @@ function AdopterApply() {
     </main>
 
     </AppLayout>
-
+    </>
     );
 }
 

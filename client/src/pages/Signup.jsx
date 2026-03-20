@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/BackButton";
 
 function SignUpPage() {
 
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
+  const [errors, setErrors] = useState({});
   const [provinces, setProvinces] = useState([]);
   
   const [formData, setFormData] = useState({
@@ -35,6 +36,53 @@ function SignUpPage() {
       ...formData,
       [name]: value
     });
+  };
+
+  const validateField = (name, value) => {
+    let error = "";
+
+    if (name === "email") {
+      if (!value.includes("@")) {
+        error = "Invalid email format";
+      }
+    }
+
+    if (name === "mobile") {
+      if (!/^09\d{9}$/.test(value)) {
+        error = "Mobile must be 11 digits (PH format)";
+      }
+    }
+
+    if (name === "userName") {
+      if (value.length !== 6) {
+        error = "Username must be 6 characters";
+      }
+    }
+
+    if (name === "password") {
+      if (value.length < 6) {
+        error = "Password must be at least 6 characters";
+      }
+    }
+
+    if (name === "firstName" || name === "lastName" || name === "city" || name === "provinceId" || name === "birthdate" || name === "address") {
+      if (!value.trim()) {
+        error = "This field is required";
+      }
+    }
+
+    return error;
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    const error = validateField(name, value);
+
+    setErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
   };
 
   const calculateAge = (birthdate) => {
@@ -92,6 +140,10 @@ function SignUpPage() {
   return (
     <main className="signup-page">
 
+      <div className="back-btn-wrapper">
+        <BackButton />
+      </div>
+
       <div className="signup-logo-area">
         <img src="/images/logo.png" className="signup-logo" />
       </div>
@@ -113,8 +165,10 @@ function SignUpPage() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="signup-input"
+                  onBlur={handleBlur}
+                  className={`signup-input ${errors.firstName ? "error" : ""}`}
                 />
+                {errors.firstName && <p className="error-text">{errors.firstName}</p>}
               </div>
 
               <div style={{ flex: 1 }}>
@@ -124,8 +178,10 @@ function SignUpPage() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="signup-input"
+                  onBlur={handleBlur}
+                  className={`signup-input ${errors.lastName ? "error" : ""}`}
                 />
+                {errors.lastName && <p className="error-text">{errors.lastName}</p>}
               </div>
 
             </div>
@@ -136,8 +192,11 @@ function SignUpPage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="signup-input"
+              onBlur={handleBlur}
+              className={`signup-input ${errors.email ? "error" : ""}`}
             />
+
+            {errors.email && <p className="error-text">{errors.email}</p>}
 
             <label>Mobile Number</label>
             <input
@@ -145,8 +204,11 @@ function SignUpPage() {
               name="mobile"
               value={formData.mobile}
               onChange={handleChange}
-              className="signup-input"
+              onBlur={handleBlur}
+              className={`signup-input ${errors.mobile ? "error" : ""}`}
             />
+
+            {errors.mobile && <p className="error-text">{errors.mobile}</p>}
 
             <label>Username</label>
             <input
@@ -154,8 +216,11 @@ function SignUpPage() {
               name="userName"
               value={formData.userName}
               onChange={handleChange}
-              className="signup-input"
+              onBlur={handleBlur}
+              className={`signup-input ${errors.userName ? "error" : ""}`}
             />
+
+            {errors.userName && <p className="error-text">{errors.userName}</p>}
 
             <label>Password</label>
             <input
@@ -163,8 +228,11 @@ function SignUpPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="signup-input"
+              onBlur={handleBlur}
+              className={`signup-input ${errors.password ? "error" : ""}`}
             />
+
+            {errors.password && <p className="error-text">{errors.password}</p>}
 
             <label>Date of Birth</label>
             <input
@@ -172,8 +240,11 @@ function SignUpPage() {
               name="birthdate"
               value={formData.birthdate}
               onChange={handleChange}
-              className="signup-input"
+              onBlur={handleBlur}
+              className={`signup-input ${errors.birthdate ? "error" : ""}`}
             />
+
+            {errors.birthdate && <p className="error-text">{errors.birthdate}</p>}
 
             <div className="signup-row">
 
@@ -184,8 +255,10 @@ function SignUpPage() {
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  className="signup-input"
+                  onBlur={handleBlur}
+                  className={`signup-input ${errors.city ? "error" : ""}`}
                 />
+                {errors.city && <p className="error-text">{errors.city}</p>}
               </div>
 
               <div style={{ flex: 1 }}>
@@ -194,7 +267,8 @@ function SignUpPage() {
                   name="provinceId"
                   value={formData.provinceId}
                   onChange={handleChange}
-                  className="signup-input"
+                  onBlur={handleBlur}
+                  className={`signup-input ${errors.provinceId ? "error" : ""}`}
                 >
                   <option value="">Select a province</option>
                   {provinces.map(province => (
@@ -203,8 +277,8 @@ function SignUpPage() {
                     </option>
                   ))}
                 </select>
+                {errors.provinceId && <p className="error-text">{errors.provinceId}</p>}
               </div>
-
 
             </div>
 
@@ -214,8 +288,11 @@ function SignUpPage() {
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className="signup-input"
+              onBlur={handleBlur}
+              className={`signup-input ${errors.address ? "error" : ""}`}
             />
+
+            {errors.address && <p className="error-text">{errors.address}</p>}
 
             <button type="submit" className="signup-btn" disabled={loading}>
               {loading ? <span className="spinner"></span> : "CREATE ACCOUNT"}

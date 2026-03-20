@@ -139,3 +139,20 @@
   opacity: 0.9;
   color: #f4a261;
 }
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.signup-input.error {
+  border: 1px solid red;
+}
+
+.back-btn-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
