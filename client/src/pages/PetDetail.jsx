@@ -170,22 +170,9 @@ function PetDetail() {
             </Link>
 
             <div className="org-details">
-              <p>
-                <strong>Year Established:</strong>{" "}
-                {pet.organization?.yearEstablished
-                  ? new Date(pet.organization.yearEstablished).getFullYear()
-                  : "N/A"}
-              </p>
-
-              <p>
-                <strong>About:</strong>{" "}
-                {pet.organization?.description || "No description"}
-              </p>
-
-              <p>
-                <strong>Address:</strong>{" "}
-                {pet.organization?.address || "No address"}
-              </p>
+              <p><strong>Rescued:</strong> {new Date(pet.dateRescued).toLocaleDateString()}</p>
+              <p><strong>Rescue Story:</strong> {pet.rescueStory}</p>
+              <p><strong>Adoption Reason:</strong> {pet.adoptionReason}</p>
             </div>
 
           </div>
