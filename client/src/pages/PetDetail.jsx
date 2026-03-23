@@ -7,8 +7,17 @@ function PetDetail() {
   const { id } = useParams();
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState(0);
 
   const API = import.meta.env.VITE_API_URL;
+
+  const images = [
+    "/public/images/placeholder.jpg",
+    "/public/images/placeholder.jpg",
+    "/public/images/placeholder.jpg",
+    "/public/images/placeholder.jpg",
+    "/public/images/placeholder.jpg"
+  ];
 
   useEffect(() => {
     if (!id) return;
@@ -50,13 +59,31 @@ function PetDetail() {
           {/* ================= HERO ================= */}
           <div className="pet-hero">
 
-            <div className="pet-photo-large">
-              <img
-                src={pet.image ? `${API}/images/${pet.image}` : `/temp-photos/pets/pet-main-${pet.id}.jpg`}
-                alt={pet.name}
-              />
-            </div>
+            {/* ================= CHANGE BACKEND HERE ================= */}
+            <div className="pet-gallery">
+              {/* MAIN IMAGE */}
+              <div className="gallery-main">
+                <img src={images[activeImage]} alt="pet" />
+              </div>
 
+              {/* THUMBNAILS */}
+              <div className="gallery-thumbs">
+                {images.map((img, index) => (
+                  <div
+                    key={index}
+                    className={`thumb ${activeImage === index ? "active" : ""}`}
+                    onClick={() => setActiveImage(index)}
+                  >
+                    <img src={img} alt={`thumb-${index}`} />
+                  </div>
+                ))}
+              </div>
+          </div>
+
+          <div className="gallery-count">
+            {activeImage + 1} / {images.length}
+          </div>
+           
             <h1 className="pet-name">{pet.name}</h1>
 
             <div className="pet-meta-grid">

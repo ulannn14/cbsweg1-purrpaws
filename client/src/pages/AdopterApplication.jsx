@@ -66,7 +66,7 @@ function AdopterApplication() {
               style={{ textDecoration: "none", color: "inherit" }}
             >
 
-                <div key={app.id} className="application-card">
+                <div key={app.id} className="adopter-application-card">
                 <div className="adopt-card">
 
                   <div className="adopt-pet-photo">

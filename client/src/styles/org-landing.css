@@ -74,20 +74,34 @@
 
 /* APPLICATION CARD */
 
+
+.org-application-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 20px;
+
+  padding:16px;
+  border:1px solid #ddd;
+  border-radius:12px;
+
+  background:white;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.org-application-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
 .application-list{
   display:flex;
   flex-direction:column;
   gap:20px;
-}
-
-.application-card{
-  border:1px solid #ccc;
-  padding:25px;
-  border-radius:6px;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
 }
 
 .application-info h3{
@@ -193,15 +207,6 @@
 .org-app-top {
   display: flex;
   flex-direction: column;
-}
-
-.application-card {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  border: 1px solid #ddd;
-  padding: 25px;
-  border-radius: 10px;
 }
 
 .applicant-pic img {

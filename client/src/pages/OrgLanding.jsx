@@ -100,7 +100,7 @@ function OrgLanding() {
               style={{ textDecoration: "none", color: "inherit" }}
               >
 
-              <div key={app.id} className="application-card">
+              <div key={app.id} className="org-application-card">
 
                 {/* Applicant Picture */}
                 <div className="applicant-pic">

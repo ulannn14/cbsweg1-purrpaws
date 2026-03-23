@@ -37,6 +37,57 @@
   color:#c62828;
 }
 
+.gallery-main {
+  width: 300px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-thumbs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.thumb {
+  width: 70px;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb.active {
+  border-color: #6c8f6b; /* your theme green */
+}
+
+.gallery-main img:hover {
+  transform: scale(1.05);
+  transition: 0.3s;
+}
+
+.gallery-count {
+  font-size: 12px;
+  color: #777;
+  margin-top: 6px;
+}
+
 /* QUICK INFO */
 .pet-quick-grid {
   display:grid;
