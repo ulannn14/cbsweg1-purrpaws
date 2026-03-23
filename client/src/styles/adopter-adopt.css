@@ -402,7 +402,7 @@ select {
 
 .pet-fee input{
   width:120px;
-  border:none;
+  border:1px solid #8ec790;
   background:transparent;
   font-weight:600;
   font-size:14px;

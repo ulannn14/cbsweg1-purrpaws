@@ -271,7 +271,7 @@ input[type="date"][name="dateRescued"]:focus {
 }
 
 .edit-upload-preview:hover {
-  border-color: #4f46e5;
+  border-color: #f4a261;
   transform: scale(1.05);
 }
 
@@ -280,7 +280,7 @@ input[type="date"][name="dateRescued"]:focus {
 }
 
 .edit-upload-label {
-  background-color: #4f46e5;
+  background-color: #000;
   color: #fff;
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
@@ -290,7 +290,8 @@ input[type="date"][name="dateRescued"]:focus {
 }
 
 .edit-upload-label:hover {
-  background-color: #4338ca;
+  background-color: #000;
+  color: #f4a261;
 }
 
 .edit-upload-filename {
