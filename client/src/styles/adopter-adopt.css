@@ -5,8 +5,8 @@
 }
 
 .org-icon{
-  width:60px;
-  height:60px;
+  width: 75px;
+  height:75px;
   border-radius:50%;
   border:1px solid #aaa;
   display:flex;
@@ -407,7 +407,7 @@ select {
 
 .pet-fee input{
   width:120px;
-  border:none;
+  border:1px solid #8ec790;
   background:transparent;
   font-weight:600;
   font-size:14px;

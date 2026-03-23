@@ -37,7 +37,7 @@
   color:white;
 }
 
-.save-btn:hover{
+.save-btn:not(:disabled):hover{
   opacity: 0.9;
   color: #f4a261;
   background: #000;

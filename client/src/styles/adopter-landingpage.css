@@ -295,26 +295,3 @@
   justify-content:center;
   gap:20px;
 }
-
-.org-app-actions button{
-  padding:10px 24px;
-  border-radius:12px;
-  border:1px solid #444;
-  background:#f4f4f4;
-  cursor:pointer;
-}
-
-.org-app-actions button:hover{
-  background:#eaeaea;
-}
-
-.org-app-actions button:disabled{
-  opacity:0.5;
-  cursor:not-allowed;
-}
-
-.org-app-actions:hover button:disabled{
-  opacity:0.5;
-  cursor:not-allowed;
-  background: #f4f4f4;
-}
