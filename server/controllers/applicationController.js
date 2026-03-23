@@ -1,107 +1,64 @@
 const prisma = require("../config/prisma");
+const supabase = require("../config/supabase");
 
+console.log("PRISMA OBJECT:", supabase);
 
 // CREATE APPLICATION
 exports.createApplication = async (req, res) => {
   try {
+    const files = req.files;
 
-    const {
-      userId,
-      petId,
+    // --- DEBUG ---
+    console.log("BODY:", req.body);
+    console.log("FILES:", files);
 
-      applicantFirstName,
-      applicantLastName,
-      applicantAddress,
-      applicantPhoneNumber,
-      applicantEmail,
-      applicantBirthdate,
+    const uploadedFiles = {
+      validId: [],
+      consentProof: [],
+      housePhotos: []
+    };
 
-      applicantOccupation,
-      applicantCompany,
-      applicantSocialMedia,
-      applicantCivilStatus,
-      adoptionPrompt,
+    // helper function
+    const uploadToSupabase = async (fileArray, folder) => {
+      const urls = [];
 
-      alternateContactName,
-      alternateContactRelationship,
-      alternateContactNumber,
-      alternateContactEmail,
+      for (const file of fileArray || []) {
+        const fileName = `${Date.now()}-${file.originalname}`;
 
-      response1,
-      response2,
-      response3,
-      response4,
-      response5,
-      response6,
-      response7,
-      response8,
-      response9,
-      response10,
-      response11,
-      response12,
-      response13,
-      response14,
-      response15,
-      response16
+        const { data, error } = await supabase.storage
+          .from("public-assets")
+          .upload(`${folder}/${fileName}`, file.buffer, {
+            contentType: file.mimetype
+          });
 
-    } = req.body;
+        if (error) throw error;
 
-    const application = await prisma.adoptionApplication.create({
-      data: {
-        userId,
-        petId,
+        const publicUrl = supabase.storage
+          .from("public-assets")
+          .getPublicUrl(data.path).data.publicUrl;
 
-        applicantFirstName,
-        applicantLastName,
-        applicantAddress,
-        applicantPhoneNumber,
-        applicantEmail,
-        applicantBirthdate: new Date(applicantBirthdate),
-
-        applicantOccupation,
-        applicantCompany,
-        applicantSocialMedia,
-        applicantCivilStatus,
-        adoptionPrompt,
-
-        alternateContactName,
-        alternateContactRelationship,
-        alternateContactNumber,
-        alternateContactEmail,
-
-        response1,
-        response2,
-        response3,
-        response4,
-        response5,
-        response6,
-        response7,
-        response8,
-        response9,
-        response10,
-        response11,
-        response12,
-        response13,
-        response14,
-        response15,
-        response16: new Date(response16)
-      },
-      include: {
-        user: true,
-        pet: {
-          include: {
-            breed: true,
-            organization: true
-          }
-        }
+        urls.push(publicUrl);
       }
+
+      return urls;
+    };
+
+    // upload files
+    uploadedFiles.validId = await uploadToSupabase(files.validId, "validId");
+    uploadedFiles.consentProof = await uploadToSupabase(files.consentProof, "consentProof");
+    uploadedFiles.housePhotos = await uploadToSupabase(files.housePhotos, "housePhotos");
+
+    // 👉 here you can save to DB (Prisma)
+    // await prisma.application.create({ data: { ...req.body, ...uploadedFiles } });
+
+    res.status(201).json({
+      message: "Application submitted successfully",
+      files: uploadedFiles
     });
 
-    res.status(201).json(application);
-
-  } catch (error) {
-    console.error("Create application error:", error);
-    res.status(500).json({ message: "Failed to create application" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 };
 
