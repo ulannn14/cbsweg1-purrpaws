@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
 
 function OrgLanding() {
@@ -7,6 +7,7 @@ function OrgLanding() {
   const [activeTab, setActiveTab] = useState("PENDING");
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -93,94 +94,110 @@ function OrgLanding() {
           ) : (
 
             filteredApps.map(app => (
-
-              <Link
+            <div
               key={app.id}
-              to={app.pet ? `/edit-pet/${app.pet.id}` : "#"}
-              style={{ textDecoration: "none", color: "inherit" }}
-              >
+              className="org-application-card"
+              onClick={() => navigate(`/org/applications/${app.id}`)}
+            >
 
-              <div key={app.id} className="org-application-card">
+              {/* CONTENT (LEFT SIDE STACKED) */}
+              <div className="app-content">
 
-                {/* Applicant Picture */}
-                <div className="applicant-pic">
-                  <img
-                    src={app.user?.userImage || `/temp-photos/users/user-profile-${app.user?.id}.jpg`}
-                    alt="applicant"
-                  />
-                </div>
+                {/* TOP: Applicant */}
+                <div className="applicant-section">
 
-                {/* Applicant Info */}
-                <div className="application-info">
-                  <h3>{app.user?.firstName} {app.user?.lastName}</h3>
-                  <p>{app.user?.email}</p>
-                </div>
-
-                {/* Pet Card */}
-                <div className="adopt-card applied-pet-card">
-
-                  <div className="adopt-pet-photo">
+                  <div className="applicant-pic">
                     <img
-                      src={`/temp-photos/pets/pet-main-${app.pet?.id}.jpg`}
-                      alt={app.pet?.name}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover"
-                      }}
+                      src={
+                        app.user?.userImage ||
+                        `/temp-photos/users/user-profile-${app.user?.id}.jpg`
+                      }
+                      alt="applicant"
                     />
                   </div>
 
-                  <div className="pet-info">
-
-                    <div className="pet-text">
-                      <h3>{app.pet?.name}</h3>
-                      <p>{app.pet?.breed?.name}</p>
-
-                      <div className="pet-tags">
-                        {app.pet?.age && (
-                          <span className="tag">{app.pet.age} yrs</span>
-                        )}
-                        {app.pet?.isSpayedOrNeutered && (
-                          <span className="tag dark">Neutered</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div
-                      className={`pet-type ${
-                        app.pet?.isMale === true
-                          ? "male"
-                          : app.pet?.isMale === false
-                          ? "female"
-                          : ""
-                      }`}
-                    >
-                      <img
-                        src={
-                          app.pet?.breed?.isCat
-                            ? "/images/flags/cat.jpg"
-                            : "/images/flags/dog.jpg"
-                        }
-                        alt="species"
-                      />
-                    </div>
-
+                  <div className="application-info">
+                    <h3>{app.user?.firstName} {app.user?.lastName}</h3>
+                    <p><strong>Email:</strong> {app.user?.email}</p>
+                    <p><strong>Phone:</strong> {app.applicantPhoneNumber}</p>
+                    <p><strong>Address:</strong> {app.applicantAddress}</p>
                   </div>
 
                 </div>
 
-                {/* View Button */}
-                <Link to={`/org/applications/${app.id}`}>
-                  <button className="view-btn">
-                    VIEW
-                  </button>
+                {/* BOTTOM: Pet Card */}
+                <Link
+                  to={`/edit-pet/${app.pet?.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <div className="org-pet-card">
+
+                    <div className="org-adopt-pet-photo">
+                      <img
+                        src={`/temp-photos/pets/pet-main-${app.pet?.id}.jpg`}
+                        alt={app.pet?.name}
+                      />
+                    </div>
+
+                    <div className="pet-info">
+
+                      <div className="pet-text">
+                        <h3>{app.pet?.name}</h3>
+                        <p>{app.pet?.breed?.name}</p>
+
+                        <div className="pet-tags">
+                          {app.pet?.age && (
+                            <span className="tag">{app.pet.age} yrs</span>
+                          )}
+                          {app.pet?.isSpayedOrNeutered && (
+                            <span className="tag dark">Neutered</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div
+                        className={`pet-type ${
+                          app.pet?.isMale === true
+                            ? "male"
+                            : app.pet?.isMale === false
+                            ? "female"
+                            : ""
+                        }`}
+                      >
+                        <img
+                          src={
+                            app.pet?.breed?.isCat
+                              ? "/images/flags/cat.jpg"
+                              : "/images/flags/dog.jpg"
+                          }
+                          alt="species"
+                        />
+                      </div>
+
+                    </div>
+
+                  </div>
                 </Link>
 
               </div>
-              
-            </Link>
-            ))
+
+              {/* RIGHT SIDE */}
+              <div className="app-right">
+                <button
+                  className="view-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/org/applications/${app.id}`);
+                  }}
+                >
+                  VIEW
+                </button>
+              </div>
+
+            </div>
+
+          ))
           )}
 
         </div>
