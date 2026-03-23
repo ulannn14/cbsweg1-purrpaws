@@ -591,6 +591,16 @@ function AdopterApply() {
                     />
                     Yes, I understand that I must communicate their consent to the organization in further communications.
                 </label>
+                <label>
+                    <input
+                    type="radio"
+                    name="consentUnderstanding"
+                    value="no"
+                    checked={formData.consentUnderstanding === "no"}
+                    onChange={handleChange}
+                    />
+                    No, I prefer not to communicate their consent to the organization, and I understand that this may affect the approval of my application.
+                </label>
                 </div>
             </div>
             )}
@@ -652,8 +662,8 @@ function AdopterApply() {
             <div className="radio-group">
                 <label><input type="radio" name="planNeuter" value="yes" checked={formData.planNeuter==="yes"} onChange={handleChange}/> Yes</label>
                 <label><input type="radio" name="planNeuter" value="no" checked={formData.planNeuter==="no"} onChange={handleChange}/> No</label>
-                <label><input type="radio" name="planNeuter" value="undecided" checked={formData.planNeuter==="undecided"} onChange={handleChange}/> I have not decided yet</label>
-                <label><input type="radio" name="planNeuter" value="already" checked={formData.planNeuter==="already"} onChange={handleChange}/> The cat/dog that I’m adopting is already spayed/neutered</label>
+                <label><input type="radio" name="planNeuter" value="undecided" checked={formData.planNeuter==="undecided"} onChange={handleChange}/> I have not decided yet.</label>
+                <label><input type="radio" name="planNeuter" value="already" checked={formData.planNeuter==="already"} onChange={handleChange}/> The cat/dog that I’m adopting is already spayed/neutered.</label>
             </div>
             </div>
         </>
@@ -673,6 +683,12 @@ function AdopterApply() {
                     onChange={handleChange}/>
                 I understand that I must send the organization regular updates as much as possible.
                 </label>
+                <label>
+                <input type="radio" name="agreeUpdates" value="no"
+                    checked={formData.agreeUpdates==="no"}
+                    onChange={handleChange}/>
+                No, I prefer not to send regular updates to the organization.
+                </label>
             </div>
             </div>
 
@@ -687,6 +703,12 @@ function AdopterApply() {
                     onChange={handleChange}/>
                 I understand that I must update the organization as soon as possible in case the cat’s safety or health is jeopardized.
                 </label>
+                <label>
+                <input type="radio" name="agreeEmergency" value="no"
+                    checked={formData.agreeEmergency==="no"}
+                    onChange={handleChange}/>
+                No, I prefer not to update the organization in case of emergencies.
+                </label>
             </div>
             </div>
 
@@ -699,13 +721,13 @@ function AdopterApply() {
                 <input type="radio" name="shareSocial" value="yes"
                     checked={formData.shareSocial==="yes"}
                     onChange={handleChange}/>
-                Sure! I am willing to post using the hashtag #AdoptWithPurrPaws to support your advocacy
+                Sure! I am willing to post using the hashtag #AdoptWithPurrPaws to support PurrPaws' advocacy.
                 </label>
                 <label>
                 <input type="radio" name="shareSocial" value="no"
                     checked={formData.shareSocial==="no"}
                     onChange={handleChange}/>
-                No thanks, I prefer not to post on social media
+                No thanks, I prefer not to post on social media.
                 </label>
             </div>
             </div>

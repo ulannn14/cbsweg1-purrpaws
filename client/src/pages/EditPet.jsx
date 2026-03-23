@@ -139,15 +139,17 @@ function EditPet() {
   return (
     <OrgAppLayout>
       <BackButton />
+
       <main className="main">
         <section className="section pet-detail">
 
-          {/* PET IMAGE */}
-          <div className="pet-header">
+          {/* ================= HERO ================= */}
+          <div className="pet-hero">
+
             <div className="edit-upload-container">
               <img src={preview} alt="pet preview" className="edit-upload-preview" />
 
-              {/*<label htmlFor="image-upload" className="edit-upload-label">
+              <label htmlFor="image-upload" className="edit-upload-label">
                 Change Photo
               </label>
               <input
@@ -155,7 +157,7 @@ function EditPet() {
                 id="image-upload"
                 className="edit-upload-input"
                 onChange={handleImageUpload}
-              />*/}
+              />
             </div>
 
             <input
@@ -165,26 +167,100 @@ function EditPet() {
               onChange={handleChange}
             />
 
-            <div className="pet-fee">
-              Adoption Fee: ₱
-              <input
-                type="number"
-                name="adoptionFee"
-                value={form.adoptionFee || ""}
-                onChange={handleChange}
-                className="edit-input"
-              />
+            {/* MATCHES QUICK CARD STYLE */}
+            <div className="pet-meta-grid">
+
+              <div className="quick-card highlight">
+                <span>Adoption Fee</span>
+                <div className="meta-value">
+                  ₱
+                  <input
+                    type="number"
+                    name="adoptionFee"
+                    value={form.adoptionFee || ""}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div className={`quick-card highlight status ${form.adoptionStatus?.toLowerCase()}`}>
+                <span>Adoption Status</span>
+                <select
+                  name="adoptionStatus"
+                  value={form.adoptionStatus || ""}
+                  onChange={handleChange}
+                >
+                  <option value="AVAILABLE">Available</option>
+                  <option value="UNAVAILABLE">Unavailable</option>
+                  <option value="ADOPTED">Adopted</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* DETAILS GRID */}
+          {/* ================= QUICK INFO ================= */}
+          <div className="pet-quick-grid">
+
+            <div className="quick-card">
+              <span>Breed</span>
+              <select name="breedId" value={form.breedId || ""} onChange={handleChange}>
+                <option value="">Select breed</option>
+                {breeds.map(b => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="quick-card">
+              <span>Age</span>
+              <input type="number" name="age" value={form.age || ""} onChange={handleChange} />
+            </div>
+
+            <div className="quick-card">
+              <span>Gender</span>
+              <select
+                name="isMale"
+                value={form.isMale ? "true" : "false"}
+                onChange={(e) =>
+                  setForm({ ...form, isMale: e.target.value === "true" })
+                }
+              >
+                <option value="true">Male</option>
+                <option value="false">Female</option>
+              </select>
+            </div>
+
+            <div className="quick-card">
+              <span>Size</span>
+              <select name="size" value={form.size || ""} onChange={handleChange}>
+                <option value="SMALL">Small</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LARGE">Large</option>
+              </select>
+            </div>
+
+            <div className="quick-card">
+              <span>Weight</span>
+              <input type="number" name="weight" value={form.weight || ""} onChange={handleChange} />
+            </div>
+
+            <div className="quick-card">
+              <span>Color</span>
+              <input name="color" value={form.color || ""} onChange={handleChange} />
+            </div>
+
+          </div>
+
+          {/* ================= DETAILS ================= */}
           <div className="pet-details-grid">
 
-            {/* LEFT COLUMN */}
+            {/* Behavior */}
             <div className="pet-details-box">
+              <h3>Behavior & Traits</h3>
               <ul>
+
                 <li>
-                  <strong>Temperament:</strong>
+                  <strong>Temperament</strong>
                   <select name="temperament" value={form.temperament || ""} onChange={handleChange}>
                     <option value="CALM">Calm</option>
                     <option value="PLAYFUL">Playful</option>
@@ -193,106 +269,97 @@ function EditPet() {
                     <option value="AGGRESSIVE">Aggressive</option>
                   </select>
                 </li>
-                <li>
-                  <strong>Species:</strong>
-                  <select name="species" value={form.species || ""} onChange={handleChange}>
-                    <option value="CAT">Cat</option>
-                    <option value="DOG">Dog</option>
-                  </select>
-                </li>
-                <li>
-                  <strong>Breed:</strong>
-                  <select name="breedId" value={form.breedId || ""} onChange={handleChange}>
-                    <option value="">Select breed</option>
-                    {breeds.map(b => (
-                      <option key={b.id} value={b.id}>{b.name}</option>
-                    ))}
-                  </select>
-                </li>
-                <li>
-                  <strong>Gender:</strong>
-                  <select name="isMale" value={form.isMale ? "true" : "false"} onChange={e => setForm({...form,isMale:e.target.value==="true"})}>
-                    <option value="true">Male</option>
-                    <option value="false">Female</option>
-                  </select>
-                </li>
-                <li>
-                  <strong>Age:</strong>
-                  <input type="number" name="age" value={form.age || ""} onChange={handleChange}/>
-                </li>
-                <li>
-                  <strong>Size:</strong>
-                  <select name="size" value={form.size || ""} onChange={handleChange}>
-                    <option value="SMALL">Small</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="LARGE">Large</option>
-                  </select>
-                </li>
-                <li>
-                  <strong>Weight:</strong>
-                  <input type="number" name="weight" value={form.weight || ""} onChange={handleChange}/>
-                </li>
-                <li>
-                  <strong>Color:</strong>
-                  <input name="color" value={form.color || ""} onChange={handleChange}/>
-                </li>
-              </ul>
-            </div>
 
-            {/* RIGHT COLUMN */}
-            <div className="pet-details-box">
-              <ul>
-                <li className="checkbox-row">
-                  <strong>Dewormed</strong>
-                  <input type="checkbox" name="isDewormed" checked={form.isDewormed || false} onChange={handleChange}/>
-                </li>
-                <li className="checkbox-row">
-                  <strong>Spayed / Neutered</strong>
-                  <input type="checkbox" name="isSpayedOrNeutered" checked={form.isSpayedOrNeutered || false} onChange={handleChange}/>
-                </li>
                 <li className="checkbox-row">
                   <strong>Good with Dogs</strong>
                   <input type="checkbox" name="isGoodWithDogs" checked={form.isGoodWithDogs || false} onChange={handleChange}/>
                 </li>
+
                 <li className="checkbox-row">
                   <strong>Good with Cats</strong>
                   <input type="checkbox" name="isGoodWithCats" checked={form.isGoodWithCats || false} onChange={handleChange}/>
                 </li>
+
                 <li className="checkbox-row">
                   <strong>Good with Kids</strong>
                   <input type="checkbox" name="isGoodWithKids" checked={form.isGoodWithKids || false} onChange={handleChange}/>
                 </li>
+
                 <li className="checkbox-row">
                   <strong>House Trained</strong>
                   <input type="checkbox" name="isHouseTrained" checked={form.isHouseTrained || false} onChange={handleChange}/>
                 </li>
+
                 <li className="checkbox-row">
                   <strong>Leash Trained</strong>
                   <input type="checkbox" name="isLeashTrained" checked={form.isLeashTrained || false} onChange={handleChange}/>
                 </li>
-                <li>
-                  <strong>Adoption Status:</strong>
-                  <select name="adoptionStatus" value={form.adoptionStatus || ""} onChange={handleChange}>
-                    <option value="AVAILABLE">Available</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="ADOPTED">Adopted</option>
-                  </select>
-                </li>
-                <li>
-                  <strong>Adoption Requirements:</strong>
-                  <textarea
-                    value={form.adoptionRequirements?.join(", ") || ""}
-                    onChange={handleArrayChange}
+
+              </ul>
+            </div>
+
+            {/* Medical */}
+            <div className="pet-details-box">
+              <h3>Medical & Health</h3>
+
+              <ul>
+                <li className="checkbox-row">
+                  <strong>Spayed / Neutered</strong>
+                  <input
+                    type="checkbox"
+                    name="isSpayedOrNeutered"
+                    checked={form.isSpayedOrNeutered || false}
+                    onChange={handleChange}
                   />
                 </li>
+
+                {/* CONDITIONS */}
+                <li>
+                  <strong>Medical Conditions</strong>
+                  <textarea
+                    name="conditions"
+                    value={
+                      form.petConditions?.map(pc => pc.condition.name).join(", ") || ""
+                    }
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        petConditions: e.target.value.split(",").map(name => ({
+                          condition: { name: name.trim() }
+                        }))
+                      })
+                    }
+                  />
+                </li>
+
+                {/* VACCINATIONS */}
+                <li>
+                  <strong>Vaccinations</strong>
+                  <textarea
+                    name="vaccinations"
+                    value={
+                      form.vaccinations?.map(v => v.vaccine.name).join(", ") || ""
+                    }
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        vaccinations: e.target.value.split(",").map(name => ({
+                          vaccine: { name: name.trim() }
+                        }))
+                      })
+                    }
+                  />
+                </li>
+
               </ul>
             </div>
           </div>
 
-          {/* RESCUE INFO */}
+          {/* ================= RESCUE INFO ================= */}
           <div className="pet-org-box">
+
             <p>
-              <strong>Date Rescued:</strong>
+              <strong>Date Rescued</strong>
               <input
                 type="date"
                 name="dateRescued"
@@ -300,28 +367,35 @@ function EditPet() {
                 onChange={handleChange}
               />
             </p>
+
             <p>
-              <strong>Rescue Story:</strong>
+              <strong>Rescue Story</strong>
               <textarea
                 name="rescueStory"
                 value={form.rescueStory || ""}
                 onChange={handleChange}
               />
             </p>
+
             <p>
-              <strong>Adoption Reason:</strong>
+              <strong>Adoption Reason</strong>
               <textarea
                 name="adoptionReason"
                 value={form.adoptionReason || ""}
                 onChange={handleChange}
               />
             </p>
+
           </div>
 
-          {/* ACTION BUTTONS */}
+          {/* ================= ACTIONS ================= */}
           <div className="pet-apply">
-            <button className="save-btn" onClick={handleSave}>Save Changes</button>
-            <button className="cancel-btn" onClick={()=>navigate(-1)}>Cancel</button>
+            <button className="apply-btn-large" onClick={handleSave}>
+              Save Changes
+            </button>
+            <button className="cancel-btn" onClick={() => navigate(-1)}>
+              Cancel
+            </button>
           </div>
 
         </section>

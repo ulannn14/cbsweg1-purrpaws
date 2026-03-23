@@ -1,142 +1,257 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 import BackButton from "../components/BackButton";
 
-function OrganizationDetail() {
-  const { id } = useParams();
-  const [org, setOrg] = useState(null);
-  const [loading, setLoading] = useState(true);
+function OrgDetail() {
+    const API = import.meta.env.VITE_API_URL;
+    const { id } = useParams();
 
-  const API = import.meta.env.VITE_API_URL;
+    const [orgInfo, setOrgInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [pets, setPets] = useState([]);
+    const [loadingPets, setLoadingPets] = useState(true);
 
-  useEffect(() => {
-    if (!id) return;
+    useEffect(() => {
+        fetch(`${API}/api/organizations/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                setOrgInfo(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
 
-    fetch(`${API}/api/organizations/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.debug("Organization fetched", data);
-        setOrg(data);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, [id, API]);
+        if (!id) return;
 
-  if (loading) return (
-    <AppLayout>
-      <div className="page-loading">
-        <p>Loading organization...</p>
-      </div>
-    </AppLayout>
-  );
+        setLoadingPets(true);
 
-  if (!org)
+        fetch(`${API}/api/pets?organizationId=${id}&status=AVAILABLE`)
+            .then(res => res.json())
+            .then(data => setPets(data))
+            .catch(err => console.error(err))
+            .finally(() => setLoadingPets(false));
+    }, [API, id]);
+
+    if (loading || !orgInfo) {
+        return (
+            <AppLayout>
+                <div className="page-loading">
+                    <p>Loading organization...</p>
+                </div>
+            </AppLayout>
+        );
+    }
+
+    const STATUS_LABELS = {
+        CATS: "Cats",
+        DOGS: "Dogs",
+        BOTH: "Cats and Dogs"
+    };
+
     return (
-      <AppLayout>
-        <div>Organization not found.</div>
-      </AppLayout>
+        <AppLayout>
+          <BackButton />
+            <main className="main">
+                <section className="section profile-section">
+
+                    <div className="profile-box">
+
+                        {/* HEADER */}
+                        <div className="profile-header">
+                            <img
+                                src={`/temp-photos/orgs/org-profile-${orgInfo.id}.png`}
+                                alt="Org Logo"
+                                className="profile-avatar"
+                            />
+
+                            <div>
+                                <h1>{orgInfo.name}</h1>
+                                <p className="sub-text">
+                                    {orgInfo.city}, {orgInfo.province?.name}
+                                </p>
+                            </div>
+                        </div>
+
+                        <h2 className="apply-title">About</h2>
+                        <div className="personal-grid">
+                            <div className="about-section">
+                                <span>
+                                    {orgInfo.description || "No description provided."}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* ORGANIZATION INFO */}
+                        <h2 className="apply-title">Organization Information</h2>
+                        <div className="apply-box">
+                            <div className="personal-grid">
+
+                                <div className="info-row">
+                                    <label>Name</label>
+                                    <span>{orgInfo.name}</span>
+                                </div>
+
+                                <div className="info-row">
+                                    <label>Type</label>
+                                    <span>{orgInfo.organizationType}</span>
+                                </div>
+
+                                <div className="info-row">
+                                    <label>Year Established</label>
+                                    <span>
+                                        {orgInfo.yearEstablished
+                                            ? new Date(orgInfo.yearEstablished).getFullYear()
+                                            : "N/A"}
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {/* CONTACT */}
+                        <h2 className="apply-title">Contact</h2>
+                        <div className="apply-box">
+                            <div className="personal-grid">
+
+                                <div className="info-row">
+                                    <label>Contact Person</label>
+                                    <span>{orgInfo.contactPerson || "N/A"}</span>
+                                </div>
+
+                                <div className="info-row">
+                                    <label>Contact Number</label>
+                                    <span>{orgInfo.contactNumber}</span>
+                                </div>
+
+                                <div className="info-row">
+                                    <label>Website</label>
+                                    <span>{orgInfo.website || "N/A"}</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {/* LOCATION */}
+                        <h2 className="apply-title">Location</h2>
+                        <div className="apply-box">
+                            <div className="personal-grid">
+
+                                <div className="info-row">
+                                    <label>City</label>
+                                    <span>{orgInfo.city}</span>
+                                </div>
+
+                                <div className="info-row">
+                                    <label>Address</label>
+                                    <span>{orgInfo.address}</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {/* ADDITIONAL */}
+                        <h2 className="apply-title">Additional Info</h2>
+                        <div className="apply-box">
+                            <div className="personal-grid">
+
+                                <div className="info-row">
+                                    <label>Foster Pets</label>
+                                    <span>{STATUS_LABELS[orgInfo.status] || "Unknown"}</span>
+                                </div>
+
+                                <div className="info-row">
+                                    <label>Number of Animals</label>
+                                    <span>{orgInfo.numberOfAnimals}</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {/* PETS UNDER THIS ORG */}
+                        <h2 className="apply-title">Pets Available for Adoption</h2>
+
+                        <div className="org-pets-section">
+
+                            {loadingPets && (
+                                <p className="pets-loading">Loading pets...</p>
+                            )}
+
+                            {!loadingPets && pets.length === 0 && (
+                                <p className="pets-loading">No pets available at the moment.</p>
+                            )}
+
+                            {!loadingPets && pets.map(pet => (
+                                <Link
+                                    key={pet.id}
+                                    to={`/adopt/${pet.id}`}
+                                    style={{ textDecoration: "none" }}
+                                >
+
+                                <div className="adopt-card">
+
+                                    <div className="adopt-pet-photo">
+                                        <img
+                                            src={`/temp-photos/pets/pet-main-${pet.id}.jpg`}
+                                            alt={pet.name}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover"
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className="pet-info">
+
+                                        <div className="pet-text">
+                                            <h3>{pet.name}</h3>
+                                            <p>{pet.breed?.name}</p>
+
+                                            <div className="pet-tags">
+                                                {pet.age && <span className="tag">{pet.age} yrs</span>}
+                                                {pet.isSpayedOrNeutered && (
+                                                    <span className="tag dark">Neutered</span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            className={`pet-type ${
+                                                pet.isMale === true
+                                                    ? "male"
+                                                    : pet.isMale === false
+                                                    ? "female"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <img
+                                                src={
+                                                    pet.breed?.isCat === false
+                                                        ? "/images/flags/dog.jpg"
+                                                        : "/images/flags/cat.jpg"
+                                                }
+                                                alt={pet.breed?.isCat ? "Cat" : "Dog"}
+                                            />
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                </Link>
+                            ))}
+
+                        </div>
+
+                    </div>
+
+                </section>
+            </main>
+        </AppLayout>
     );
-
-  return (
-    <AppLayout>
-      <BackButton />
-      <div className="org-profile">
-
-        {/* Organization Photo */}
-        <div className="org-profile-photo">
-          <img
-            src="/images/organization-placeholder.svg"
-            alt={org.name}
-          />
-        </div>
-
-        {/* Organization Details */}
-        <div className="org-profile-box">
-          <h2>{org.name}</h2>
-
-          <p><strong>Type:</strong> {org.organizationType}</p>
-
-          <p>
-            <strong>Location:</strong>{" "}
-            {org.city}, {org.province?.name || "Unknown"}
-          </p>
-
-          <p>
-            <strong>Address:</strong>{" "}
-            {org.address || "Not specified"}
-          </p>
-
-          <p>
-            <strong>Year Established:</strong>{" "}
-            {org.yearEstablished
-              ? new Date(org.yearEstablished).getFullYear()
-              : "Unknown"}
-          </p>
-
-          <p>
-            <strong>Status:</strong>{" "}
-            {org.status || "Unknown"}
-          </p>
-
-          <p>
-            <strong>Animals Currently Sheltered:</strong>{" "}
-            {org.numberOfAnimals ?? "Unknown"}
-          </p>
-
-          {org.description && (
-            <>
-              <p><strong>About the Organization</strong></p>
-              <p className="org-profile-desc">{org.description}</p>
-            </>
-          )}
-
-          <p><strong>Contact Information</strong></p>
-
-          <p><strong>Email:</strong> {org.email}</p>
-          <p><strong>Phone:</strong> {org.contactNumber}</p>
-
-          {org.contactPerson && (
-            <p>
-              <strong>Contact Person:</strong>{" "}
-              {org.contactPerson} {org.contactPersonRole && `(${org.contactPersonRole})`}
-            </p>
-          )}
-
-          {org.website && (
-            <p>
-              <strong>Website:</strong>{" "}
-              <a href={org.website} target="_blank" rel="noreferrer">
-                {org.website}
-              </a>
-            </p>
-          )}
-
-          {org.socialMediaLinks?.length > 0 && (
-            <>
-              <p><strong>Social Media</strong></p>
-              <ul>
-                {org.socialMediaLinks.map((link, i) => (
-                  <li key={i}>
-                    <a href={link} target="_blank" rel="noreferrer">
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          {org.registrationNumber && (
-            <p>
-              <strong>Registration Number:</strong>{" "}
-              {org.registrationNumber}
-            </p>
-          )}
-        </div>
-      </div>
-    </AppLayout>
-  );
 }
 
-export default OrganizationDetail;
+export default OrgDetail;

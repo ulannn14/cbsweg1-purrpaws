@@ -11,6 +11,8 @@ function OrgApplication() {
 
   const [application, setApplication] = useState(null);
   const [status, setStatus] = useState("PENDING");
+  const [assessmentNotes, setAssessmentNotes] = useState("");
+  const [pendingAction, setPendingAction] = useState(null);
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -21,6 +23,7 @@ function OrgApplication() {
       .then(data => {
         setApplication(data);
         setStatus(data.status);
+        setAssessmentNotes(data.notes || "");
       })
       .catch(err => console.error(err));
 
@@ -57,16 +60,19 @@ function OrgApplication() {
   }
 
   async function updateStatus(newStatus) {
-
     await fetch(`${API}/api/applications/${id}/status`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ status: newStatus })
+      body: JSON.stringify({
+        status: newStatus,
+        notes: assessmentNotes
+      })
     });
 
     setStatus(newStatus);
+    setPendingAction(null);
     navigate("/org");
   }
 
@@ -213,28 +219,41 @@ function OrgApplication() {
           <div className="org-app-actions">
 
             <button
-              className="decline-btn"
-              disabled={status === "REJECTED" || status === "APPROVED"}
-              onClick={() => updateStatus("REJECTED")}
+              className={`application-decline-btn ${
+                status === "REJECTED" || pendingAction === "REJECTED"
+                  ? "selected-reject"
+                  : ""
+              }`}
+             disabled={
+              status === "REJECTED" ||
+              status === "APPROVED" ||
+              pendingAction === "APPROVED" ||
+              pendingAction === "ASSESSMENT"
+            }
+              onClick={() => setPendingAction("REJECTED")}
             >
               Reject
             </button>
 
             <button
-              className="action-btn"
-              disabled={status === "REJECTED" || status === "APPROVED"}
-              onClick={() => {
-
-                if (status === "PENDING") {
-                  updateStatus("ASSESSMENT");
-                }
-
-                else if (status === "ASSESSMENT") {
-                  approveApplication();
-                }
-
-              }}
-            >
+            className={`application-action-btn ${
+              status === "APPROVED" || pendingAction === "APPROVED"
+                ? "selected-approve"
+                : ""
+            }`}
+            disabled={
+              status === "REJECTED" ||
+              status === "APPROVED" ||
+              pendingAction === "REJECTED"
+            }
+            onClick={() => {
+              if (status === "PENDING") {
+                setPendingAction("ASSESSMENT");
+              } else if (status === "ASSESSMENT") {
+                setPendingAction("APPROVED");
+              }
+            }}
+          >
 
               {status === "PENDING" && "Move to Assessment"}
               {status === "ASSESSMENT" && "Approve"}
@@ -244,6 +263,26 @@ function OrgApplication() {
             </button>
 
           </div>
+
+          <div className="assessment-box">
+            <label>Assessment Details</label>
+            <textarea
+              placeholder="Enter reason for approval/rejection..."
+              value={assessmentNotes}
+              onChange={(e) => setAssessmentNotes(e.target.value)}
+              disabled={status === "APPROVED" || status === "REJECTED"}
+            />
+          </div>
+
+            {status !== "APPROVED" && status !== "REJECTED" && (
+              <button
+                className="application-submit-btn"
+                disabled={!assessmentNotes || !pendingAction}
+                onClick={() => updateStatus(pendingAction)}
+              >
+                Submit Decision
+              </button>
+            )}
 
         </section>
 

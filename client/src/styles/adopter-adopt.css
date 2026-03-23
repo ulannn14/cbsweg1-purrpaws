@@ -5,8 +5,8 @@
 }
 
 .org-icon{
-  width:60px;
-  height:60px;
+  width: 75px;
+  height:75px;
   border-radius:50%;
   border:1px solid #aaa;
   display:flex;
@@ -114,9 +114,6 @@
   color: #f4a261;
 }
 
-.application-card {
-  margin-top: 12px;
-}
 .apply-btn{
   margin-right:12px;
 }
@@ -235,6 +232,7 @@ margin-bottom:8px;
   overflow:hidden;
 }
 
+
 .org-carousel img{
   width:100%;
   height:100%;
@@ -304,6 +302,10 @@ color: #f4a261;
   display:flex;
   flex-direction:column;
   align-items:center;
+}
+
+.pet-org-box a:hover{
+  transform: scale(1.05);
 }
 
 /* ============================= */
@@ -402,7 +404,7 @@ select {
 
 .pet-fee input{
   width:120px;
-  border:none;
+  border:1px solid #8ec790;
   background:transparent;
   font-weight:600;
   font-size:14px;
