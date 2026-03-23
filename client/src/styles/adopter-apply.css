@@ -70,6 +70,7 @@
 .form-group{
   display:flex;
   flex-direction:column;
+  margin-bottom:28px;
 }
 
 .form-group label{
@@ -163,7 +164,6 @@
 
 /* Fixed height box */
 .fixed-box{
-  min-height: 650px;
   display:flex;
   flex-direction:column;
 }
@@ -173,6 +173,8 @@
   font-size:18px;
   font-weight:600;
   margin-bottom:10px;
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 /* Radio buttons */
@@ -292,4 +294,10 @@ button:disabled{
 
 .file-chip button:hover{
   color:red;
+}
+
+input,
+select,
+textarea {
+  color-scheme: light;
 }
