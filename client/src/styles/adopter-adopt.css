@@ -304,6 +304,10 @@ color: #f4a261;
   align-items:center;
 }
 
+.pet-org-box a:hover{
+  transform: scale(1.05);
+}
+
 /* ============================= */
 /* Edit Pet Inputs */
 /* ============================= */
