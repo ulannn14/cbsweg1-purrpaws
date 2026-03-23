@@ -135,14 +135,55 @@
   cursor:pointer;
 }
 
-
-.accept-btn{
-  border:1px solid #444;
-  background:#44d44e;
-  color: #000;
+.org-app-actions .application-decline-btn{
+  background:#000;
+  color: #fff;
   padding:8px 20px;
   border-radius:20px;
   cursor:pointer;
+}
+
+.org-app-actions .application-action-btn{
+  background:#000;
+  color: #fff;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}
+
+.selected-reject {
+  background: #d04141 !important;
+  color: #fff;
+  border-color: #d04141;
+}
+
+.selected-approve {
+  background: #44d44e !important;
+  color: #000;
+  border-color: #44d44e;
+}
+
+.org-app-actions button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  border-color: #ccc;
+}
+
+.org-app-actions .application-decline-btn:active { 
+  background: #a83232; 
+}
+
+.org-app-actions .application-decline-btn:hover { 
+  background: #a83232;
+}
+
+.org-app-actions .application-action-btn:active {
+  background: #44d44e;
+}
+
+.org-app-actions .application-action-btn:hover {
+  background: #44d44e;
 }
 
 .applied-pet-section {
@@ -214,8 +255,8 @@
 .org-app-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  max-width: 1100px;   
-  margin: 20px;   
+  max-width: 1100px;
+  margin: 5px;   
   gap: 16px;
 }
 
@@ -235,6 +276,57 @@
   margin-bottom: 10px;
   padding-bottom: 8px;
   border-bottom: 1px solid #ccc;
+}
+
+.assessment-box {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assessment-box label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.assessment-box textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.assessment-box textarea:focus {
+  outline: none;
+  border-color: #6c8f6b;
+}
+
+.assessment-box textarea:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.application-submit-btn{
+  margin-top: 20px;
+  padding:10px 18px;
+  border-radius:30px;
+  border:1px solid #444;
+  cursor:pointer;
+  background:black;
+  color:white;
+}
+
+.application-submit-btn:hover{
+  opacity: 0.9;
+  color: #f4a261;
+  background: #000;
+  border-color: #000;
+  border:1px solid #000;
 }
 
 @media (max-width: 1024px) {
