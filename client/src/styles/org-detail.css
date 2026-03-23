@@ -1,36 +1,91 @@
-.org-profile {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 20px;
+/* PUBLIC ORG HEADER */
+.org-public-header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
-.org-profile-photo {
+.org-public-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.org-type {
+  font-size: 14px;
+  color: #777;
+}
+
+.org-location {
+  font-size: 14px;
+  color: #999;
+}
+
+/* DESCRIPTION */
+.org-description {
+  margin-bottom: 30px;
+}
+
+.org-description h2 {
+  margin-bottom: 10px;
+}
+
+/* ACTION BUTTONS */
+.org-public-actions {
+  margin-top: 40px;
   display: flex;
-  justify-content: center;
+  gap: 15px;
+}
+
+.primary-btn {
+  background: black;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background: white;
+  border: 1px solid #444;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background: #f4f4f4;
+}
+
+.profile-header {
+  display: flex;
+  align-items: flex-end;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
-.org-profile-photo img {
-  width: 140px;
-  height: 140px;
+.profile-avatar {
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
-  border: 2px solid #ccc;
+  object-fit: cover;
 }
 
-.org-profile-box {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+.sub-text {
+  font-size: 15px;
+  color: #777;
 }
 
-.org-profile-box h2 {
-  text-align: center;
-  margin-bottom: 16px;
+.about-section {
+  color:#333;
 }
 
-.org-profile-desc {
-  margin-top: 6px;
-  margin-bottom: 16px;
-  line-height: 1.5;
+.org-pets-section {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
 }

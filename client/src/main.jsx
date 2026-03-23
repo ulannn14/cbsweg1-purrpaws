@@ -7,6 +7,7 @@ import App from './App.jsx';
 import '/public/css/global.css';
 import './styles/adopter-landingpage.css';
 import './styles/adopter-adopt.css';
+import './styles/pet-detail.css';
 import './styles/adopter-apply.css';
 import './styles/adopter-asean.css';
 import './styles/adopter-application.css';

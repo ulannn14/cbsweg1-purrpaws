@@ -50,6 +50,12 @@ function OrgProfile() {
         });
     };
 
+    const STATUS_LABELS = {
+        CATS: "Cats",
+        DOGS: "Dogs",
+        BOTH: "Cats and Dogs"
+    };
+
     const handleLogoUpload = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -57,31 +63,27 @@ function OrgProfile() {
         setPreview(URL.createObjectURL(file));
     };
 
-const handleSave = async () => {
+    const handleSave = async () => {
+        try {
+            const res = await fetch(`${API}/api/organizations/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orgInfo) // ✅ FIXED
+            });
 
-    try {
+            if (!res.ok) throw new Error("Update failed");
 
-      const res = await fetch(`${API}/api/organizations/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(storedUser)
-      });
+            const updated = await res.json();
 
-      if (!res.ok) throw new Error("Update failed");
-
-      const updated = await res.json();
-
-      setOrgInfo(updated);
-      setOriginalOrg(updated);
-      setEditing(false);
-
-    } catch (err) {
-      console.error(err);
-    }
-
-  };
+            setOrgInfo(updated);
+            setEditing(false); // ✅ THIS is what exits edit mode
+            alert("Profile updated successfully!");
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -96,38 +98,23 @@ const handleSave = async () => {
             {/* ORG LOGO */}
             <div className="pet-header">
 
-                <div className="pet-photo-large">
-                    <img
+                {/* PROFILE PHOTO */}
+                <div className="pet-header">
+                    <div className="edit-upload-container">
+                    <img 
                         src={`/temp-photos/orgs/org-profile-${storedUser.id}.png`}
-                        alt="Organization Logo"
+                        alt="Profile"
                         className="edit-upload-preview"
                     />
+                    {editing && (
+                        <>
+                        <label htmlFor="image-upload" className="edit-upload-label">Change Photo</label>
+                        <input type="file" id="image-upload" className="edit-upload-input" onChange={handleImageUpload} />
+                        </>
+                    )}
+                    </div>
                 </div>
-
-                {/*editing ? (
-                <div className="edit-upload-container">
-                    <img
-                        src={`/temp-photos/orgs/org-profile-${storedUser.id}.png`}
-                        alt="Organization Logo"
-                        className="edit-upload-preview"
-                    />
-                    <label htmlFor="logo-upload" className="edit-upload-label">Change Logo</label>
-                    <input
-                    type="file"
-                    id="logo-upload"
-                    className="edit-upload-input"
-                    onChange={handleLogoUpload}
-                    />
-                </div>
-                ) : (
-                <div className="pet-photo-large">
-                    <img
-                        src={`/temp-photos/orgs/org-profile-${storedUser.id}.png`}
-                        alt="Organization Logo"
-                        className="edit-upload-preview"
-                    />
-                </div>
-                )*/}
+                
             </div>
 
             {/* ACCOUNT DETAILS */}
@@ -369,20 +356,22 @@ const handleSave = async () => {
                 </div>
 
                 <div className="info-row">
-                    <label>Status</label>
+                    <label>Foster Pets</label>
                     {editing ? (
                     <select
-                        className="edit-input"
-                        name="status"
-                        value={orgInfo.status}
-                        onChange={handleChange}
+                    className="edit-input"
+                    name="status"
+                    value={orgInfo.status}
+                    onChange={handleChange}
                     >
-                        <option value="CATS">Cats</option>
-                        <option value="DOGS">Dogs</option>
-                        <option value="BOTH">Both</option>
+                    {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>
+                        {label}
+                        </option>
+                    ))}
                     </select>
                     ) : (
-                    <span>{orgInfo.status}</span>
+                    <span>{STATUS_LABELS[orgInfo.status] || "Unknown"}</span>
                     )}
                 </div>
 

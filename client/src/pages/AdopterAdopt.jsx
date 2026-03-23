@@ -25,8 +25,6 @@ function AdopterAdopt() {
 
     const [filters, setFilters] = useState(defaultFilters);
 
-
-
     const API = import.meta.env.VITE_API_URL;
 
     useEffect(() => {

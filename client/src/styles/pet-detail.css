@@ -1,0 +1,147 @@
+/* HERO */
+.pet-hero {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  margin-bottom:30px;
+}
+
+.pet-meta-row {
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+/* STATUS BADGE */
+.pet-status {
+  padding:8px 18px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  border:1px solid #ccc;
+}
+
+.pet-status.available {
+  background:#e8f7e8;
+  color:#2e7d32;
+}
+
+.pet-status.adopted {
+  background:#eee;
+  color:#666;
+}
+
+.pet-status.unavailable {
+  background:#fdecea;
+  color:#c62828;
+}
+
+/* QUICK INFO */
+.pet-quick-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+  gap:12px;
+  margin-bottom:25px;
+}
+
+.quick-card {
+  border:1px solid #ccc;
+  border-radius:10px;
+  padding:14px;
+  background:#fff;
+  text-align:center;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;   /* ✅ CENTER EVERYTHING */
+  text-align:center;
+}
+
+.quick-card span {
+  font-size:12px;
+  color:#777;
+}
+
+.quick-card strong {
+  display:block;
+  font-size:16px;
+  margin-top:4px;
+}
+
+.meta-label {
+  font-size:11px;
+  color:#777;
+  display:block;
+  margin-bottom:2px;
+}
+
+.meta-value {
+  font-weight:600;
+  font-size:14px;
+}
+
+/* refine fee */
+.pet-fee {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  padding:10px 18px;
+  border-radius:999px;
+
+  background:#dcf0dc;
+  border:1px solid #8ec790;
+}
+
+/* refine status */
+.pet-status {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  padding:10px 18px;
+  border-radius:999px;
+  border:1px solid #ccc;
+}
+
+/* MATCH QUICK GRID STYLE */
+.pet-meta-grid {
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:12px; /* SAME as quick cards */
+  width:100%;
+  max-width:320px; /* keeps it tight under image */
+  margin-top:10px;
+}
+
+.quick-card.highlight {
+  border-radius:999px; /* keeps oval look */
+}
+
+/* Fee style */
+.quick-card.highlight:first-child {
+  background:#dcf0dc;
+  border:1px solid #8ec790;
+}
+
+/* Status colors */
+.quick-card.status.available {
+  background:#e8f7e8;
+  color:#2e7d32;
+}
+
+.quick-card.status.adopted {
+  background:#eee;
+  color:#666;
+}
+
+.quick-card.status.unavailable {
+  background:#fdecea;
+  color:#c62828;
+}
+
+.pet-details-box h3 {
+  margin-bottom:10px;
+}

@@ -15,19 +15,14 @@ function PetDetail() {
 
     fetch(`${API}/api/pets/${id}`)
       .then((res) => res.json())
-      .then((data) => {
-        console.debug("PetDetail fetched", data);
-        setPet(data);
-      })
-      .catch((err) => console.error(err))
+      .then((data) => setPet(data))
+      .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) return (
     <AppLayout>
-      <div className="page-loading">
-        <p>Loading pet...</p>
-      </div>
+      <div className="page-loading">Loading pet...</div>
     </AppLayout>
   );
 
@@ -37,137 +32,164 @@ function PetDetail() {
     </AppLayout>
   );
 
+  const formatText = (text) => {
+    if (!text) return "Unknown";
+    return text
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
   return (
     <AppLayout>
       <BackButton />
-    <main className="main">
 
-    <section className="section pet-detail">
+      <main className="main">
+        <section className="section pet-detail">
 
-    {/* PET IMAGE */}
-    <div className="pet-header">
+          {/* ================= HERO ================= */}
+          <div className="pet-hero">
 
-      <div className="pet-photo-large">
-      <img
-        src={pet.image ? `${API}/images/${pet.image}` : `/temp-photos/pets/pet-main-${pet.id}.jpg`}
-        alt={pet.name}
-      />
-      </div>
+            <div className="pet-photo-large">
+              <img
+                src={pet.image ? `${API}/images/${pet.image}` : `/temp-photos/pets/pet-main-${pet.id}.jpg`}
+                alt={pet.name}
+              />
+            </div>
 
-    <h2 className="pet-name">{pet.name}</h2>
+            <h1 className="pet-name">{pet.name}</h1>
 
-    <div className="pet-fee">
-      Adoption Fee: <span className="fee-price">₱{pet.adoptionFee?.toFixed(2) || "Not specified"}</span>
-    </div>
-    
-    </div>
+            <div className="pet-meta-grid">
 
-    {/* DETAILS GRID */}
+              <div className="quick-card highlight">
+                <span>Adoption Fee</span>
+                <strong>
+                  ₱{pet.adoptionFee?.toFixed(2) || "Not specified"}
+                </strong>
+              </div>
 
-    <div className="pet-details-grid">
+              <div className={`quick-card highlight status ${pet.adoptionStatus?.toLowerCase()}`}>
+                <span>Adoption Status</span>
+                <strong>{pet.adoptionStatus}</strong>
+              </div>
 
-    {/* LEFT COLUMN */}
-    <div className="pet-details-box">
+            </div>
+          </div>
 
-    <ul>
-    <li><strong>Temperament:</strong> {pet.temperament || "Unknown"}</li>
-    <li><strong>Species:</strong> {pet.species || "Unknown"}</li>
-    <li><strong>Breed / Type:</strong> {pet.breed?.name || "Unknown"}</li>
-    <li><strong>Gender / Sex:</strong> {pet.isMale ? "Male" : "Female"}</li>
-    <li><strong>Age:</strong> {pet.age ?? "Unknown"}</li>
-    <li><strong>Date of Birth:</strong> {pet.birthDate || "Unknown"}</li>
-    <li><strong>Size:</strong> {pet.size || "Unknown"}</li>
-    <li><strong>Weight:</strong> {pet.weight?.toFixed(2) || "Unknown"}</li>
-    <li><strong>Color / Markings:</strong> {pet.color || "Unknown"}</li>
-    </ul>
+          {/* ================= QUICK INFO ================= */}
+          <div className="pet-quick-grid">
 
-    </div>
+            <div className="quick-card">
+              <span>Breed</span>
+              <strong>{pet.breed?.name || "Unknown"}</strong>
+            </div>
 
-    {/* RIGHT COLUMN */}
+            <div className="quick-card">
+              <span>Age</span>
+              <strong>{pet.age ?? "Unknown"}</strong>
+            </div>
 
-    <div className="pet-details-box">
+            <div className="quick-card">
+              <span>Gender</span>
+              <strong>{pet.isMale ? "Male" : "Female"}</strong>
+            </div>
 
-    <ul>
-    <li><strong>Dewormed:</strong> {pet.isDewormed ? "Yes" : "No"}</li>
-    <li><strong>Spayed / Neutered:</strong> {pet.isSpayedOrNeutered ? "Yes" : "No"}</li>
-    <li><strong>Good with Dogs:</strong> {pet.isGoodWithDogs ? "Yes" : "No"}</li>
-    <li><strong>Good with Cats:</strong> {pet.isGoodWithCats ? "Yes" : "No"}</li>
-    <li><strong>Good with Kids:</strong> {pet.isGoodWithKids ? "Yes" : "No"}</li>
-    <li><strong>House Trained:</strong> {pet.isHouseTrained ? "Yes" : "No"}</li>
-    <li><strong>Leash Trained:</strong> {pet.isLeashTrained ? "Yes" : "No"}</li>
-    </ul>
+            <div className="quick-card">
+              <span>Size</span>
+              <strong>{formatText(pet.size)}</strong>
+            </div>
 
-    </div>
+            <div className="quick-card">
+              <span>Weight</span>
+              <strong>{pet.weight?.toFixed(1) || "—"} kg</strong>
+            </div>
 
-    </div>
+            <div className="quick-card">
+              <span>Color</span>
+              <strong>{pet.color}</strong>
+            </div>
 
-    {/* ORGANIZATION */}
+          </div>
 
-    <div className="pet-org-box">
+          {/* ================= DETAILS ================= */}
+          <div className="pet-details-grid">
 
-      <Link 
-        to={`/organizations/${pet.organizationId}`}
-        style={{ textDecoration: "none", color: "inherit" }}
-      >
+            {/* Behavior */}
+            <div className="pet-details-box">
+              <h3>Behavior & Traits</h3>
+              <ul>
+                <li><strong>Temperament:</strong> {formatText(pet.temperament)}</li>
+                <li><strong>Good with Dogs:</strong> {pet.isGoodWithDogs ? "Yes" : "No"}</li>
+                <li><strong>Good with Cats:</strong> {pet.isGoodWithCats ? "Yes" : "No"}</li>
+                <li><strong>Good with Kids:</strong> {pet.isGoodWithKids ? "Yes" : "No"}</li>
+                <li><strong>House Trained:</strong> {pet.isHouseTrained ? "Yes" : "No"}</li>
+                <li><strong>Leash Trained:</strong> {pet.isLeashTrained ? "Yes" : "No"}</li>
+              </ul>
+            </div>
 
-        <div className="org-circle">
-          <img
-            src={
-              pet.organization?.logo
-                ? `${API}/images/${pet.organization.logo}`
-                : `/temp-photos/orgs/org-profile-${pet.organization?.id}.png`
-            }
-            alt={pet.organization?.name}
-          />
-        </div>
+            {/* Medical */}
+            <div className="pet-details-box">
+              <h3>Medical & Health</h3>
+              <ul>
+                <li><strong>Spayed / Neutered:</strong> {pet.isSpayedOrNeutered ? "Yes" : "No"}</li>
 
-        <div className="org-name">
-          <h3>{pet.organization?.name || "Unknown Organization"}</h3>
-        </div>
+                <li>
+                  <strong>Conditions:</strong>{" "}
+                  {pet.petConditions?.length
+                    ? pet.petConditions.map(pc => pc.condition.name).join(", ")
+                    : "None"}
+                </li>
 
-      </Link>
+                <li>
+                  <strong>Vaccinations:</strong>{" "}
+                  {pet.vaccinations?.length
+                    ? pet.vaccinations.map(v => v.vaccine.name).join(", ")
+                    : "None listed"}
+                </li>
+              </ul>
+            </div>
 
-      <div className="org-details">
+          </div>
 
-        <p>
-          <strong>Rescued:</strong>{" "}
-          {pet.dateRescued
-            ? new Date(pet.dateRescued).toLocaleDateString()
-            : "Unknown"}
-        </p>
+          {/* ================= ORGANIZATION ================= */}
+          <div className="pet-org-box">
 
-        <p>
-          <strong>Rescue Story:</strong>{" "}
-          {pet.rescueStory || "No story available"}
-        </p>
+            <Link to={`/organizations/${pet.organizationId}`}>
+              <div className="org-circle">
+                <img
+                  src={
+                    pet.organization?.image
+                      ? `${API}/images/${pet.organization.organizationImage}`
+                      : `/temp-photos/orgs/org-profile-${pet.organization?.id}.png`
+                  }
+                  alt={pet.organization?.name}
+                />
+              </div>
 
-        <p>
-          <strong>Adoption Reason:</strong>{" "}
-          {pet.adoptionReason || "Not specified"}
-        </p>
+              <h3>{pet.organization?.name}</h3>
+            </Link>
 
-      </div>
+            <div className="org-details">
+              <p><strong>Rescued:</strong> {new Date(pet.dateRescued).toLocaleDateString()}</p>
+              <p><strong>Rescue Story:</strong> {pet.rescueStory}</p>
+              <p><strong>Adoption Reason:</strong> {pet.adoptionReason}</p>
+            </div>
 
-    </div>
+          </div>
 
-    {/* APPLY BUTTON */}
+          {/* ================= APPLY ================= */}
+          <div className="pet-apply">
+            <Link to={`/apply/${pet.id}`}>
+              <button className="apply-btn-large">
+                Apply for Adoption
+              </button>
+            </Link>
+          </div>
 
-    <div className="pet-apply">
-
-    <Link to={`/apply/${pet.id}`}>
-    <button className="apply-btn-large">
-    Apply for Adoption
-    </button>
-    </Link>
-
-    </div>
-
-    </section>
-
-    </main>
-
+        </section>
+      </main>
     </AppLayout>
-    );
+  );
 }
 
 export default PetDetail;
