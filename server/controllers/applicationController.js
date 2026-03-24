@@ -6,9 +6,8 @@ console.log("PRISMA OBJECT:", supabase);
 // CREATE APPLICATION
 exports.createApplication = async (req, res) => {
   try {
-    const files = req.files;
+    const files = req.files || {};
 
-    // --- DEBUG ---
     console.log("BODY:", req.body);
     console.log("FILES:", files);
 
@@ -18,7 +17,7 @@ exports.createApplication = async (req, res) => {
       housePhotos: []
     };
 
-    // helper function
+    // ✅ helper function
     const uploadToSupabase = async (fileArray, folder) => {
       const urls = [];
 
@@ -43,18 +42,112 @@ exports.createApplication = async (req, res) => {
       return urls;
     };
 
-    // upload files
+    // ✅ upload files
     uploadedFiles.validId = await uploadToSupabase(files.validId, "validId");
     uploadedFiles.consentProof = await uploadToSupabase(files.consentProof, "consentProof");
     uploadedFiles.housePhotos = await uploadToSupabase(files.housePhotos, "housePhotos");
 
-    // 👉 here you can save to DB (Prisma)
-    // await prisma.application.create({ data: { ...req.body, ...uploadedFiles } });
+    console.log("UPLOADED:", uploadedFiles);
 
-    res.status(201).json({
-      message: "Application submitted successfully",
-      files: uploadedFiles
+    // ✅ extract form fields
+    const {
+      userId,
+      petId,
+
+      applicantFirstName,
+      applicantLastName,
+      applicantAddress,
+      applicantPhoneNumber,
+      applicantEmail,
+      applicantBirthdate,
+
+      applicantOccupation,
+      applicantCompany,
+      applicantSocialMedia,
+      applicantCivilStatus,
+      adoptionPrompt,
+
+      alternateContactName,
+      alternateContactRelationship,
+      alternateContactNumber,
+      alternateContactEmail,
+
+      response1,
+      response2,
+      response3,
+      response4,
+      response5,
+      response6,
+      response7,
+      response8,
+      response9,
+      response10,
+      response11,
+      response12,
+      response13,
+      response14,
+      response15,
+      response16
+    } = req.body;
+
+    // ✅ SAVE TO DATABASE (🔥 THIS WAS MISSING)
+    const application = await prisma.adoptionApplication.create({
+      data: {
+        userId,
+        petId,
+
+        applicantFirstName,
+        applicantLastName,
+        applicantAddress,
+        applicantPhoneNumber,
+        applicantEmail,
+        applicantBirthdate: new Date(applicantBirthdate),
+
+        applicantOccupation,
+        applicantCompany,
+        applicantSocialMedia,
+        applicantCivilStatus,
+        adoptionPrompt,
+
+        alternateContactName,
+        alternateContactRelationship,
+        alternateContactNumber,
+        alternateContactEmail,
+
+        response1,
+        response2,
+        response3,
+        response4,
+        response5,
+        response6,
+        response7,
+        response8,
+        response9,
+        response10,
+        response11,
+        response12,
+        response13,
+        response14,
+        response15,
+        response16: new Date(response16),
+
+        // 🔥 FILE URLS SAVED HERE
+        validIdUrls: uploadedFiles.validId,
+        consentProofUrls: uploadedFiles.consentProof,
+        housePhotosUrls: uploadedFiles.housePhotos
+      },
+      include: {
+        user: true,
+        pet: {
+          include: {
+            breed: true,
+            organization: true
+          }
+        }
+      }
     });
+
+    res.status(201).json(application);
 
   } catch (err) {
     console.error(err);

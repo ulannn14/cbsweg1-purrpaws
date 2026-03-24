@@ -135,6 +135,7 @@ model AdoptionApplication {
   userId                       String
   petId                        String
   status                       AdoptionApplicationStatus @default(PENDING)
+  comment                      String?
   createdAt                    DateTime                  @default(now())
   applicantFirstName           String
   applicantLastName            String
@@ -162,16 +163,13 @@ model AdoptionApplication {
   response8                    String
   response9                    String
   response10                   String
-  response11                   String
-  response12                   String //Placeholder for document or picture
-  response13                   Boolean //????
-  response14                   String //Placeholder for document or picture
-  response15                   String
-  response16                   String
-  response17                   Boolean
-  response18                   Boolean
-  response19                   Boolean
-  response20                   DateTime
+  response11                   String //Placeholder for document or picture
+  response12                   String 
+  response13                   String
+  response14                   Boolean
+  response15                   Boolean
+  response16                   Boolean
+  response17                   DateTime
   
   pet                          Pet                       @relation(fields: [petId], references: [id])
   user                         User                      @relation(fields: [userId], references: [id])
@@ -227,5 +225,5 @@ enum AdoptionApplicationStatus {
   PENDING
   APPROVED
   REJECTED
-  ASSESSMENT
+  UNDER_REVIEW
 }
