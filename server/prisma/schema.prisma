@@ -70,7 +70,6 @@ model Pet {
   breedId              Int
   rescueStory          String
   dateRescued          DateTime
-  adoptionReason       String
   temperament          Temperament
   isSpayedOrNeutered   Boolean
   isGoodWithDogs       Boolean
@@ -152,9 +151,10 @@ model AdoptionApplication {
   alternateContactRelationship String
   alternateContactNumber       String
   alternateContactEmail        String
+
   response1                    String
-  response2                    Boolean
-  response3                    String
+  response2                    String
+  response3                    String //Placeholder for valid id submission
   response4                    String
   response5                    Boolean
   response6                    String
@@ -162,12 +162,17 @@ model AdoptionApplication {
   response8                    String
   response9                    String
   response10                   String
-  response11                   Boolean
-  response12                   String
-  response13                   Boolean
-  response14                   Boolean
-  response15                   String[]
-  response16                   DateTime
+  response11                   String
+  response12                   String //Placeholder for document or picture
+  response13                   Boolean //????
+  response14                   String //Placeholder for document or picture
+  response15                   String
+  response16                   String
+  response17                   Boolean
+  response18                   Boolean
+  response19                   Boolean
+  response20                   DateTime
+  
   pet                          Pet                       @relation(fields: [petId], references: [id])
   user                         User                      @relation(fields: [userId], references: [id])
 

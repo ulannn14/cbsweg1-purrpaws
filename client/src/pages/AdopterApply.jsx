@@ -96,61 +96,42 @@ function AdopterApply() {
     const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const form = new FormData();
+
+    // --- TEXT FIELDS ---
+    form.append("petId", id);
+    form.append("userId", userId);
+
+    form.append("applicantFirstName", personalInfo.firstName);
+    form.append("applicantLastName", personalInfo.lastName);
+    form.append("applicantAddress", personalInfo.address);
+    form.append("applicantPhoneNumber", personalInfo.phoneNumber);
+    form.append("applicantEmail", personalInfo.email);
+    form.append("applicantBirthdate", personalInfo.birthdate);
+
+    // --- FORM DATA ---
+    Object.entries(formData).forEach(([key, value]) => {
+        if (!Array.isArray(value)) {
+        form.append(key, value ?? "");
+        }
+    });
+
+    // --- FILES ---
+    formData.validId.forEach(file => form.append("validId", file));
+    formData.consentProof.forEach(file => form.append("consentProof", file));
+    formData.housePhotos.forEach(file => form.append("housePhotos", file));
+
     const res = await fetch(`${API}/api/applications`, {
         method: "POST",
-        headers: {
-        "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-        petId: id,
-        userId: userId,
-
-        applicantFirstName: personalInfo.firstName,
-        applicantLastName: personalInfo.lastName,
-        applicantAddress: personalInfo.address,
-        applicantPhoneNumber: personalInfo.phoneNumber,
-        applicantEmail: personalInfo.email,
-        applicantBirthdate: personalInfo.birthdate,
-
-        // REQUIRED FIELDS
-        applicantOccupation: "N/A",
-        applicantCompany: null,
-        applicantSocialMedia: null,
-        applicantCivilStatus: "SINGLE",
-        adoptionPrompt: "WEBSITE",
-
-        alternateContactName: "N/A",
-        alternateContactRelationship: "N/A",
-        alternateContactNumber: "0000000000",
-        alternateContactEmail: "placeholder@email.com",
-
-        // Map your current fields to schema
-        response1: formData.buildingType,
-        response2: formData.rent === "yes",
-        response3: formData.movePet,
-        response4: formData.liveWith,
-        response5: formData.allergies === "yes",
-        response6: formData.carePerson,
-        response7: formData.financialPerson,
-        response8: formData.emergencyCare,
-        response9: formData.hoursAlone,
-        response10: formData.introductionSteps,
-        response11: formData.familySupport === "yes",
-        response12: formData.familyExplain,
-        response13: formData.otherPets === "yes",
-        response14: formData.pastPets === "yes",
-        response15: [],
-        response16: formData.interviewTime
-        })
+        body: form
     });
 
     if (!res.ok) {
-    alert("Submission failed");
-    return;
+        alert("Submission failed");
+        return;
     }
 
     setShowSuccess(true);
-
     navigate("/applications");
     };
 
