@@ -21,7 +21,6 @@ function NewPet() {
         breedId: "",
         rescueStory: "",
         dateRescued: "",
-        adoptionReason: "",
         temperament: "",
         isSpayedOrNeutered: false,
         isGoodWithDogs: false,
@@ -325,15 +324,6 @@ function NewPet() {
                 <textarea
                     name="rescueStory"
                     value={form.rescueStory}
-                    onChange={handleChange}
-                />
-                </p>
-
-                <p>
-                <strong>Adoption Reason</strong>
-                <textarea
-                    name="adoptionReason"
-                    value={form.adoptionReason}
                     onChange={handleChange}
                 />
                 </p>

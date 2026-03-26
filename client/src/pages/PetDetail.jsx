@@ -199,7 +199,6 @@ function PetDetail() {
             <div className="org-details">
               <p><strong>Rescued:</strong> {new Date(pet.dateRescued).toLocaleDateString()}</p>
               <p><strong>Rescue Story:</strong> {pet.rescueStory}</p>
-              <p><strong>Adoption Reason:</strong> {pet.adoptionReason}</p>
             </div>
 
           </div>

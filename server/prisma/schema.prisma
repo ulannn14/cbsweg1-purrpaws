@@ -152,10 +152,9 @@ model AdoptionApplication {
   alternateContactRelationship String
   alternateContactNumber       String
   alternateContactEmail        String
-
   response1                    String
   response2                    String
-  response3                    String //Placeholder for valid id submission
+  response3                    String
   response4                    String
   response5                    Boolean
   response6                    String
@@ -163,14 +162,13 @@ model AdoptionApplication {
   response8                    String
   response9                    String
   response10                   String
-  response11                   String //Placeholder for document or picture
-  response12                   String 
+  response11                   String
+  response12                   String
   response13                   String
   response14                   Boolean
   response15                   Boolean
   response16                   Boolean
   response17                   DateTime
-  
   pet                          Pet                       @relation(fields: [petId], references: [id])
   user                         User                      @relation(fields: [userId], references: [id])
 

@@ -190,8 +190,7 @@ input[name="color"]:focus {
 
 /* Textarea fields: adoptionRequirements, rescueStory, adoptionReason */
 textarea[name="adoptionRequirements"],
-textarea[name="rescueStory"],
-textarea[name="adoptionReason"] {
+textarea[name="rescueStory"] {
   width: 100%;
   padding: 8px 10px;
   margin-top: 4px;
@@ -206,8 +205,7 @@ textarea[name="adoptionReason"] {
 }
 
 textarea[name="adoptionRequirements"]:focus,
-textarea[name="rescueStory"]:focus,
-textarea[name="adoptionReason"]:focus {
+textarea[name="rescueStory"]:focus {
   outline: none;
   border: 1px solid #666;
   box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
@@ -247,8 +245,7 @@ input[type="date"][name="dateRescued"]:focus {
 }
 
 /* Textareas full width */
-.pet-org-box textarea[name="rescueStory"],
-.pet-org-box textarea[name="adoptionReason"] {
+.pet-org-box textarea[name="rescueStory"] {
   width: 100%;
   box-sizing: border-box;
 }

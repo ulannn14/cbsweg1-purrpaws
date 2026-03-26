@@ -193,7 +193,6 @@ exports.createPet = async (req, res) => {
         },
 
         rescueStory: req.body.rescueStory,
-        adoptionReason: req.body.adoptionReason,
         temperament: req.body.temperament,
 
         isSpayedOrNeutered: req.body.isSpayedOrNeutered,
@@ -251,7 +250,6 @@ exports.updatePet = async (req, res) => {
         },
 
         rescueStory: req.body.rescueStory,
-        adoptionReason: req.body.adoptionReason,
         temperament: req.body.temperament,
 
         isSpayedOrNeutered: req.body.isSpayedOrNeutered,

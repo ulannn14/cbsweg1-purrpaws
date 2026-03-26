@@ -377,15 +377,6 @@ function EditPet() {
               />
             </p>
 
-            <p>
-              <strong>Adoption Reason</strong>
-              <textarea
-                name="adoptionReason"
-                value={form.adoptionReason || ""}
-                onChange={handleChange}
-              />
-            </p>
-
           </div>
 
           {/* ================= ACTIONS ================= */}
