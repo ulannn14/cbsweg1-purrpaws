@@ -54,8 +54,8 @@ function SignUpPage() {
     }
 
     if (name === "userName") {
-      if (value.length !== 6) {
-        error = "Username must be 6 characters";
+      if (value.length < 4) {
+        error = "Username must be at least 4 characters";
       }
     }
 
