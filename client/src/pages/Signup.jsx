@@ -201,14 +201,14 @@ function SignUpPage() {
             <label>Mobile Number</label>
             <input
               type="tel"
-              name="mobile"
-              value={formData.mobile}
+              name="phoneNumber"
+              value={formData.phoneNumber}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`signup-input ${errors.mobile ? "error" : ""}`}
+              className={`signup-input ${errors.phoneNumber ? "error" : ""}`}
             />
 
-            {errors.mobile && <p className="error-text">{errors.mobile}</p>}
+            {errors.phoneNumber && <p className="error-text">{errors.phoneNumber}</p>}
 
             <label>Username</label>
             <input

@@ -1,7 +1,7 @@
 const prisma = require("../config/prisma");
 const supabase = require("../config/supabase");
 
-console.log("PRISMA OBJECT:", supabase);
+//console.log("PRISMA OBJECT:", supabase);
 
 // CREATE APPLICATION
 exports.createApplication = async (req, res) => {
