@@ -5,96 +5,98 @@ const supabase = require("../config/supabase");
 
 // CREATE APPLICATION
 exports.createApplication = async (req, res) => {
-  try {
-    const files = req.files || {};
+    try {
+      const files = req.files || {};
 
-    console.log("BODY:", req.body);
-    console.log("FILES:", files);
+      console.log("BODY:", req.body);
+      console.log("FILES:", files);
 
-    const uploadedFiles = {
-      validId: [],
-      consentProof: [],
-      housePhotos: []
-    };
+      const uploadedFiles = {
+        validId: [],
+        consentProof: [],
+        housePhotos: [],
+      };
 
-    // ✅ helper function
-    const uploadToSupabase = async (fileArray, folder) => {
-      const urls = [];
+      // Helper function to upload to Supabase
+      const uploadToSupabase = async (fileArray, folder) => {
+        const urls = [];
 
-      for (const file of fileArray || []) {
-        const fileName = `${Date.now()}-${file.originalname}`;
+        for (const file of fileArray || []) {
+          const fileName = `${Date.now()}-${file.originalname}`;
 
-        const { data, error } = await supabase.storage
-          .from("public-assets")
-          .upload(`${folder}/${fileName}`, file.buffer, {
-            contentType: file.mimetype
-          });
+          const { data, error } = await supabase.storage
+            .from("public-assets")
+            .upload(`${folder}/${fileName}`, file.buffer, {
+              contentType: file.mimetype,
+            });
 
-        if (error) throw error;
+          if (error) throw error;
 
-        const publicUrl = supabase.storage
-          .from("public-assets")
-          .getPublicUrl(data.path).data.publicUrl;
+          const publicUrl = supabase.storage
+            .from("public-assets")
+            .getPublicUrl(data.path).data.publicUrl;
 
-        urls.push(publicUrl);
-      }
+          urls.push(publicUrl);
+        }
 
-      return urls;
-    };
+        return urls;
+      };
 
-    // ✅ upload files
-    uploadedFiles.validId = await uploadToSupabase(files.validId, "validId");
-    uploadedFiles.consentProof = await uploadToSupabase(files.consentProof, "consentProof");
-    uploadedFiles.housePhotos = await uploadToSupabase(files.housePhotos, "housePhotos");
+      // Upload files
+      uploadedFiles.validId = await uploadToSupabase(files.validId, "validId");
+      uploadedFiles.consentProof = await uploadToSupabase(files.consentProof, "consentProof");
+      uploadedFiles.housePhotos = await uploadToSupabase(files.housePhotos, "housePhotos");
 
-    console.log("UPLOADED:", uploadedFiles);
+      console.log("UPLOADED:", uploadedFiles);
 
-    // ✅ extract form fields
-    const {
-      userId,
-      petId,
-
-      applicantFirstName,
-      applicantLastName,
-      applicantAddress,
-      applicantPhoneNumber,
-      applicantEmail,
-      applicantBirthdate,
-
-      applicantOccupation,
-      applicantCompany,
-      applicantSocialMedia,
-      applicantCivilStatus,
-      adoptionPrompt,
-
-      alternateContactName,
-      alternateContactRelationship,
-      alternateContactNumber,
-      alternateContactEmail,
-
-      response1,
-      response2,
-      response3,
-      response4,
-      response5,
-      response6,
-      response7,
-      response8,
-      response9,
-      response10,
-      response11,
-      response12,
-      response13,
-      response14,
-      response15,
-      response16
-    } = req.body;
-
-    // ✅ SAVE TO DATABASE (🔥 THIS WAS MISSING)
-    const application = await prisma.adoptionApplication.create({
-      data: {
+      // Extract form fields
+      const {
         userId,
         petId,
+
+        applicantFirstName,
+        applicantLastName,
+        applicantAddress,
+        applicantPhoneNumber,
+        applicantEmail,
+        applicantBirthdate,
+
+        applicantOccupation,
+        applicantCompany,
+        applicantSocialMedia,
+        applicantCivilStatus,
+        adoptionPrompt,
+
+        alternateContactName,
+        alternateContactRelationship,
+        alternateContactNumber,
+        alternateContactEmail,
+      } = req.body;
+
+      // Map dynamic responses
+      const fieldMap = {
+        residenceType: "response1",
+        occupation: "response2",
+        reasonAdopt: "response3",
+        experience: "response4",
+        preparationSteps: "response5",
+        vetClinic: "response6",
+        petDiet: "response7",
+        otherPetsList: "response8",
+        consent: "response9",
+        consentUnderstanding: "response10",
+        petsNeutered: "response11",
+        planNeuter: "response12",
+        agreeUpdates: "response13",
+        agreeEmergency: "response14",
+        shareSocial: "response15",
+        interviewTime: "response16",
+      };
+
+      // Base application data
+      const applicationData = {
+        userId: Number(userId),
+        petId: Number(petId),
 
         applicantFirstName,
         applicantLastName,
@@ -114,47 +116,51 @@ exports.createApplication = async (req, res) => {
         alternateContactNumber,
         alternateContactEmail,
 
-        response1,
-        response2,
-        response3,
-        response4,
-        response5,
-        response6,
-        response7,
-        response8,
-        response9,
-        response10,
-        response11,
-        response12,
-        response13,
-        response14,
-        response15,
-        response16: new Date(response16),
-
-        // 🔥 FILE URLS SAVED HERE
         validIdUrls: uploadedFiles.validId,
         consentProofUrls: uploadedFiles.consentProof,
-        housePhotosUrls: uploadedFiles.housePhotos
-      },
-      include: {
-        user: true,
-        pet: {
-          include: {
-            breed: true,
-            organization: true
+        housePhotosUrls: uploadedFiles.housePhotos,
+      };
+
+      // Add dynamic responses
+      Object.entries(fieldMap).forEach(([frontendKey, backendKey]) => {
+        const value = req.body[frontendKey];
+
+        if (value === undefined || value === "") return;
+
+        // Special handling for date
+        if (frontendKey === "interviewTime") {
+          const parsedDate = new Date(value);
+          if (!isNaN(parsedDate)) {
+            applicationData[backendKey] = parsedDate;
           }
+          return;
         }
-      }
-    });
 
-    res.status(201).json(application);
+        applicationData[backendKey] = value;
+      });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-};
+      // Create application in DB
+      const application = await prisma.adoptionApplication.create({
+        data: applicationData,
+        include: {
+          user: true,
+          pet: {
+            include: {
+              breed: true,
+              organization: true,
+            },
+          },
+        },
+      });
 
+      // Final response
+      res.status(201).json(application);
+
+    } catch (err) {
+      console.error("CREATE APPLICATION ERROR:", err);
+      res.status(500).json({ error: err.message });
+    }
+  };
 
 
 // ADOPTER: GET MY APPLICATIONS

@@ -111,10 +111,10 @@ function AdopterApply() {
 
     // --- FORM DATA ---
     Object.entries(formData).forEach(([key, value]) => {
-        if (!Array.isArray(value)) {
-        form.append(key, value ?? "");
+        if (!Array.isArray(value) && value !== "" && value !== null) {
+            form.append(key, value);
         }
-    });
+        });
 
     // --- FILES ---
     formData.validId.forEach(file => form.append("validId", file));
