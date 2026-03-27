@@ -137,26 +137,26 @@ model AdoptionApplication {
   status                       AdoptionApplicationStatus @default(PENDING)
   comment                      String?
   createdAt                    DateTime                  @default(now())
-  applicantFirstName           String
-  applicantLastName            String
-  applicantAddress             String
-  applicantPhoneNumber         String
-  applicantEmail               String
-  applicantBirthdate           DateTime
+  applicantFirstName           String?
+  applicantLastName            String?
+  applicantAddress             String?
+  applicantPhoneNumber         String?
+  applicantEmail               String?
+  applicantBirthdate           DateTime?
   applicantOccupation          String?
   applicantCompany             String?
   applicantSocialMedia         String?
-  applicantCivilStatus         CivilStatus
-  adoptionPrompt               AdoptionPrompt
-  alternateContactName         String
-  alternateContactRelationship String
-  alternateContactNumber       String
-  alternateContactEmail        String
+  applicantCivilStatus         CivilStatus?
+  adoptionPrompt               AdoptionPrompt?
+  alternateContactName         String?
+  alternateContactRelationship String?
+  alternateContactNumber       String?
+  alternateContactEmail        String?
   response1                    String
   response2                    String
   response3                    String
   response4                    String
-  response5                    Boolean
+  response5                    String
   response6                    String
   response7                    String
   response8                    String
@@ -165,12 +165,15 @@ model AdoptionApplication {
   response11                   String
   response12                   String
   response13                   String
-  response14                   Boolean
-  response15                   Boolean
-  response16                   Boolean
-  response17                   DateTime
+  response14                   String
+  response15                   String
+  response16                   DateTime
   pet                          Pet                       @relation(fields: [petId], references: [id])
   user                         User                      @relation(fields: [userId], references: [id])
+
+  validIdUrls       String[]
+  consentProofUrls  String[]
+  housePhotosUrls   String[]
 
   @@unique([userId, petId])
 }

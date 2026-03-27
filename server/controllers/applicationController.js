@@ -95,8 +95,8 @@ exports.createApplication = async (req, res) => {
 
       // Base application data
       const applicationData = {
-        userId: Number(userId),
-        petId: Number(petId),
+        userId,
+        petId,
 
         applicantFirstName,
         applicantLastName,

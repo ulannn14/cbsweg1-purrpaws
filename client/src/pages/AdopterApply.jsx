@@ -5,10 +5,26 @@ import BackButton from "../components/BackButton";
 
 function AdopterApply() {
     const API = import.meta.env.VITE_API_URL;
-    const { id } = useParams();   // petId
+    const { id } = useParams();
     const navigate = useNavigate();
-    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    const petId = parseInt(id);
+
+    let storedUser = null;
+    try {
+    storedUser = JSON.parse(localStorage.getItem("user"));
+    } catch (e) {
+    console.error("Invalid user data in localStorage");
+    }
+
     const userId = storedUser?.id;
+
+    if (!userId) {
+    console.warn("User not logged in");
+    navigate("/login");
+    }
+
+    console.log({ petId, userId });
 
     const [editing, setEditing] = useState(false);
     const [personalInfo, setPersonalInfo] = useState(null);
