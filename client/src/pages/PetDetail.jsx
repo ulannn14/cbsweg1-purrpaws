@@ -11,10 +11,12 @@ function PetDetail() {
 
   const API = import.meta.env.VITE_API_URL;
 
-  const images = pet?.imageUrls?.length
-  ? pet.imageUrls
-  : ["https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/Shadow.jpg"];
+const baseUrl = "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/";
 
+const images = pet?.name
+  ? [`${baseUrl}${encodeURIComponent(pet.name)}.jpg`]
+  : [`${baseUrl}Shadow.jpg`];
+  
   useEffect(() => {
     if (!id) return;
 
