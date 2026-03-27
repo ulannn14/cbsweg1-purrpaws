@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 import BackButton from "../components/BackButton";
 
+const PET_IMG_BASE =
+  "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/";
+
 function AdopterAdopt() {
 
     const [organizations, setOrganizations] = useState([]);
@@ -11,6 +14,11 @@ function AdopterAdopt() {
     const [provinces, setProvinces] = useState([]);
 
     const [selectedOrg, setSelectedOrg] = useState(null);
+
+    const getPetImage = (name) =>
+    name
+    ? `${PET_IMG_BASE}${encodeURIComponent(name)}.jpg`
+    : "/images/placeholder.jpg";
 
     const defaultFilters = {
         provinceId: "",
@@ -161,12 +169,15 @@ function AdopterAdopt() {
 
                 <div className="adopt-pet-photo">
                     <img
-                        src={`/temp-photos/pets/pet-main-${pet.id}.jpg`}
+                        src={getPetImage(pet.name)}
                         alt={pet.name}
                         style={{
                             width: "100%",
                             height: "100%",
                             objectFit: "cover"
+                        }}
+                        onError={(e) => {
+                            e.target.src = "/images/placeholder.jpg";
                         }}
                     />
                 </div>
