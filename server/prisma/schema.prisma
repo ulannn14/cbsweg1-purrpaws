@@ -143,15 +143,6 @@ model AdoptionApplication {
   applicantPhoneNumber         String?
   applicantEmail               String?
   applicantBirthdate           DateTime?
-  applicantOccupation          String?
-  applicantCompany             String?
-  applicantSocialMedia         String?
-  applicantCivilStatus         CivilStatus?
-  adoptionPrompt               AdoptionPrompt?
-  alternateContactName         String?
-  alternateContactRelationship String?
-  alternateContactNumber       String?
-  alternateContactEmail        String?
   response1                    String
   response2                    String
   response3                    String
