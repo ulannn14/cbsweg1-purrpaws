@@ -193,15 +193,14 @@ function OrgDetail() {
                                 <div className="adopt-card">
 
                                     <div className="adopt-pet-photo">
-                                        <img
-                                            src={`/temp-photos/pets/pet-main-${pet.id}.jpg`}
-                                            alt={pet.name}
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                objectFit: "cover"
-                                            }}
-                                        />
+                                    <img
+                                    src={
+                                        pet?.name
+                                        ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(pet.name)}.jpg`
+                                        : "/images/avatar-placeholder.png"
+                                    }
+                                    alt={pet?.name}
+                                    />
                                     </div>
 
                                     <div className="pet-info">
