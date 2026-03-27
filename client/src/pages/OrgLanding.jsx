@@ -102,10 +102,11 @@ function OrgLanding() {
 
                     <div className="applicant-pic">
                       <img
-                        src={
-                          app.user?.userImage ||
-                          `/temp-photos/users/user-profile-${app.user?.id}.jpg`
-                        }
+                      src={
+                        app.user?.userName
+                          ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(app.user.userName)}.jpg`
+                          : "/images/avatar-placeholder.png"
+                      }
                         alt="applicant"
                       />
                     </div>

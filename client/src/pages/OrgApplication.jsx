@@ -91,8 +91,9 @@ function OrgApplication() {
               <div className="applicant-photo">
                 <img
                   src={
-                    applicant?.userImage ||
-                    `/temp-photos/users/user-profile-${applicant?.id}.jpg`
+                    applicant?.userName
+                      ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(applicant.userName)}.jpg`
+                      : "/images/avatar-placeholder.png"
                   }
                   alt="Applicant"
                 />
