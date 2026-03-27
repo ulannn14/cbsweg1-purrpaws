@@ -13,6 +13,9 @@ function AdopterProfile() {
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("/images/avatar-placeholder.png"); // new default avatar
 
+  const USER_IMG_BASE =
+  "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/";
+
   useEffect(() => {
     if (!id) return;
 
@@ -26,9 +29,14 @@ function AdopterProfile() {
         const userData = await userRes.json();
         const provincesData = await provincesRes.json();
 
+        const getUserImage = (username) =>
+        username
+          ? `${USER_IMG_BASE}${encodeURIComponent(username)}.jpg`
+          : "/images/avatar-placeholder.png";
+
         setUserInfo(userData);
         setProvinces(provincesData);
-        setPreview(userData.photo ? `${API}/images/${userData.photo}` : "/images/avatar-placeholder.png");
+        setPreview(getUserImage(userData.userName));
       } catch (err) {
         console.error(err);
       } finally {
@@ -100,11 +108,14 @@ function AdopterProfile() {
           {/* PROFILE PHOTO */}
           <div className="pet-header">
             <div className="edit-upload-container">
-              <img 
-                src={storedUser?.userImage || `/temp-photos/users/user-profile-${storedUser?.id}.jpg`}
-                alt="Profile"
-                className="edit-upload-preview"
-              />
+              <img
+                  src={preview || getUserImage(userInfo.userName)}
+                  alt="Profile"
+                  className="edit-upload-preview"
+                  onError={(e) => {
+                    e.target.src = "/images/avatar-placeholder.png";
+                  }}
+                />
               {editing && (
                 <>
                   <label htmlFor="image-upload" className="edit-upload-label">Change Photo</label>

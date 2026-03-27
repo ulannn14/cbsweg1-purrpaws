@@ -11,13 +11,9 @@ function PetDetail() {
 
   const API = import.meta.env.VITE_API_URL;
 
-  const images = [
-    "/public/images/placeholder.jpg",
-    "/public/images/placeholder.jpg",
-    "/public/images/placeholder.jpg",
-    "/public/images/placeholder.jpg",
-    "/public/images/placeholder.jpg"
-  ];
+  const images = pet?.imageUrls?.length
+  ? pet.imageUrls
+  : ["https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/Shadow.jpg"];
 
   useEffect(() => {
     if (!id) return;

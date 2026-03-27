@@ -127,7 +127,7 @@ function AdopterLanding() {
 
                     <div className="adopt-pet-photo">
                     <img
-                        src={`/temp-photos/pets/pet-main-${pet.id}.jpg`}
+                        src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${pet.name}.jpg`}
                         alt={pet.name}
                         style={{
                         width: "100%",
