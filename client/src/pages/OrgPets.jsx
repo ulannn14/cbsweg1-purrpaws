@@ -105,7 +105,7 @@ function OrgPets() {
               <div className="pet-img">
                 <img
                   src={pet.image ? `${API}/images/${pet.image}` 
-                  : `/temp-photos/pets/pet-main-${pet.id}.jpg`}
+                  : `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(pet.name)}.jpg`}
                   alt={pet.name}
                 />
               </div>

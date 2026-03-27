@@ -13,8 +13,8 @@ function EditPet() {
   const [loading, setLoading] = useState(true);
   const [breeds, setBreeds] = useState([]);
   const [imageFile, setImageFile] = useState(null); // new image
-  const [preview, setPreview] = useState(`/temp-photos/pets/pet-main-${id}.jpg`); // image preview
-
+  const [preview, setPreview] = useState("");
+  
   useEffect(() => {
     if (!id) return;
 
@@ -24,7 +24,11 @@ function EditPet() {
       .then(data => {
         setPet(data);
         setForm(data);
-        setPreview(data.image ? `${API}/images/${data.image}` : `/temp-photos/pets/pet-main-${id}.jpg`);
+        setPreview(
+          data.name
+            ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(data.name)}.jpg`
+            : ""
+        ); 
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
@@ -147,8 +151,11 @@ function EditPet() {
           <div className="pet-hero">
 
             <div className="edit-upload-container">
-              <img src={preview} alt="pet preview" className="edit-upload-preview" />
-
+            <img
+              src={preview || null}
+              alt="pet preview"
+              className="edit-upload-preview"
+            />
               <label htmlFor="image-upload" className="edit-upload-label">
                 Change Photo
               </label>

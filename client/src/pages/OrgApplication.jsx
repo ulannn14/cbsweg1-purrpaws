@@ -165,7 +165,7 @@ function OrgApplication() {
                 <div className="adopt-card applied-pet-card">
                   <div className="adopt-pet-photo">
                     <img
-                      src={`/temp-photos/pets/pet-main-${pet?.id}.jpg`}
+                      src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(pet?.name)}.jpg`}
                       alt={pet?.name}
                     />
                   </div>
