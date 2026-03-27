@@ -131,40 +131,39 @@ model MedicalCondition {
 }
 
 model AdoptionApplication {
-  id                           String                    @id @default(uuid())
-  userId                       String
-  petId                        String
-  status                       AdoptionApplicationStatus @default(PENDING)
-  comment                      String?
-  createdAt                    DateTime                  @default(now())
-  applicantFirstName           String?
-  applicantLastName            String?
-  applicantAddress             String?
-  applicantPhoneNumber         String?
-  applicantEmail               String?
-  applicantBirthdate           DateTime?
-  response1                    String
-  response2                    String
-  response3                    String
-  response4                    String
-  response5                    String
-  response6                    String
-  response7                    String
-  response8                    String
-  response9                    String
-  response10                   String
-  response11                   String
-  response12                   String
-  response13                   String
-  response14                   String
-  response15                   String
-  response16                   DateTime
-  pet                          Pet                       @relation(fields: [petId], references: [id])
-  user                         User                      @relation(fields: [userId], references: [id])
-
-  validIdUrls       String[]
-  consentProofUrls  String[]
-  housePhotosUrls   String[]
+  id                   String                    @id @default(uuid())
+  userId               String
+  petId                String
+  status               AdoptionApplicationStatus @default(PENDING)
+  comment              String?
+  createdAt            DateTime                  @default(now())
+  applicantFirstName   String?
+  applicantLastName    String?
+  applicantAddress     String?
+  applicantPhoneNumber String?
+  applicantEmail       String?
+  applicantBirthdate   DateTime?
+  response1            String
+  response2            String
+  response3            String
+  response4            String
+  response6            String
+  response7            String
+  response8            String
+  response9            String
+  response10           String
+  response11           String
+  response12           String
+  response13           String
+  response14           String
+  response15           String
+  response16           DateTime
+  consentProofUrls     String[]
+  housePhotosUrls      String[]
+  validIdUrls          String[]
+  response5            String
+  pet                  Pet                       @relation(fields: [petId], references: [id])
+  user                 User                      @relation(fields: [userId], references: [id])
 
   @@unique([userId, petId])
 }
