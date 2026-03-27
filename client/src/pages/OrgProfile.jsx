@@ -106,12 +106,12 @@ function OrgProfile() {
                         alt="Profile"
                         className="edit-upload-preview"
                     />
-                    {editing && (
+                    {/*editing && (
                         <>
                         <label htmlFor="image-upload" className="edit-upload-label">Change Photo</label>
                         <input type="file" id="image-upload" className="edit-upload-input" onChange={handleImageUpload} />
                         </>
-                    )}
+                    )*/}
                     </div>
                 </div>
                 
