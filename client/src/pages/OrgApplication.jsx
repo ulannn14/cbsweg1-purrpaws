@@ -4,9 +4,7 @@ import OrgAppLayout from "../components/OrgAppLayout";
 import BackButton from "../components/BackButton";
 
 function OrgApplication() {
-
   const { id } = useParams();
-
   const navigate = useNavigate();
 
   const [application, setApplication] = useState(null);
@@ -17,16 +15,14 @@ function OrgApplication() {
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-
     fetch(`${API}/api/applications/${id}`)
       .then(res => res.json())
       .then(data => {
         setApplication(data);
         setStatus(data.status);
-        setAssessmentNotes(data.notes || "");
+        setAssessmentNotes(data.comment || "");
       })
       .catch(err => console.error(err));
-
   }, [API, id]);
 
   if (!application) {
@@ -41,12 +37,10 @@ function OrgApplication() {
   const pet = application.pet;
 
   function getAge(birthdate) {
-
     const birth = new Date(birthdate);
     const today = new Date();
 
     let age = today.getFullYear() - birth.getFullYear();
-
     const monthDiff = today.getMonth() - birth.getMonth();
 
     if (
@@ -76,33 +70,22 @@ function OrgApplication() {
     navigate("/org");
   }
 
-  async function approveApplication() {
-
-    await fetch(`${API}/api/applications/${id}/approve`, {
-      method: "PUT"
-    });
-
-    setStatus("APPROVED");
-
-  }
-
   return (
     <OrgAppLayout>
       <BackButton />
-      <main className="org-main">
 
+      <main className="org-main">
         <section className="section org-application">
 
           {/* STATUS */}
           <div className={`status-pill ${status.toLowerCase()}`}>
-            {status}
+            {status === "UNDER_REVIEW" ? "UNDER REVIEW" : status}
           </div>
 
           <div className="org-app-grid">
 
             {/* COLUMN 1 — APPLICANT */}
             <div className="column">
-
               <h2>Applicant Details</h2>
 
               <div className="applicant-photo">
@@ -132,16 +115,13 @@ function OrgApplication() {
                 <p><strong>Company:</strong> {application.applicantCompany}</p>
                 <p><strong>Civil Status:</strong> {application.applicantCivilStatus}</p>
               </div>
-
             </div>
 
             {/* COLUMN 2 — QUESTIONNAIRE */}
             <div className="column">
-
               <h2>Adoption Questionnaire</h2>
 
               <div className="application-section">
-
                 <p><strong>Why do you want to adopt?</strong></p>
                 <p>{application.response1}</p>
 
@@ -171,14 +151,11 @@ function OrgApplication() {
 
                 <p><strong>How will you discipline the pet?</strong></p>
                 <p>{application.response10}</p>
-
               </div>
-
             </div>
 
             {/* COLUMN 3 — PET */}
             <div className="column">
-
               <h2>Pet Applied</h2>
 
               <Link
@@ -186,7 +163,6 @@ function OrgApplication() {
                 style={{ textDecoration: "none", color: "inherit" }}
               >
                 <div className="adopt-card applied-pet-card">
-
                   <div className="adopt-pet-photo">
                     <img
                       src={`/temp-photos/pets/pet-main-${pet?.id}.jpg`}
@@ -207,10 +183,8 @@ function OrgApplication() {
                       </div>
                     </div>
                   </div>
-
                 </div>
               </Link>
-
             </div>
 
           </div>
@@ -218,52 +192,53 @@ function OrgApplication() {
           {/* ACTION BUTTONS */}
           <div className="org-app-actions">
 
+            {/* REJECT */}
             <button
               className={`application-decline-btn ${
                 status === "REJECTED" || pendingAction === "REJECTED"
                   ? "selected-reject"
                   : ""
               }`}
-             disabled={
-              status === "REJECTED" ||
-              status === "APPROVED" ||
-              pendingAction === "APPROVED" ||
-              pendingAction === "ASSESSMENT"
-            }
+              disabled={
+                status === "REJECTED" ||
+                status === "APPROVED" ||
+                pendingAction === "APPROVED" ||
+                pendingAction === "UNDER_REVIEW"
+              }
               onClick={() => setPendingAction("REJECTED")}
             >
               Reject
             </button>
 
+            {/* APPROVE / MOVE */}
             <button
-            className={`application-action-btn ${
-              status === "APPROVED" || pendingAction === "APPROVED"
-                ? "selected-approve"
-                : ""
-            }`}
-            disabled={
-              status === "REJECTED" ||
-              status === "APPROVED" ||
-              pendingAction === "REJECTED"
-            }
-            onClick={() => {
-              if (status === "PENDING") {
-                setPendingAction("ASSESSMENT");
-              } else if (status === "ASSESSMENT") {
-                setPendingAction("APPROVED");
+              className={`application-action-btn ${
+                status === "APPROVED" || pendingAction === "APPROVED"
+                  ? "selected-approve"
+                  : ""
+              }`}
+              disabled={
+                status === "REJECTED" ||
+                status === "APPROVED" ||
+                pendingAction === "REJECTED"
               }
-            }}
-          >
-
-              {status === "PENDING" && "Move to Assessment"}
-              {status === "ASSESSMENT" && "Approve"}
+              onClick={() => {
+                if (status === "PENDING") {
+                  setPendingAction("UNDER_REVIEW");
+                } else if (status === "UNDER_REVIEW") {
+                  setPendingAction("APPROVED");
+                }
+              }}
+            >
+              {status === "PENDING" && "Move to Review"}
+              {status === "UNDER_REVIEW" && "Approve"}
               {status === "APPROVED" && "Approved"}
               {status === "REJECTED" && "Rejected"}
-
             </button>
 
           </div>
 
+          {/* NOTES */}
           <div className="assessment-box">
             <label>Assessment Details</label>
             <textarea
@@ -274,20 +249,19 @@ function OrgApplication() {
             />
           </div>
 
-            {status !== "APPROVED" && status !== "REJECTED" && (
-              <button
-                className="application-submit-btn"
-                disabled={!assessmentNotes || !pendingAction}
-                onClick={() => updateStatus(pendingAction)}
-              >
-                Submit Decision
-              </button>
-            )}
+          {/* SUBMIT */}
+          {status !== "APPROVED" && status !== "REJECTED" && (
+            <button
+              className="application-submit-btn"
+              disabled={!assessmentNotes || !pendingAction}
+              onClick={() => updateStatus(pendingAction)}
+            >
+              Submit Decision
+            </button>
+          )}
 
         </section>
-
       </main>
-
     </OrgAppLayout>
   );
 }

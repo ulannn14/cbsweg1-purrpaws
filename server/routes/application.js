@@ -16,8 +16,6 @@ router.get("/org/:orgId", controller.getOrgApplications);
 // specific application
 router.get("/:id", controller.getApplicationById);
 
-router.put("/:id/approve", controller.approveApplication);
-
 router.put("/:id/status", controller.updateApplicationStatus);
 
 module.exports = router;

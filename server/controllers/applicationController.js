@@ -1,166 +1,173 @@
 const prisma = require("../config/prisma");
 const supabase = require("../config/supabase");
+const sendApplicationEmail = require("../utils/sendEmail");
 
 //console.log("PRISMA OBJECT:", supabase);
 
-// CREATE APPLICATION
 exports.createApplication = async (req, res) => {
-    try {
-      const files = req.files || {};
+  try {
+    const files = req.files || {};
 
-      console.log("BODY:", req.body);
-      console.log("FILES:", files);
+    console.log("BODY:", req.body);
+    console.log("FILES:", files);
 
-      const uploadedFiles = {
-        validId: [],
-        consentProof: [],
-        housePhotos: [],
-      };
+    const uploadedFiles = {
+      validId: [],
+      consentProof: [],
+      housePhotos: [],
+    };
 
-      // Helper function to upload to Supabase
-      const uploadToSupabase = async (fileArray, folder) => {
-        const urls = [];
+    // 🔧 Upload helper
+    const uploadToSupabase = async (fileArray, folder) => {
+      const urls = [];
 
-        for (const file of fileArray || []) {
-          const fileName = `${Date.now()}-${file.originalname}`;
+      for (const file of fileArray || []) {
+        const fileName = `${Date.now()}-${file.originalname}`;
 
-          const { data, error } = await supabase.storage
-            .from("public-assets")
-            .upload(`${folder}/${fileName}`, file.buffer, {
-              contentType: file.mimetype,
-            });
+        const { data, error } = await supabase.storage
+          .from("public-assets")
+          .upload(`${folder}/${fileName}`, file.buffer, {
+            contentType: file.mimetype,
+          });
 
-          if (error) throw error;
+        if (error) throw error;
 
-          const publicUrl = supabase.storage
-            .from("public-assets")
-            .getPublicUrl(data.path).data.publicUrl;
+        const publicUrl = supabase.storage
+          .from("public-assets")
+          .getPublicUrl(data.path).data.publicUrl;
 
-          urls.push(publicUrl);
+        urls.push(publicUrl);
+      }
+
+      return urls;
+    };
+
+    // 📁 Upload files
+    uploadedFiles.validId = await uploadToSupabase(files.validId, "validId");
+    uploadedFiles.consentProof = await uploadToSupabase(files.consentProof, "consentProof");
+    uploadedFiles.housePhotos = await uploadToSupabase(files.housePhotos, "housePhotos");
+
+    console.log("UPLOADED:", uploadedFiles);
+
+    // 🧾 Extract fields
+    const {
+      userId,
+      petId,
+
+      applicantFirstName,
+      applicantLastName,
+      applicantAddress,
+      applicantPhoneNumber,
+      applicantEmail,
+      applicantBirthdate,
+
+      applicantOccupation,
+      applicantCompany,
+      applicantSocialMedia,
+      applicantCivilStatus,
+      adoptionPrompt,
+
+      alternateContactName,
+      alternateContactRelationship,
+      alternateContactNumber,
+      alternateContactEmail,
+    } = req.body;
+
+    // 🧠 Map responses
+    const fieldMap = {
+      residenceType: "response1",
+      occupation: "response2",
+      reasonAdopt: "response3",
+      experience: "response4",
+      preparationSteps: "response5",
+      vetClinic: "response6",
+      petDiet: "response7",
+      otherPetsList: "response8",
+      consent: "response9",
+      consentUnderstanding: "response10",
+      petsNeutered: "response11",
+      planNeuter: "response12",
+      agreeUpdates: "response13",
+      agreeEmergency: "response14",
+      shareSocial: "response15",
+      interviewTime: "response16",
+    };
+
+    const applicationData = {
+      userId,
+      petId,
+
+      applicantFirstName,
+      applicantLastName,
+      applicantAddress,
+      applicantPhoneNumber,
+      applicantEmail,
+      applicantBirthdate: new Date(applicantBirthdate),
+
+      applicantOccupation,
+      applicantCompany,
+      applicantSocialMedia,
+      applicantCivilStatus,
+      adoptionPrompt,
+
+      alternateContactName,
+      alternateContactRelationship,
+      alternateContactNumber,
+      alternateContactEmail,
+
+      validIdUrls: uploadedFiles.validId,
+      consentProofUrls: uploadedFiles.consentProof,
+      housePhotosUrls: uploadedFiles.housePhotos,
+    };
+
+    // 🔁 Attach dynamic responses
+    Object.entries(fieldMap).forEach(([frontendKey, backendKey]) => {
+      const value = req.body[frontendKey];
+
+      if (value === undefined || value === "") return;
+
+      if (frontendKey === "interviewTime") {
+        const parsedDate = new Date(value);
+        if (!isNaN(parsedDate)) {
+          applicationData[backendKey] = parsedDate;
         }
+        return;
+      }
 
-        return urls;
-      };
+      applicationData[backendKey] = value;
+    });
 
-      // Upload files
-      uploadedFiles.validId = await uploadToSupabase(files.validId, "validId");
-      uploadedFiles.consentProof = await uploadToSupabase(files.consentProof, "consentProof");
-      uploadedFiles.housePhotos = await uploadToSupabase(files.housePhotos, "housePhotos");
-
-      console.log("UPLOADED:", uploadedFiles);
-
-      // Extract form fields
-      const {
-        userId,
-        petId,
-
-        applicantFirstName,
-        applicantLastName,
-        applicantAddress,
-        applicantPhoneNumber,
-        applicantEmail,
-        applicantBirthdate,
-
-        applicantOccupation,
-        applicantCompany,
-        applicantSocialMedia,
-        applicantCivilStatus,
-        adoptionPrompt,
-
-        alternateContactName,
-        alternateContactRelationship,
-        alternateContactNumber,
-        alternateContactEmail,
-      } = req.body;
-
-      // Map dynamic responses
-      const fieldMap = {
-        residenceType: "response1",
-        occupation: "response2",
-        reasonAdopt: "response3",
-        experience: "response4",
-        preparationSteps: "response5",
-        vetClinic: "response6",
-        petDiet: "response7",
-        otherPetsList: "response8",
-        consent: "response9",
-        consentUnderstanding: "response10",
-        petsNeutered: "response11",
-        planNeuter: "response12",
-        agreeUpdates: "response13",
-        agreeEmergency: "response14",
-        shareSocial: "response15",
-        interviewTime: "response16",
-      };
-
-      // Base application data
-      const applicationData = {
-        userId,
-        petId,
-
-        applicantFirstName,
-        applicantLastName,
-        applicantAddress,
-        applicantPhoneNumber,
-        applicantEmail,
-        applicantBirthdate: new Date(applicantBirthdate),
-
-        applicantOccupation,
-        applicantCompany,
-        applicantSocialMedia,
-        applicantCivilStatus,
-        adoptionPrompt,
-
-        alternateContactName,
-        alternateContactRelationship,
-        alternateContactNumber,
-        alternateContactEmail,
-
-        validIdUrls: uploadedFiles.validId,
-        consentProofUrls: uploadedFiles.consentProof,
-        housePhotosUrls: uploadedFiles.housePhotos,
-      };
-
-      // Add dynamic responses
-      Object.entries(fieldMap).forEach(([frontendKey, backendKey]) => {
-        const value = req.body[frontendKey];
-
-        if (value === undefined || value === "") return;
-
-        // Special handling for date
-        if (frontendKey === "interviewTime") {
-          const parsedDate = new Date(value);
-          if (!isNaN(parsedDate)) {
-            applicationData[backendKey] = parsedDate;
-          }
-          return;
-        }
-
-        applicationData[backendKey] = value;
-      });
-
-      // Create application in DB
-      const application = await prisma.adoptionApplication.create({
-        data: applicationData,
-        include: {
-          user: true,
-          pet: {
-            include: {
-              breed: true,
-              organization: true,
-            },
+    // 🗄️ Create application
+    const application = await prisma.adoptionApplication.create({
+      data: applicationData,
+      include: {
+        user: true,
+        pet: {
+          include: {
+            breed: true,
+            organization: true,
           },
         },
-      });
+      },
+    });
 
-      // Final response
-      res.status(201).json(application);
+    // 🔥 SEND EMAIL (PENDING) — NON-BLOCKING
+    Promise.resolve().then(() =>
+      sendApplicationEmail({
+        application,
+        status: "PENDING",
+        notes: null,
+      })
+    );
 
-    } catch (err) {
-      console.error("CREATE APPLICATION ERROR:", err);
-      res.status(500).json({ error: err.message });
-    }
-  };
+    // ✅ Response
+    res.status(201).json(application);
+
+  } catch (err) {
+    console.error("CREATE APPLICATION ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 
 // ADOPTER: GET MY APPLICATIONS
@@ -271,64 +278,100 @@ exports.getApplicationById = async (req, res) => {
   }
 };
 
-exports.approveApplication = async (req, res) => {
-  try {
-
-    const { id } = req.params;
-
-    const application = await prisma.adoptionApplication.update({
-      where: { id },
-      data: {
-        status: "APPROVED"
-      }
-    });
-
-    // mark pet as adopted
-    await prisma.pet.update({
-      where: { id: application.petId },
-      data: {
-        adoptionStatus: "ADOPTED"
-      }
-    });
-
-    // reject other applications for the same pet
-    await prisma.adoptionApplication.updateMany({
-      where: {
-        petId: application.petId,
-        id: { not: id }
-      },
-      data: {
-        status: "REJECTED"
-      }
-    });
-
-    res.json({ message: "Application approved. Pet adopted." });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to approve application" });
-  }
-};
-
 exports.updateApplicationStatus = async (req, res) => {
-
   try {
-
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, notes } = req.body;
 
+    // ✅ Direct mapping (no more ASSESSMENT)
+    const mappedStatus = status;
+
+    const validStatuses = ["PENDING", "UNDER_REVIEW", "APPROVED", "REJECTED"];
+
+    if (!validStatuses.includes(mappedStatus)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    // ✅ update selected application
     const application = await prisma.adoptionApplication.update({
       where: { id },
-      data: { status }
+      data: {
+        status: mappedStatus,
+        comment: notes?.trim() || null,
+      },
+      include: {
+        user: true,
+        pet: {
+          include: {
+            organization: true,
+          },
+        },
+      },
     });
+
+    // 🔥 IF APPROVED → handle adoption logic
+    if (mappedStatus === "APPROVED") {
+
+      // 🐾 mark pet as adopted
+      await prisma.pet.update({
+        where: { id: application.petId },
+        data: {
+          adoptionStatus: "ADOPTED",
+        },
+      });
+
+      // 📦 get other applications
+      const otherApps = await prisma.adoptionApplication.findMany({
+        where: {
+          petId: application.petId,
+          id: { not: id },
+        },
+        include: {
+          user: true,
+          pet: {
+            include: {
+              organization: true,
+            },
+          },
+        },
+      });
+
+      // ❌ reject all others
+      await prisma.adoptionApplication.updateMany({
+        where: {
+          petId: application.petId,
+          id: { not: id },
+        },
+        data: {
+          status: "REJECTED",
+        },
+      });
+
+      // 📩 email rejected applicants (non-blocking)
+      otherApps.forEach((app) => {
+        Promise.resolve().then(() =>
+          sendApplicationEmail({
+            application: app,
+            status: "REJECTED",
+            notes: "Another applicant has been selected for adoption.",
+          })
+        );
+      });
+    }
+
+    // 📩 email current applicant (non-blocking)
+    Promise.resolve().then(() =>
+      sendApplicationEmail({
+        application,
+        status: mappedStatus,
+        notes,
+      })
+    );
 
     res.json(application);
 
   } catch (error) {
-
     console.error(error);
     res.status(500).json({ message: "Failed to update application status" });
-
   }
-
 };
