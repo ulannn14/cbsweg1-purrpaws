@@ -31,6 +31,7 @@ function AdopterApply() {
     const [provinces, setProvinces] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [step, setStep] = useState(0);
 
@@ -110,6 +111,14 @@ function AdopterApply() {
         });
     };
 
+    const showSuccessPopup = (message) => {
+        setSuccessMessage(message);
+
+        setTimeout(() => {
+        setSuccessMessage("");
+        }, 2500);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -152,14 +161,17 @@ function AdopterApply() {
             throw new Error("Submission failed");
             }
 
+            showSuccessPopup("Application submitted successfully!");
             setShowSuccess(true);
-            navigate("/applications");
 
+            setTimeout(() => {
+            navigate("/applications");
+            }, 1800);
         } catch (err) {
             console.error(err);
             alert("Submission failed");
         } finally {
-            setIsSubmitting(false); // 🔥 ALWAYS resets
+            setIsSubmitting(false);
         }
     };
 
@@ -208,20 +220,12 @@ function AdopterApply() {
 
     return (
     <>
-    { showSuccess && (
-        <div className="popup-overlay">
-            <div className="popup-box">
-            <h3>Application Submitted!</h3>
-            <p>Your adoption application has been successfully sent.</p>
-
-            <button
-                className="save-btn"
-                onClick={() => navigate("/applications")}
-            >
-                Go to Applications
-            </button>
-            </div>
-        </div>
+    
+    {successMessage && (
+    <div className="success-popup">
+        <span className="success-popup-icon">✓</span>
+        <span>{successMessage}</span>
+    </div>
     )}
 
     <AppLayout>

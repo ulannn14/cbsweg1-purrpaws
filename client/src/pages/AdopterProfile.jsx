@@ -10,6 +10,8 @@ function AdopterProfile() {
   const [userInfo, setUserInfo] = useState(null);
   const [provinces, setProvinces] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("/images/avatar-placeholder.png"); // new default avatar
 
@@ -58,9 +60,19 @@ function AdopterProfile() {
     setPreview(URL.createObjectURL(file));
   };
 
+  const showSuccessPopup = (message) => {
+    setSuccessMessage(message);
+
+    setTimeout(() => {
+        setSuccessMessage("");
+    }, 2500);
+  };
+
   const handleSave = async () => {
+  if (isSaving) return;
 
     try {
+      setIsSaving(true);
 
       const res = await fetch(`${API}/api/users/${id}`, {
         method: "PUT",
@@ -79,10 +91,12 @@ function AdopterProfile() {
       setUser(updated);
       setOriginalUser(updated);
       setEditing(false);
-      alert("Profile saved");
-
+      showSuccessPopup("Profile updated successfully!");
     } catch (err) {
       console.error(err);
+      alert("Failed to update profile");
+    } finally {
+      setIsSaving(false);
     }
 
   };
@@ -104,6 +118,13 @@ function AdopterProfile() {
     <AppLayout>
       <main className="main">
         <section className="section apply-page">
+
+          {successMessage && (
+            <div className="success-popup">
+                <span className="success-popup-icon">✓</span>
+                <span>{successMessage}</span>
+            </div>
+          )}
 
           {/* PROFILE PHOTO */}
           <div className="pet-header">
@@ -207,8 +228,21 @@ function AdopterProfile() {
             )}
             {editing && (
               <>
-                <button className="save-btn" onClick={handleSave}>Save</button>
                 <button className="cancel-btn" onClick={() => setEditing(false)}>Cancel</button>
+                <button
+                className="save-btn"
+                onClick={handleSave}
+                disabled={isSaving}
+                >
+                {isSaving ? (
+                    <>
+                    <span className="btn-spinner"></span>
+                    <span style={{ marginLeft: "8px" }}>Saving...</span>
+                    </>
+                ) : (
+                    "Save"
+                )}
+                </button>
               </>
             )}
           </div>

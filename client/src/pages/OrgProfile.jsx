@@ -12,6 +12,8 @@ function OrgProfile() {
     const [orgInfo, setOrgInfo] = useState(null);
     const [provinces, setProvinces] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
 
     const [logoFile, setLogoFile] = useState(null);
     const [preview, setPreview] = useState("/images/org-avatar.png"); // default org avatar
@@ -63,26 +65,41 @@ function OrgProfile() {
         setPreview(URL.createObjectURL(file));
     };
 
+    const showSuccessPopup = (message) => {
+    setSuccessMessage(message);
+
+    setTimeout(() => {
+        setSuccessMessage("");
+    }, 2500);
+    };
+
     const handleSave = async () => {
-        try {
-            const res = await fetch(`${API}/api/organizations/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(orgInfo) // ✅ FIXED
-            });
+    if (isSaving) return;
 
-            if (!res.ok) throw new Error("Update failed");
+    try {
+        setIsSaving(true);
 
-            const updated = await res.json();
+        const res = await fetch(`${API}/api/organizations/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orgInfo)
+        });
 
-            setOrgInfo(updated);
-            setEditing(false); // ✅ THIS is what exits edit mode
-            alert("Profile updated successfully!");
-        } catch (err) {
-            console.error(err);
-        }
+        if (!res.ok) throw new Error("Update failed");
+
+        const updated = await res.json();
+
+        setOrgInfo(updated);
+        setEditing(false);
+        showSuccessPopup("Profile updated successfully!");
+    } catch (err) {
+        console.error(err);
+        alert("Failed to update profile");
+    } finally {
+        setIsSaving(false);
+    }
     };
 
     const handleLogout = () => {
@@ -94,6 +111,13 @@ function OrgProfile() {
         <OrgAppLayout>
         <main className="main">
             <section className="section apply-page">
+
+            {successMessage && (
+            <div className="success-popup">
+                <span className="success-popup-icon">✓</span>
+                <span>{successMessage}</span>
+            </div>
+            )}
 
             {/* ORG LOGO */}
             <div className="pet-header">
@@ -416,7 +440,20 @@ function OrgProfile() {
                 {editing && (
                 <>
                     <button className="cancel-btn" onClick={() => setEditing(false)}>Cancel</button>
-                    <button className="save-btn" onClick={handleSave}>Save</button>
+                    <button
+                    className="save-btn"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    >
+                    {isSaving ? (
+                        <>
+                        <span className="btn-spinner"></span>
+                        <span style={{ marginLeft: "8px" }}>Saving...</span>
+                        </>
+                    ) : (
+                        "Save"
+                    )}
+                    </button>
                 </>
                 )}
             </div>
