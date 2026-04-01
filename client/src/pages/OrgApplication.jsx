@@ -11,6 +11,9 @@ function OrgApplication() {
   const [status, setStatus] = useState("PENDING");
   const [assessmentNotes, setAssessmentNotes] = useState("");
   const [pendingAction, setPendingAction] = useState(null);
+  const isEditable = status === "PENDING" || status === "UNDER_REVIEW";
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -53,22 +56,67 @@ function OrgApplication() {
     return age;
   }
 
-  async function updateStatus(newStatus) {
-    await fetch(`${API}/api/applications/${id}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        status: newStatus,
-        notes: assessmentNotes
-      })
-    });
+  const showSuccessPopup = (message) => {
+    setSuccessMessage(message);
 
-    setStatus(newStatus);
-    setPendingAction(null);
-    navigate("/org");
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 2500);
+  };  
+
+  async function updateStatus(newStatus) {
+    if (!isEditable || isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+
+      const res = await fetch(`${API}/api/applications/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          status: newStatus,
+          notes: assessmentNotes
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update application status");
+      }
+
+      setStatus(newStatus);
+      setPendingAction(null);
+
+      let message = "Application updated successfully!";
+
+      if (newStatus === "REJECTED") {
+        message = "Application rejected successfully!";
+      } else if (newStatus === "APPROVED") {
+        message = "Application approved successfully!";
+      } else if (newStatus === "UNDER_REVIEW") {
+        message = "Application moved to review successfully!";
+      }
+
+      showSuccessPopup(message);
+
+      setTimeout(() => {
+        navigate("/org");
+      }, 1800);
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update application status");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
+
+  const toggleAction = (action) => {
+    if (!isEditable) return;
+
+    setPendingAction(prev => (prev === action ? null : action));
+  };
 
   return (
     <OrgAppLayout>
@@ -76,6 +124,13 @@ function OrgApplication() {
 
       <main className="org-main">
         <section className="section org-application">
+
+          {successMessage && (
+            <div className="success-popup">
+              <span className="success-popup-icon">✓</span>
+              <span>{successMessage}</span>
+            </div>
+          )}
 
           {/* STATUS */}
           <div className={`status-pill ${status.toLowerCase()}`}>
@@ -196,17 +251,10 @@ function OrgApplication() {
             {/* REJECT */}
             <button
               className={`application-decline-btn ${
-                status === "REJECTED" || pendingAction === "REJECTED"
-                  ? "selected-reject"
-                  : ""
+                pendingAction === "REJECTED" ? "selected-reject" : ""
               }`}
-              disabled={
-                status === "REJECTED" ||
-                status === "APPROVED" ||
-                pendingAction === "APPROVED" ||
-                pendingAction === "UNDER_REVIEW"
-              }
-              onClick={() => setPendingAction("REJECTED")}
+              disabled={!isEditable}
+              onClick={() => toggleAction("REJECTED")}
             >
               Reject
             </button>
@@ -214,20 +262,18 @@ function OrgApplication() {
             {/* APPROVE / MOVE */}
             <button
               className={`application-action-btn ${
-                status === "APPROVED" || pendingAction === "APPROVED"
+                pendingAction === "APPROVED" || pendingAction === "UNDER_REVIEW"
                   ? "selected-approve"
                   : ""
               }`}
-              disabled={
-                status === "REJECTED" ||
-                status === "APPROVED" ||
-                pendingAction === "REJECTED"
-              }
+              disabled={!isEditable}
               onClick={() => {
+                if (!isEditable) return;
+
                 if (status === "PENDING") {
-                  setPendingAction("UNDER_REVIEW");
+                  toggleAction("UNDER_REVIEW");
                 } else if (status === "UNDER_REVIEW") {
-                  setPendingAction("APPROVED");
+                  toggleAction("APPROVED");
                 }
               }}
             >
@@ -238,6 +284,12 @@ function OrgApplication() {
             </button>
 
           </div>
+
+          {status !== "APPROVED" && status !== "REJECTED" && (
+            <p className="pending-label">
+              {pendingAction ? `Selected: ${pendingAction}` : "No action selected."}
+            </p>
+          )}
 
           {/* NOTES */}
           <div className="assessment-box">
@@ -254,10 +306,17 @@ function OrgApplication() {
           {status !== "APPROVED" && status !== "REJECTED" && (
             <button
               className="application-submit-btn"
-              disabled={!assessmentNotes || !pendingAction}
+              disabled={!assessmentNotes || !pendingAction || isSubmitting}
               onClick={() => updateStatus(pendingAction)}
             >
-              Submit Decision
+              {isSubmitting ? (
+                <>
+                  <span className="btn-spinner"></span>
+                  <span style={{ marginLeft: "8px" }}>Submitting...</span>
+                </>
+              ) : (
+                "Submit Decision"
+              )}
             </button>
           )}
 

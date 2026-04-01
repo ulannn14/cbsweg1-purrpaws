@@ -31,6 +31,7 @@ function AdopterApply() {
     const [provinces, setProvinces] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [step, setStep] = useState(0);
 
     const [formData, setFormData] = useState({
@@ -110,45 +111,56 @@ function AdopterApply() {
     };
 
     const handleSubmit = async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    const form = new FormData();
+        if (!isFormComplete() || isSubmitting) return;
 
-    // --- TEXT FIELDS ---
-    form.append("petId", id);
-    form.append("userId", userId);
+        try {
+            setIsSubmitting(true);
 
-    form.append("applicantFirstName", personalInfo.firstName);
-    form.append("applicantLastName", personalInfo.lastName);
-    form.append("applicantAddress", personalInfo.address);
-    form.append("applicantPhoneNumber", personalInfo.phoneNumber);
-    form.append("applicantEmail", personalInfo.email);
-    form.append("applicantBirthdate", personalInfo.birthdate);
+            const form = new FormData();
 
-    // --- FORM DATA ---
-    Object.entries(formData).forEach(([key, value]) => {
-        if (!Array.isArray(value) && value !== "" && value !== null) {
-            form.append(key, value);
+            // --- TEXT FIELDS ---
+            form.append("petId", id);
+            form.append("userId", userId);
+
+            form.append("applicantFirstName", personalInfo.firstName);
+            form.append("applicantLastName", personalInfo.lastName);
+            form.append("applicantAddress", personalInfo.address);
+            form.append("applicantPhoneNumber", personalInfo.phoneNumber);
+            form.append("applicantEmail", personalInfo.email);
+            form.append("applicantBirthdate", personalInfo.birthdate);
+
+            // --- FORM DATA ---
+            Object.entries(formData).forEach(([key, value]) => {
+            if (!Array.isArray(value) && value !== "" && value !== null) {
+                form.append(key, value);
+            }
+            });
+
+            // --- FILES ---
+            formData.validId.forEach(file => form.append("validId", file));
+            formData.consentProof.forEach(file => form.append("consentProof", file));
+            formData.housePhotos.forEach(file => form.append("housePhotos", file));
+
+            const res = await fetch(`${API}/api/applications`, {
+            method: "POST",
+            body: form
+            });
+
+            if (!res.ok) {
+            throw new Error("Submission failed");
+            }
+
+            setShowSuccess(true);
+            navigate("/applications");
+
+        } catch (err) {
+            console.error(err);
+            alert("Submission failed");
+        } finally {
+            setIsSubmitting(false); // 🔥 ALWAYS resets
         }
-        });
-
-    // --- FILES ---
-    formData.validId.forEach(file => form.append("validId", file));
-    formData.consentProof.forEach(file => form.append("consentProof", file));
-    formData.housePhotos.forEach(file => form.append("housePhotos", file));
-
-    const res = await fetch(`${API}/api/applications`, {
-        method: "POST",
-        body: form
-    });
-
-    if (!res.ok) {
-        alert("Submission failed");
-        return;
-    }
-
-    setShowSuccess(true);
-    navigate("/applications");
     };
 
     const sections = [
@@ -791,8 +803,19 @@ function AdopterApply() {
     Cancel
     </button>
 
-    <button className="save-btn" type="submit" disabled={!isFormComplete()}>
-    Submit
+    <button
+    className="save-btn"
+    type="submit"
+    disabled={!isFormComplete() || isSubmitting}
+    >
+    {isSubmitting ? (
+        <>
+        <span className="btn-spinner"></span>
+        <span style={{ marginLeft: "8px" }}>Submitting...</span>
+        </>
+    ) : (
+        "Submit"
+    )}
     </button>
 
     </div>

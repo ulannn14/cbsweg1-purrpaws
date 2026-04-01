@@ -87,51 +87,16 @@
   gap: 10px;
 }
 
-/* MAIN CARD */
+/* APPLICATION CARD */
 .org-application-card {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-
+  flex-direction: column;
   padding: 16px;
   border: 1px solid #ddd;
   border-radius: 12px;
   background: white;
-
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.app-content {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-}
-
-/* TOP SECTION (APPLICANT) */
-.applicant-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-/* IMAGE */
-.applicant-pic img {
-  width: 90px;
-  height: 90px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-/* INFO */
-.application-info h3 {
-  margin: 0;
-}
-
-.application-info p {
-  margin: 2px 0;
-  font-size: 14px;
 }
 
 .org-application-card:hover {
@@ -141,34 +106,63 @@
 
 .application-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 👈 2 per row */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
-.org-application-card .application-info {
-  margin:0;
-  width: 100%;
+.app-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
 }
 
-/* PET CARD */
+.applicant-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.applicant-pic img {
+  width: 90px;
+  height: 90px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-left: 0;
+}
+
+.application-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.application-info h3 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+}
+
+.application-info p {
+  margin: 2px 0;
+  font-size: 14px;
+  word-break: break-word;
+}
 
 .org-pet-card {
   display: flex;
   align-items: center;
-  width: 320px;          /* wider but shorter */
-  height: 100px;
-  margin-top: 0;         /* remove extra spacing */
+  width: 100%;
+  min-height: 100px;
   padding: 8px;
-
-  border:1px solid #ddd;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  margin-left: 18px;
+  margin-left: 0;
+  background: white;
 }
 
 .org-pet-card:hover {
   transform: translateY(-2px) scale(1.002);
   box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-} 
+}
 
 .org-adopt-pet-photo {
   width: 80px;
@@ -190,6 +184,7 @@
   align-items: center;
   width: 100%;
   margin-left: 10px;
+  gap: 10px;
 }
 
 .org-pet-card .pet-text h3 {
@@ -202,9 +197,14 @@
   margin: 2px 0;
 }
 
+.application-view-btn {
+  align-self: flex-end;
+  margin-top: auto;
+}
+
 .view-btn{
   border:1px solid #444;
-  background:#f4f4f4;
+  background:#fff;
   color: #000;
   padding:8px 20px;
   border-radius:20px;
@@ -303,27 +303,11 @@
   flex-direction: column;
 }
 
-.applicant-pic img {
-  margin-left: 20px;
-  width: 100px;
-  height: 100px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
 .pet-card img {
   width: 100px;
   height: 100px;
   object-fit: cover;
   border-radius: 10px;
-}
-
-.view-btn {
-  padding: 10px 24px;
-  border-radius: 25px;
-  border: 1px solid #333;
-  background: white;
-  cursor: pointer;
 }
 
 .org-loading{
@@ -337,8 +321,15 @@
 
 .loading-text,
 .empty-text {
+  grid-column: 1 / -1;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 500px;
+
   text-align: center;
-  padding: 40px;
   color: #777;
   font-size: 16px;
 }
@@ -348,6 +339,7 @@
   grid-template-columns: repeat(3, 1fr);
   max-width: 1100px;
   margin: 5px;   
+  margin-left: 0px;
   gap: 16px;
 }
 
@@ -420,8 +412,27 @@
   border:1px solid #000;
 }
 
+.pending-label {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
 @media (max-width: 1024px) {
   .org-app-grid {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 1200px) {
+  .application-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .application-list {
+    grid-template-columns: 1fr;
+  }
+}
+

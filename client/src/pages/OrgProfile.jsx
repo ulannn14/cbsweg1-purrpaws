@@ -390,6 +390,20 @@ function OrgProfile() {
                 </div>
                 </div>
             </div>
+            
+            {/* CAMPAIGN BUTTON */}
+            <button
+                className="campaign-btn"
+                onClick={() =>
+                    window.open(
+                    "https://forms.gle/6hSpVStRLjUQxpjQ8",
+                    "_blank",
+                    "noopener,noreferrer"
+                    )
+                }
+                >
+                Apply for Campaign
+            </button>
 
             {/* ACTION BUTTONS */}
             <div className="apply-box-actions">

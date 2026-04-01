@@ -93,20 +93,17 @@ function OrgLanding() {
                 className="org-application-card"
                 onClick={() => navigate(`/org/applications/${app.id}`)}
               >
-
-                {/* CONTENT */}
                 <div className="app-content">
 
                   {/* Applicant */}
                   <div className="applicant-section">
-
                     <div className="applicant-pic">
                       <img
-                      src={
-                        app.user?.userName
-                          ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(app.user.userName)}.jpg`
-                          : "/images/avatar-placeholder.png"
-                      }
+                        src={
+                          app.user?.userName
+                            ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(app.user.userName)}.jpg`
+                            : "/images/avatar-placeholder.png"
+                        }
                         alt="applicant"
                       />
                     </div>
@@ -117,7 +114,6 @@ function OrgLanding() {
                       <p><strong>Phone:</strong> {app.applicantPhoneNumber}</p>
                       <p><strong>Address:</strong> {app.applicantAddress}</p>
                     </div>
-
                   </div>
 
                   {/* Pet */}
@@ -127,15 +123,14 @@ function OrgLanding() {
                     style={{ textDecoration: "none", color: "inherit" }}
                   >
                     <div className="org-pet-card">
-
                       <div className="org-adopt-pet-photo">
                         <img
-                          src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(app.pet?.name)}.jpg`}                          alt={app.pet?.name}
+                          src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(app.pet?.name)}.jpg`}
+                          alt={app.pet?.name}
                         />
                       </div>
 
                       <div className="pet-info">
-
                         <div className="pet-text">
                           <h3>{app.pet?.name}</h3>
                           <p>{app.pet?.breed?.name}</p>
@@ -168,18 +163,13 @@ function OrgLanding() {
                             alt="species"
                           />
                         </div>
-
                       </div>
-
                     </div>
                   </Link>
 
-                </div>
-
-                {/* RIGHT SIDE */}
-                <div className="app-right">
+                  {/* View Button at bottom */}
                   <button
-                    className="view-btn"
+                    className="view-btn application-view-btn"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/org/applications/${app.id}`);
@@ -188,7 +178,6 @@ function OrgLanding() {
                     VIEW
                   </button>
                 </div>
-
               </div>
             ))
 

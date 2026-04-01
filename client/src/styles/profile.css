@@ -28,7 +28,8 @@
   border:1px solid #444;
 }
 
-.save-btn{
+.save-btn,
+.campaign-btn{
   padding:10px 18px;
   border-radius:30px;
   border:1px solid #444;
@@ -37,7 +38,8 @@
   color:white;
 }
 
-.save-btn:not(:disabled):hover{
+.save-btn:not(:disabled):hover,
+.campaign-btn:hover{
   opacity: 0.9;
   color: #f4a261;
   background: #000;

@@ -12,8 +12,10 @@ function EditPet() {
   const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
   const [breeds, setBreeds] = useState([]);
-  const [imageFile, setImageFile] = useState(null); // new image
-  const [preview, setPreview] = useState("");
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   
   useEffect(() => {
     if (!id) return;
@@ -24,11 +26,15 @@ function EditPet() {
       .then(data => {
         setPet(data);
         setForm(data);
-        setPreview(
-          data.name
-            ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(data.name)}.jpg`
-            : ""
-        ); 
+        const initialImage = data.name
+          ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(data.name)}.jpg`
+          : "/images/placeholder.jpg";
+
+        setGalleryImages([
+          { id: crypto.randomUUID(), file: null, preview: "/images/placeholder.jpg", isExisting: true },
+          { id: crypto.randomUUID(), file: null, preview: "/images/placeholder.jpg", isExisting: true }
+        ]);
+        setActiveImageIndex(0);
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
@@ -93,7 +99,7 @@ function EditPet() {
       setPet(updated);
       setForm(updated);
       if (updated.image) setPreview(`${API}/images/${updated.image}`);
-      alert("Pet updated successfully!");
+      showSuccessPopup("Pet updated successfully!");
     } catch (err) {
       console.error(err);
       alert("Failed to save changes");
@@ -101,8 +107,19 @@ function EditPet() {
   };
   */}
 
-    const handleSave = async () => {
+  const showSuccessPopup = (message) => {
+    setSuccessMessage(message);
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 2500);
+  };
+
+  const handleSave = async () => {
+    if (isSaving) return;
+
     try {
+      setIsSaving(true);
 
       const { breed, organization, ...payload } = form;
 
@@ -120,11 +137,61 @@ function EditPet() {
       setPet(updated);
       setForm(updated);
 
-      alert("Pet updated successfully!");
-
+      showSuccessPopup("Pet saved successfully!");
     } catch (err) {
       console.error(err);
       alert("Failed to save changes");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddImages = (e) => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+
+  const newImages = files.map((file) => ({
+    id: crypto.randomUUID(),
+    file,
+    preview: URL.createObjectURL(file),
+    isExisting: false
+  }));
+
+  setGalleryImages((prev) => [...prev, ...newImages]);
+
+  if (galleryImages.length === 0) {
+    setActiveImageIndex(0);
+  }
+
+  e.target.value = "";
+};
+
+const handleReplaceImage = (e) => {
+  const file = e.target.files?.[0];
+    if (!file || galleryImages.length === 0) return;
+
+    const updated = [...galleryImages];
+    updated[activeImageIndex] = {
+      ...updated[activeImageIndex],
+      file,
+      preview: URL.createObjectURL(file),
+      isExisting: false
+    };
+
+    setGalleryImages(updated);
+    e.target.value = "";
+  };
+
+  const handleDeleteImage = () => {
+    if (galleryImages.length === 0) return;
+
+    const updated = galleryImages.filter((_, index) => index !== activeImageIndex);
+    setGalleryImages(updated);
+
+    if (updated.length === 0) {
+      setActiveImageIndex(0);
+    } else if (activeImageIndex >= updated.length) {
+      setActiveImageIndex(updated.length - 1);
     }
   };
 
@@ -147,25 +214,81 @@ function EditPet() {
       <main className="main">
         <section className="section pet-detail">
 
+          {successMessage && (
+            <div className="success-popup">
+              <span className="success-popup-icon">✓</span>
+              <span>{successMessage}</span>
+            </div>
+          )}
+
           {/* ================= HERO ================= */}
           <div className="pet-hero">
 
-            <div className="edit-upload-container">
-            <img
-              src={preview || null}
-              alt="pet preview"
-              className="edit-upload-preview"
-            />
-              {/*
-              <label htmlFor="image-upload" className="edit-upload-label">
-                Change Photo
-              </label>
-              <input
-                type="file"
-                id="image-upload"
-                className="edit-upload-input"
-                onChange={handleImageUpload}
-              />*/}
+            <div className="edit-gallery">
+
+              <div className="edit-gallery-main">
+                {galleryImages.length > 0 ? (
+                  <img
+                    src={galleryImages[activeImageIndex]?.preview}
+                    alt="pet preview"
+                    className="edit-gallery-main-image"
+                  />
+                ) : (
+                  <div className="edit-gallery-empty">No image</div>
+                )}
+              </div>
+
+              <div className="edit-gallery-thumbs">
+                {galleryImages.map((img, index) => (
+                  <button
+                    key={img.id}
+                    type="button"
+                    className={`edit-thumb ${activeImageIndex === index ? "active" : ""}`}
+                    onClick={() => setActiveImageIndex(index)}
+                  >
+                    <img src={img.preview} alt={`thumb-${index}`} />
+                  </button>
+                ))}
+              </div>
+
+              <div className="edit-gallery-count">
+                {galleryImages.length > 0 ? `${activeImageIndex + 1} / ${galleryImages.length}` : "0 / 0"}
+              </div>
+
+              <div className="edit-gallery-actions">
+                <label htmlFor="add-pet-images" className="edit-upload-label">
+                  Add Photos
+                </label>
+                <input
+                  type="file"
+                  id="add-pet-images"
+                  className="edit-upload-input"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAddImages}
+                />
+
+                <label htmlFor="replace-pet-image" className="edit-upload-label secondary">
+                  Replace Selected
+                </label>
+                <input
+                  type="file"
+                  id="replace-pet-image"
+                  className="edit-upload-input"
+                  accept="image/*"
+                  onChange={handleReplaceImage}
+                />
+
+                <button
+                  type="button"
+                  className="edit-delete-btn"
+                  onClick={handleDeleteImage}
+                  disabled={galleryImages.length === 0}
+                >
+                  Delete Selected
+                </button>
+              </div>
+
             </div>
 
             <input
@@ -389,8 +512,19 @@ function EditPet() {
 
           {/* ================= ACTIONS ================= */}
           <div className="pet-apply">
-            <button className="apply-btn-large" onClick={handleSave}>
-              Save Changes
+            <button
+              className="apply-btn-large"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <span className="btn-spinner"></span>
+                  <span style={{ marginLeft: "8px" }}>Saving...</span>
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </button>
             <button className="cancel-btn" onClick={() => navigate(-1)}>
               Cancel
