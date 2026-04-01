@@ -18,7 +18,7 @@
 }
 
 .upload-preview:hover {
-  border-color: #4f46e5; /* nice accent on hover */
+  border-color: #f4a261; /* nice accent on hover */
   transform: scale(1.05);
 }
 
@@ -29,7 +29,7 @@
 
 /* Styled upload button */
 .upload-label {
-  background-color: #4f46e5; /* violet-600 */
+  background-color: #4caf50; /* violet-600 */
   color: #fff;
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
@@ -39,7 +39,7 @@
 }
 
 .upload-label:hover {
-  background-color: #4338ca; /* darker violet */
+  background-color: #f4a261; /* darker violet */
 }
 
 /* Optional: show filename text */

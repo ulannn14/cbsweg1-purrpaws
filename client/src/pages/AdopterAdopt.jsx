@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import BackButton from "../components/BackButton";
+
+const PET_IMG_BASE =
+  "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/";
 
 function AdopterAdopt() {
 
@@ -11,6 +15,11 @@ function AdopterAdopt() {
 
     const [selectedOrg, setSelectedOrg] = useState(null);
 
+    const getPetImage = (name) =>
+    name
+    ? `${PET_IMG_BASE}${encodeURIComponent(name)}.jpg`
+    : "/images/placeholder.jpg";
+
     const defaultFilters = {
         provinceId: "",
         species: "",
@@ -19,12 +28,10 @@ function AdopterAdopt() {
         age_min: "",
         age_max: "",
         fee_min: "",
-        fee_max: ""
+        fee_max: "",
     };
 
     const [filters, setFilters] = useState(defaultFilters);
-
-
 
     const API = import.meta.env.VITE_API_URL;
 
@@ -42,8 +49,7 @@ function AdopterAdopt() {
 
         setLoadingPets(true);
 
-        fetch(`${API}/api/pets`)
-        .then(res => res.json())
+        fetch(`${API}/api/pets?status=AVAILABLE`)        .then(res => res.json())
         .then(data => setPets(data))
         .catch(err => console.error(err))
         .finally(() => setLoadingPets(false));
@@ -68,7 +74,7 @@ function AdopterAdopt() {
 
         setSelectedOrg(null);
 
-           fetch(`${API}/api/pets`)
+        fetch(`${API}/api/pets?status=AVAILABLE`)
            .then(res => res.json())
            .then(data => setPets(data))
            .catch(err => console.error(err))
@@ -80,7 +86,7 @@ function AdopterAdopt() {
         // otherwise apply org filter
         setSelectedOrg(orgId);
 
-        fetch(`${API}/api/pets?organizationId=${orgId}`)
+        fetch(`${API}/api/pets?organizationId=${orgId}&status=AVAILABLE`)
             .then(res => res.json())
             .then(data => setPets(data))
             .catch(err => console.error(err))
@@ -94,6 +100,8 @@ function AdopterAdopt() {
         setLoadingPets(true);
 
         const params = new URLSearchParams();
+
+        params.append("status", "AVAILABLE");
 
         Object.entries(filters).forEach(([key, value]) => {
             if (value !== "") {
@@ -110,6 +118,7 @@ function AdopterAdopt() {
 
     return (
         <AppLayout>
+            <BackButton />
         <div className="has-filter">
 
         <main className="main">
@@ -128,7 +137,14 @@ function AdopterAdopt() {
                     className={`org-icon ${selectedOrg === org.id ? "active" : ""}`}
                     onClick={() => handleOrgClick(org.id)}
                 >
-                    {org.name}
+                <img
+                src={`/temp-photos/orgs/org-profile-${org.id}.png`}
+                alt={org.name}
+                className="org-profile-img"
+                onError={(e) => {
+                    e.target.src = "/images/org-placeholder.png";
+                }}
+                />
                 </div>
                 ))}
 
@@ -153,12 +169,15 @@ function AdopterAdopt() {
 
                 <div className="adopt-pet-photo">
                     <img
-                        src="/images/placeholder-cat.svg"
+                        src={getPetImage(pet.name)}
                         alt={pet.name}
                         style={{
                             width: "100%",
                             height: "100%",
                             objectFit: "cover"
+                        }}
+                        onError={(e) => {
+                            e.target.src = "/images/placeholder.jpg";
                         }}
                     />
                 </div>
@@ -187,11 +206,11 @@ function AdopterAdopt() {
                         >
                             <img
                             src={
-                                pet.species === "DOG"
+                                pet.breed?.isCat === false
                                 ? "/images/flags/dog.jpg"
                                 : "/images/flags/cat.jpg"
                             }
-                            alt={pet.species}
+                            alt={pet.breed?.isCat ? "Cat" : "Dog"}
                             />
                         </div>
 
@@ -244,8 +263,8 @@ function AdopterAdopt() {
                 onChange={handleChange}
             >
                 <option value="">All</option>
-                <option value="DOG">Dog</option>
-                <option value="CAT">Cat</option>
+                <option value="dog">Dog</option>
+                <option value="cat">Cat</option>
             </select>
             </div>
 

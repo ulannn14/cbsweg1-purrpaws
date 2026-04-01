@@ -1,383 +1,516 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
+import BackButton from "../components/BackButton";
 
 function NewPet() {
+  const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
-    const navigate = useNavigate();
-    const API = import.meta.env.VITE_API_URL;
+  const org = JSON.parse(localStorage.getItem("org"));
 
-    const org = JSON.parse(localStorage.getItem("org"));
+  const [breeds, setBreeds] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([
+    {
+      id: crypto.randomUUID(),
+      file: null,
+      preview: "/images/placeholder.jpg",
+      isExisting: false
+    }
+  ]);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    isMale: true,
+    age: "",
+    size: "",
+    weight: "",
+    color: "",
+    breedId: "",
+    rescueStory: "",
+    dateRescued: "",
+    temperament: "",
+    isSpayedOrNeutered: false,
+    isGoodWithDogs: false,
+    isGoodWithCats: false,
+    isGoodWithKids: false,
+    isHouseTrained: false,
+    isLeashTrained: false,
+    adoptionFee: "",
+    adoptionRequirements: [],
+    adoptionStatus: "",
+    petConditions: [],
+    vaccinations: []
+  });
 
-    const [breeds, setBreeds] = useState([]);
+  useEffect(() => {
+    fetch(`${API}/api/breeds`)
+      .then((res) => res.json())
+      .then((data) => setBreeds(data))
+      .catch((err) => console.error(err));
+  }, [API]);
 
-    // const [imageFile, setImageFile] = useState(null);
-    // const [preview, setPreview] = useState("/images/placeholder-cat.svg");
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
-    const [form, setForm] = useState({
-        name: "",
-        species: "CAT",
-        isMale: true,
-        age: "",
-        size: "MEDIUM",
-        weight: "",
-        color: "",
-        breedId: "",
-        rescueStory: "",
-        dateRescued: "",
-        adoptionReason: "",
-        temperament: "CALM",
-        isSpayedOrNeutered: false,
-        isDewormed: false,
-        isGoodWithDogs: false,
-        isGoodWithCats: false,
-        isGoodWithKids: false,
-        isHouseTrained: false,
-        isLeashTrained: false,
-        adoptionFee: "",
-        adoptionRequirements: [],
-        adoptionStatus: "AVAILABLE"
+    setForm((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : type === "number" || name === "breedId"
+          ? Number(value)
+          : value
+    }));
+  };
+
+  const handleArrayChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      adoptionRequirements: e.target.value.split(",").map((s) => s.trim())
+    }));
+  };
+
+  const handleAddImages = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const newImages = files.map((file) => ({
+      id: crypto.randomUUID(),
+      file,
+      preview: URL.createObjectURL(file),
+      isExisting: false
+    }));
+
+    setGalleryImages((prev) => {
+      const isOnlyPlaceholder =
+        prev.length === 1 &&
+        prev[0].preview === "/images/placeholder.jpg" &&
+        prev[0].file === null;
+
+      const nextImages = isOnlyPlaceholder ? newImages : [...prev, ...newImages];
+
+      if (isOnlyPlaceholder || prev.length === 0) {
+        setActiveImageIndex(0);
+      }
+
+      return nextImages;
     });
 
-    useEffect(() => {
+    e.target.value = "";
+  };
 
-        fetch(`${API}/api/breeds`)
-        .then(res => res.json())
-        .then(data => setBreeds(data))
-        .catch(err => console.error(err));
+  const handleReplaceImage = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || galleryImages.length === 0) return;
 
-    }, []);
-
-    const handleChange = (e) => {
-
-        const { name, value, type, checked } = e.target;
-
-        setForm(prev => ({
-        ...prev,
-        [name]:
-            type === "checkbox"
-            ? checked
-            : type === "number" || name === "breedId"
-            ? Number(value)
-            : value
-        }));
-
+    const updated = [...galleryImages];
+    updated[activeImageIndex] = {
+      ...updated[activeImageIndex],
+      file,
+      preview: URL.createObjectURL(file),
+      isExisting: false
     };
 
-    const handleArrayChange = (e) => {
+    setGalleryImages(updated);
+    e.target.value = "";
+  };
 
-        setForm(prev => ({
-        ...prev,
-        adoptionRequirements: e.target.value.split(",").map(s => s.trim())
-        }));
+  const handleDeleteImage = () => {
+    if (galleryImages.length === 0) return;
 
-    };
+    const updated = galleryImages.filter((_, index) => index !== activeImageIndex);
 
-    /*
-    const handleImageUpload = (e) => {
-
-        const file = e.target.files[0];
-        if (!file) return;
-
-        setImageFile(file);
-        setPreview(URL.createObjectURL(file));
-
-    };
-    */
-
-    const handleSave = async () => {
-
-        try {
-
-        /*
-        const formData = new FormData();
-
-        Object.entries(form).forEach(([key, value]) => {
-
-            if (Array.isArray(value)) {
-            formData.append(key, JSON.stringify(value));
-            } else {
-            formData.append(key, value);
-            }
-
-        });
-
-        formData.append("organizationId", org.id);
-
-        if (imageFile) {
-            formData.append("image", imageFile);
+    if (updated.length === 0) {
+      setGalleryImages([
+        {
+          id: crypto.randomUUID(),
+          file: null,
+          preview: "/placeholder.jpg",
+          isExisting: false
         }
-        */
+      ]);
+      setActiveImageIndex(0);
+      return;
+    }
 
-        const res = await fetch(`${API}/api/pets`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                ...form,
-                organizationId: org.id
-            })
-        });
+    setGalleryImages(updated);
 
-        if (!res.ok) throw new Error("Failed to create pet");
+    if (activeImageIndex >= updated.length) {
+      setActiveImageIndex(updated.length - 1);
+    }
+  };
 
-        const created = await res.json();
+  const showSuccessPopup = (message) => {
+    setSuccessMessage(message);
 
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 2500);
+  };
+
+  const handleSave = async () => {
+    if (isSaving) return;
+
+    try {
+      setIsSaving(true);
+
+      const res = await fetch(`${API}/api/pets`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ...form,
+          organizationId: org.id
+        })
+      });
+
+      if (!res.ok) throw new Error("Failed to create pet");
+
+      const created = await res.json();
+
+      showSuccessPopup("Pet added successfully!");
+
+      setTimeout(() => {
         navigate(`/edit-pet/${created.id}`);
+      }, 1800);
 
-        } catch (err) {
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create pet");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
-        console.error(err);
-        alert("Failed to create pet");
+  return (
+    <OrgAppLayout>
+      <BackButton />
 
-        }
+      <main className="main">
+        <section className="section pet-detail">
 
-    };
+          {successMessage && (
+            <div className="success-popup">
+              <span className="success-popup-icon">✓</span>
+              <span>{successMessage}</span>
+            </div>
+          )}
 
-    return (
+          {/* ================= HERO ================= */}
+          <div className="pet-hero">
 
-        <OrgAppLayout>
+            <div className="edit-gallery">
 
-        <main className="main">
+              <div className="edit-gallery-main">
+                {galleryImages.length > 0 ? (
+                  <img
+                    src={galleryImages[activeImageIndex]?.preview}
+                    alt="pet preview"
+                    className="edit-gallery-main-image"
+                  />
+                ) : (
+                  <div className="edit-gallery-empty">No image</div>
+                )}
+              </div>
 
-            <section className="section pet-detail">
+              <div className="edit-gallery-thumbs">
+                {galleryImages.map((img, index) => (
+                  <button
+                    key={img.id}
+                    type="button"
+                    className={`edit-thumb ${activeImageIndex === index ? "active" : ""}`}
+                    onClick={() => setActiveImageIndex(index)}
+                  >
+                    <img src={img.preview} alt={`thumb-${index}`} />
+                  </button>
+                ))}
+              </div>
 
-            {/* PET IMAGE */}
+              <div className="edit-gallery-count">
+                {galleryImages.length > 0
+                  ? `${activeImageIndex + 1} / ${galleryImages.length}`
+                  : "0 / 0"}
+              </div>
 
-            <div className="pet-header">
-
-                {/* 
-                <div className="upload-container">
-                    <img src={preview} alt="pet preview" className="upload-preview" />
-                    
-                    <label htmlFor="image-upload" className="upload-label">
-                        Upload Photo
-                    </label>
-                    <input
-                        type="file"
-                        id="image-upload"
-                        className="upload-input"
-                        onChange={handleImageUpload}
-                    />
-
-                    {imageFile && <span className="upload-filename">{imageFile.name}</span>}
-                </div>
-                */}
-
+              <div className="edit-gallery-actions">
+                <label htmlFor="add-pet-images" className="edit-upload-label">
+                  Add Photos
+                </label>
                 <input
-                className="edit-input pet-name"
-                name="name"
-                placeholder="Pet Name"
-                value={form.name}
-                onChange={handleChange}
+                  type="file"
+                  id="add-pet-images"
+                  className="edit-upload-input"
+                  accept="image/*"
+                  multiple
+                  onChange={handleAddImages}
                 />
 
-                <div className="pet-fee">
-                Adoption Fee: ₱
+                <label htmlFor="replace-pet-image" className="edit-upload-label secondary">
+                  Replace Selected
+                </label>
                 <input
+                  type="file"
+                  id="replace-pet-image"
+                  className="edit-upload-input"
+                  accept="image/*"
+                  onChange={handleReplaceImage}
+                />
+
+                <button
+                  type="button"
+                  className="edit-delete-btn"
+                  onClick={handleDeleteImage}
+                  disabled={galleryImages.length === 0}
+                >
+                  Delete Selected
+                </button>
+              </div>
+
+            </div>
+
+            <input
+              className="edit-input pet-name"
+              name="name"
+              placeholder="Pet Name"
+              value={form.name}
+              onChange={handleChange}
+            />
+
+            {/* QUICK META */}
+            <div className="pet-meta-grid">
+
+              <div className="quick-card highlight">
+                <span>Adoption Fee</span>
+                <div className="meta-value">
+                  ₱
+                  <input
                     type="number"
                     name="adoptionFee"
                     value={form.adoptionFee}
                     onChange={handleChange}
-                    className="edit-input"
-                />
+                  />
                 </div>
+              </div>
+
+              <div className={`quick-card highlight status ${form.adoptionStatus.toLowerCase()}`}>
+                <span>Adoption Status</span>
+                <select
+                  name="adoptionStatus"
+                  value={form.adoptionStatus}
+                  onChange={handleChange}
+                >
+                  <option value="">Select status</option>
+                  <option value="AVAILABLE">Available</option>
+                  <option value="UNAVAILABLE">Unavailable</option>
+                  <option value="ADOPTED">Adopted</option>
+                </select>
+              </div>
 
             </div>
+          </div>
 
-            {/* DETAILS GRID */}
+          {/* ================= QUICK INFO ================= */}
+          <div className="pet-quick-grid">
 
-            <div className="pet-details-grid">
+            <div className="quick-card">
+              <span>Breed</span>
+              <select name="breedId" value={form.breedId} onChange={handleChange}>
+                <option value="">Select breed</option>
+                {breeds.map((b) => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
+                ))}
+              </select>
+            </div>
 
-                {/* LEFT */}
+            <div className="quick-card">
+              <span>Age</span>
+              <input type="number" name="age" value={form.age} onChange={handleChange} />
+            </div>
 
-                <div className="pet-details-box">
-                <ul>
+            <div className="quick-card">
+              <span>Gender</span>
+              <select
+                value={form.isMale ? "true" : "false"}
+                onChange={(e) =>
+                  setForm({ ...form, isMale: e.target.value === "true" })
+                }
+              >
+                <option value="true">Male</option>
+                <option value="false">Female</option>
+              </select>
+            </div>
 
-                    <li>
-                    <strong>Temperament:</strong>
-                    <select name="temperament" value={form.temperament} onChange={handleChange}>
-                        <option value="CALM">Calm</option>
-                        <option value="PLAYFUL">Playful</option>
-                        <option value="SHY">Shy</option>
-                        <option value="FRIENDLY">Friendly</option>
-                        <option value="AGGRESSIVE">Aggressive</option>
-                    </select>
-                    </li>
+            <div className="quick-card">
+              <span>Size</span>
+              <select name="size" value={form.size} onChange={handleChange}>
+                <option value="">Select size</option>
+                <option value="SMALL">Small</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LARGE">Large</option>
+              </select>
+            </div>
 
-                    <li>
-                    <strong>Species:</strong>
-                    <select name="species" value={form.species} onChange={handleChange}>
-                        <option value="CAT">Cat</option>
-                        <option value="DOG">Dog</option>
-                    </select>
-                    </li>
+            <div className="quick-card">
+              <span>Weight</span>
+              <input type="number" name="weight" value={form.weight} onChange={handleChange} />
+            </div>
 
-                    <li>
-                    <strong>Breed:</strong>
-                    <select name="breedId" value={form.breedId} onChange={handleChange}>
-                        <option value="">Select Breed</option>
-                        {breeds.map(b => (
-                        <option key={b.id} value={b.id}>
-                            {b.name}
-                        </option>
-                        ))}
-                    </select>
-                    </li>
+            <div className="quick-card">
+              <span>Color</span>
+              <input name="color" value={form.color} onChange={handleChange} />
+            </div>
 
-                    <li>
-                    <strong>Gender:</strong>
-                    <select
-                        value={form.isMale ? "true" : "false"}
-                        onChange={e => setForm({...form, isMale: e.target.value === "true"})}
-                    >
-                        <option value="true">Male</option>
-                        <option value="false">Female</option>
-                    </select>
-                    </li>
+          </div>
 
-                    <li>
-                    <strong>Age:</strong>
-                    <input type="number" name="age" value={form.age} onChange={handleChange}/>
-                    </li>
+          {/* ================= DETAILS ================= */}
+          <div className="pet-details-grid">
 
-                    <li>
-                    <strong>Size:</strong>
-                    <select name="size" value={form.size} onChange={handleChange}>
-                        <option value="SMALL">Small</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="LARGE">Large</option>
-                    </select>
-                    </li>
+            <div className="pet-details-box">
+              <h3>Behavior & Traits</h3>
+              <ul>
 
-                    <li>
-                    <strong>Weight:</strong>
-                    <input type="number" name="weight" value={form.weight} onChange={handleChange}/>
-                    </li>
+                <li>
+                  <strong>Temperament</strong>
+                  <select name="temperament" value={form.temperament} onChange={handleChange}>
+                    <option value="">Select temperament</option>
+                    <option value="CALM">Calm</option>
+                    <option value="PLAYFUL">Playful</option>
+                    <option value="SHY">Shy</option>
+                    <option value="FRIENDLY">Friendly</option>
+                    <option value="AGGRESSIVE">Aggressive</option>
+                  </select>
+                </li>
 
-                    <li>
-                    <strong>Color:</strong>
-                    <input name="color" value={form.color} onChange={handleChange}/>
-                    </li>
-
-                </ul>
-                </div>
-
-                {/* RIGHT */}
-
-                <div className="pet-details-box">
-                <ul>
-
-                    <li className="checkbox-row">
-                    <strong>Spayed / Neutered</strong>
-                    <input type="checkbox" name="isSpayedOrNeutered" checked={form.isSpayedOrNeutered} onChange={handleChange}/>
-                    </li>
-
-                    <li className="checkbox-row">
-                    <strong>Good with Dogs</strong>
-                    <input type="checkbox" name="isGoodWithDogs" checked={form.isGoodWithDogs} onChange={handleChange}/>
-                    </li>
-
-                    <li className="checkbox-row">
-                    <strong>Good with Cats</strong>
-                    <input type="checkbox" name="isGoodWithCats" checked={form.isGoodWithCats} onChange={handleChange}/>
-                    </li>
-
-                    <li className="checkbox-row">
-                    <strong>Good with Kids</strong>
-                    <input type="checkbox" name="isGoodWithKids" checked={form.isGoodWithKids} onChange={handleChange}/>
-                    </li>
-
-                    <li className="checkbox-row">
-                    <strong>House Trained</strong>
-                    <input type="checkbox" name="isHouseTrained" checked={form.isHouseTrained} onChange={handleChange}/>
-                    </li>
-
-                    <li className="checkbox-row">
-                    <strong>Leash Trained</strong>
-                    <input type="checkbox" name="isLeashTrained" checked={form.isLeashTrained} onChange={handleChange}/>
-                    </li>
-
-                    <li>
-                    <strong>Adoption Status:</strong>
-                    <select name="adoptionStatus" value={form.adoptionStatus} onChange={handleChange}>
-                        <option value="AVAILABLE">Available</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="ADOPTED">Adopted</option>
-                    </select>
-                    </li>
-
-                    <li>
-                    <strong>Adoption Requirements:</strong>
-                    <textarea
-                        placeholder="Comma separated"
-                        value={form.adoptionRequirements.join(", ")}
-                        onChange={handleArrayChange}
+                {[
+                  ["isGoodWithDogs", "Good with Dogs"],
+                  ["isGoodWithCats", "Good with Cats"],
+                  ["isGoodWithKids", "Good with Kids"],
+                  ["isHouseTrained", "House Trained"],
+                  ["isLeashTrained", "Leash Trained"]
+                ].map(([key, label]) => (
+                  <li key={key} className="checkbox-row">
+                    <strong>{label}</strong>
+                    <input
+                      type="checkbox"
+                      name={key}
+                      checked={form[key]}
+                      onChange={handleChange}
                     />
-                    </li>
+                  </li>
+                ))}
 
-                </ul>
-                </div>
-
+              </ul>
             </div>
 
-            {/* RESCUE INFO */}
+            <div className="pet-details-box">
+              <h3>Medical & Health</h3>
+              <ul>
 
-            <div className="pet-org-box">
-
-                <p>
-                <strong>Date Rescued:</strong>
-                <input
-                    type="date"
-                    name="dateRescued"
-                    value={form.dateRescued}
+                <li className="checkbox-row">
+                  <strong>Spayed / Neutered</strong>
+                  <input
+                    type="checkbox"
+                    name="isSpayedOrNeutered"
+                    checked={form.isSpayedOrNeutered}
                     onChange={handleChange}
-                />
-                </p>
+                  />
+                </li>
 
-                <p>
-                <strong>Rescue Story:</strong>
-                <textarea
-                    name="rescueStory"
-                    value={form.rescueStory}
-                    onChange={handleChange}
-                />
-                </p>
+                <li>
+                  <strong>Medical Conditions</strong>
+                  <textarea
+                    value={form.petConditions.map((c) => c.condition?.name || "").join(", ")}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        petConditions: e.target.value.split(",").map((name) => ({
+                          condition: { name: name.trim() }
+                        }))
+                      })
+                    }
+                  />
+                </li>
 
-                <p>
-                <strong>Adoption Reason:</strong>
-                <textarea
-                    name="adoptionReason"
-                    value={form.adoptionReason}
-                    onChange={handleChange}
-                />
-                </p>
+                <li>
+                  <strong>Vaccinations</strong>
+                  <textarea
+                    value={form.vaccinations.map((v) => v.vaccine?.name || "").join(", ")}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        vaccinations: e.target.value.split(",").map((name) => ({
+                          vaccine: { name: name.trim() }
+                        }))
+                      })
+                    }
+                  />
+                </li>
 
+              </ul>
             </div>
+          </div>
 
-            {/* BUTTONS */}
+          {/* ================= RESCUE INFO ================= */}
+          <div className="pet-org-box">
 
-            <div className="pet-apply">
+            <p>
+              <strong>Date Rescued</strong>
+              <input
+                type="date"
+                name="dateRescued"
+                value={form.dateRescued}
+                onChange={handleChange}
+              />
+            </p>
 
-                <button className="save-btn" onClick={handleSave}>
-                Add Pet
-                </button>
+            <p>
+              <strong>Adoption Requirements</strong>
+              <textarea
+                value={form.adoptionRequirements.join(", ")}
+                onChange={handleArrayChange}
+              />
+            </p>
 
-                <button className="cancel-btn" onClick={() => navigate(-1)}>
-                Cancel
-                </button>
+            <p>
+              <strong>Rescue Story</strong>
+              <textarea
+                name="rescueStory"
+                value={form.rescueStory}
+                onChange={handleChange}
+              />
+            </p>
 
-            </div>
+          </div>
 
-            </section>
+          {/* ================= ACTIONS ================= */}
+          <div className="pet-apply">
+            <button
+              className="apply-btn-large"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <span className="btn-spinner"></span>
+                  <span style={{ marginLeft: "8px" }}>Adding pet...</span>
+                </>
+              ) : (
+                "Add Pet"
+              )}
+            </button>
+            <button className="cancel-btn" onClick={() => navigate(-1)}>
+              Cancel
+            </button>
+          </div>
 
-        </main>
-
-        </OrgAppLayout>
-
-    );
-
+        </section>
+      </main>
+    </OrgAppLayout>
+  );
 }
 
 export default NewPet;

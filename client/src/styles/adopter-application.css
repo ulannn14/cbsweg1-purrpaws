@@ -10,7 +10,7 @@
   gap:16px;
 }
 
-.application-card{
+.adopter-application-card{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -21,17 +21,17 @@
   border-radius:12px;
 
   background:white;
-  transition:0.2s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 
   display:flex;
   align-items:center;
   gap:20px;
 }
 
-/* 
-.application-card:hover{
-  background:#f9f9f9;
-} */
+.adopter-application-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
 
 .application-link{
   text-decoration:none;

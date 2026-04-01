@@ -1,256 +1,467 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
 
 function OrgProfile() {
+    const API = import.meta.env.VITE_API_URL;
+    const storedUser = JSON.parse(localStorage.getItem("org")); // logged-in org
+    const navigate = useNavigate();
+    const id = storedUser?.id;
 
-  const API = import.meta.env.VITE_API_URL;
+    const [editing, setEditing] = useState(false);
+    const [orgInfo, setOrgInfo] = useState(null);
+    const [provinces, setProvinces] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
 
-  const orgUser = JSON.parse(localStorage.getItem("org"));
-  const id = orgUser?.id;
+    const [logoFile, setLogoFile] = useState(null);
+    const [preview, setPreview] = useState("/images/org-avatar.png"); // default org avatar
 
-  const [org, setOrg] = useState(null);
-  const [originalOrg, setOriginalOrg] = useState(null);
-  const [editing, setEditing] = useState(false);
-
-  // Fetch organization profile
-  useEffect(() => {
-
+    useEffect(() => {
     if (!id) return;
 
     fetch(`${API}/api/organizations/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setOrg(data);
-        setOriginalOrg(data);
-      })
-      .catch(err => console.error(err));
+        .then(res => res.json())
+        .then(data => {
+        setOrgInfo(data);
+        setPreview(data.logo ? `${API}/images/${data.logo}` : "/images/org-avatar.png");
+        setLoading(false);
+        })
+        .catch(err => {
+        console.error(err);
+        setLoading(false);
+        });
+    }, [API, id]);
 
-  }, [API, id]);
-
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setOrg(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  // Save profile
-  const handleSave = async () => {
-
-    try {
-
-      const res = await fetch(`${API}/api/organizations/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(org)
-      });
-
-      if (!res.ok) throw new Error("Update failed");
-
-      const updated = await res.json();
-
-      setOrg(updated);
-      setOriginalOrg(updated);
-      setEditing(false);
-
-    } catch (err) {
-      console.error(err);
+    if (loading || !orgInfo) {
+        return (
+        <OrgAppLayout>
+            <div className="page-loading">
+            <p>Loading organization profile...</p>
+            </div>
+        </OrgAppLayout>
+        );
     }
 
-  };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setOrgInfo({
+        ...orgInfo,
+        [name]: value
+        });
+    };
 
-  // Cancel editing
-  const handleCancel = () => {
-    setOrg(originalOrg);
-    setEditing(false);
-  };
+    const STATUS_LABELS = {
+        CATS: "Cats",
+        DOGS: "Dogs",
+        BOTH: "Cats and Dogs"
+    };
 
-  if (!org) {
+    const handleLogoUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setLogoFile(file);
+        setPreview(URL.createObjectURL(file));
+    };
+
+    const showSuccessPopup = (message) => {
+    setSuccessMessage(message);
+
+    setTimeout(() => {
+        setSuccessMessage("");
+    }, 2500);
+    };
+
+    const handleSave = async () => {
+    if (isSaving) return;
+
+    try {
+        setIsSaving(true);
+
+        const res = await fetch(`${API}/api/organizations/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orgInfo)
+        });
+
+        if (!res.ok) throw new Error("Update failed");
+
+        const updated = await res.json();
+
+        setOrgInfo(updated);
+        setEditing(false);
+        showSuccessPopup("Profile updated successfully!");
+    } catch (err) {
+        console.error(err);
+        alert("Failed to update profile");
+    } finally {
+        setIsSaving(false);
+    }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        navigate("/");
+    };
+
     return (
-      <OrgAppLayout>
-        <div className="org-profile-loading">Loading profile...</div>
-      </OrgAppLayout>
-    );
-  }
+        <OrgAppLayout>
+        <main className="main">
+            <section className="section apply-page">
 
-  return (
-    <OrgAppLayout>
-
-      <main className="org-main">
-
-        <section className="org-profile-section">
-
-          <div className="org-profile-box">
-
-            {/* ACTION BUTTONS */}
-
-            {!editing ? (
-
-              <button
-                className="edit-btn"
-                onClick={() => setEditing(true)}
-              >
-                EDIT
-              </button>
-
-            ) : (
-
-              <div className="profile-actions">
-
-                <button
-                  className="cancel-btn"
-                  onClick={handleCancel}
-                >
-                  CANCEL
-                </button>
-
-                <button
-                  className="save-btn"
-                  onClick={handleSave}
-                >
-                  SAVE
-                </button>
-
-              </div>
-
+            {successMessage && (
+            <div className="success-popup">
+                <span className="success-popup-icon">✓</span>
+                <span>{successMessage}</span>
+            </div>
             )}
 
-            {/* PROFILE IMAGE (placeholder only for now) */}
+            {/* ORG LOGO */}
+            <div className="pet-header">
 
-            <div className="org-profile-image">
-
-              <div className="org-avatar">
-
-                <img
-                  src="/images/org-placeholder.png"
-                  alt="Organization Logo"
-                />
-
-              </div>
-
+                {/* PROFILE PHOTO */}
+                <div className="pet-header">
+                    <div className="edit-upload-container">
+                    <img 
+                        src={`/temp-photos/orgs/org-profile-${storedUser.id}.png`}
+                        alt="Profile"
+                        className="edit-upload-preview"
+                    />
+                    {/*editing && (
+                        <>
+                        <label htmlFor="image-upload" className="edit-upload-label">Change Photo</label>
+                        <input type="file" id="image-upload" className="edit-upload-input" onChange={handleImageUpload} />
+                        </>
+                    )*/}
+                    </div>
+                </div>
+                
             </div>
 
-            {/* PROFILE INFO */}
-
-            <div className="profile-grid">
-
-              <h2 className="profile-section-title">Account Details</h2>
-
-              <label>Email</label>
-              {editing ? (
-                <input
-                  name="email"
-                  value={org.email || ""}
-                  onChange={handleChange}
-                  className="profile-input"
-                />
-              ) : (
-                <div className="profile-field">{org.email}</div>
-              )}
-
-              <h2 className="profile-section-title">Organization Details</h2>
-
-              <label>Organization Name</label>
-              {editing ? (
-                <input
-                  name="name"
-                  value={org.name || ""}
-                  onChange={handleChange}
-                  className="profile-input"
-                />
-              ) : (
-                <div className="profile-field">{org.name}</div>
-              )}
-
-              <label>Date Established</label>
-              {editing ? (
-                <input
-                  name="yearEstablished"
-                  value={org.yearEstablished || ""}
-                  onChange={handleChange}
-                  className="profile-input"
-                />
-              ) : (
-                <div className="profile-field">{org.yearEstablished}</div>
-              )}
-
-              <label>City</label>
-              {editing ? (
-                <input
-                  name="city"
-                  value={org.city || ""}
-                  onChange={handleChange}
-                  className="profile-input"
-                />
-              ) : (
-                <div className="profile-field">{org.city}</div>
-              )}
-
-              <label>Address</label>
-              {editing ? (
-                <input
-                  name="address"
-                  value={org.address || ""}
-                  onChange={handleChange}
-                  className="profile-input"
-                />
-              ) : (
-                <div className="profile-field">{org.address}</div>
-              )}
-
-              <h2 className="profile-section-title">Contact Person</h2>
-
-              <label>Contact Name</label>
-              {editing ? (
-                <input
-                  name="contactPerson"
-                  value={org.contactPerson || ""}
-                  onChange={handleChange}
-                  className="profile-input"
-                />
-              ) : (
-                <div className="profile-field">{org.contactPerson}</div>
-              )}
-
-              <label>Contact Role</label>
-              {editing ? (
-                <input
-                  name="contactPersonRole"
-                  value={org.contactPersonRole || ""}
-                  onChange={handleChange}
-                  className="profile-input"
-                />
-              ) : (
-                <div className="profile-field">{org.contactPersonRole}</div>
-              )}
-
-              <label>Contact Number</label>
-              {editing ? (
-                <input
-                  name="contactNumber"
-                  value={org.contactNumber || ""}
-                  onChange={handleChange}
-                  className="profile-input"
-                />
-              ) : (
-                <div className="profile-field">{org.contactNumber}</div>
-              )}
-
+            {/* ACCOUNT DETAILS */}
+            <h2 className="apply-title">Account Details</h2>
+            <div className="apply-box">
+                <div className="personal-grid">
+                <div className="info-row">
+                    <label>Email</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="email"
+                        value={orgInfo.email}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.email}</span>
+                    )}
+                </div>
+                <div className="info-row">
+                    <label>Password</label>
+                    {editing ? (
+                    <input
+                        type="password"
+                        className="edit-input"
+                        name="password"
+                        value={orgInfo.password}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>••••••••</span>
+                    )}
+                </div>
+                </div>
             </div>
 
-          </div>
+            {/* ORGANIZATION INFORMATION */}
+            <h2 className="apply-title">Organization Information</h2>
+            <div className="apply-box">
+                <div className="personal-grid">
+                <div className="info-row">
+                    <label>Name</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="name"
+                        value={orgInfo.name}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.name}</span>
+                    )}
+                </div>
 
-        </section>
+                <div className="info-row">
+                    <label>Contact Person</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="contactPerson"
+                        value={orgInfo.contactPerson || ""}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.contactPerson || "N/A"}</span>
+                    )}
+                </div>
 
-      </main>
+                <div className="info-row">
+                    <label>Contact Role</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="contactPersonRole"
+                        value={orgInfo.contactPersonRole || ""}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.contactPersonRole || "N/A"}</span>
+                    )}
+                </div>
 
-    </OrgAppLayout>
-  );
+                <div className="info-row">
+                    <label>Contact Number</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="contactNumber"
+                        value={orgInfo.contactNumber}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.contactNumber}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Organization Type</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="organizationType"
+                        value={orgInfo.organizationType}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.organizationType}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Year Established</label>
+                    {editing ? (
+                    <input
+                        type="date"
+                        className="edit-input"
+                        name="yearEstablished"
+                        value={orgInfo.yearEstablished?.split("T")[0] || ""}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{new Date(orgInfo.yearEstablished).getFullYear()}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Registration #</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="registrationNumber"
+                        value={orgInfo.registrationNumber || ""}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.registrationNumber || "N/A"}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Website</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="website"
+                        value={orgInfo.website || ""}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.website || "N/A"}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Social Media Links</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="socialMediaLinks"
+                        value={orgInfo.socialMediaLinks?.join(", ") || ""}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.socialMediaLinks?.join(", ") || "N/A"}</span>
+                    )}
+                </div>
+                </div>
+            </div>
+
+            {/* LOCATION */}
+            <h2 className="apply-title">Location</h2>
+            <div className="apply-box">
+                <div className="personal-grid">
+                <div className="info-row">
+                    <label>City</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="city"
+                        value={orgInfo.city}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.city}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Province</label>
+                    {editing ? (
+                    <select
+                        className="edit-input"
+                        name="provinceId"
+                        value={orgInfo.provinceId}
+                        onChange={handleChange}
+                    >
+                        {provinces.map((p) => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
+                    </select>
+                    ) : (
+                    <span>{provinces.find(p => p.id === orgInfo.provinceId)?.name}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Address</label>
+                    {editing ? (
+                    <input
+                        className="edit-input"
+                        name="address"
+                        value={orgInfo.address}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.address}</span>
+                    )}
+                </div>
+                </div>
+            </div>
+
+            {/* ADDITIONAL INFO */}
+            <h2 className="apply-title">Additional Info</h2>
+            <div className="apply-box">
+                <div className="personal-grid">
+                <div className="info-row">
+                    <label>Number of Animals</label>
+                    {editing ? (
+                    <input
+                        type="number"
+                        className="edit-input"
+                        name="numberOfAnimals"
+                        value={orgInfo.numberOfAnimals || 0}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.numberOfAnimals}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Foster Pets</label>
+                    {editing ? (
+                    <select
+                    className="edit-input"
+                    name="status"
+                    value={orgInfo.status}
+                    onChange={handleChange}
+                    >
+                    {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>
+                        {label}
+                        </option>
+                    ))}
+                    </select>
+                    ) : (
+                    <span>{STATUS_LABELS[orgInfo.status] || "Unknown"}</span>
+                    )}
+                </div>
+
+                <div className="info-row">
+                    <label>Description</label>
+                    {editing ? (
+                    <textarea
+                        className="edit-input"
+                        name="description"
+                        value={orgInfo.description || ""}
+                        onChange={handleChange}
+                    />
+                    ) : (
+                    <span>{orgInfo.description || "N/A"}</span>
+                    )}
+                </div>
+                </div>
+            </div>
+            
+            {/* CAMPAIGN BUTTON */}
+            <button
+                className="campaign-btn"
+                onClick={() =>
+                    window.open(
+                    "https://forms.gle/6hSpVStRLjUQxpjQ8",
+                    "_blank",
+                    "noopener,noreferrer"
+                    )
+                }
+                >
+                Apply for Campaign
+            </button>
+
+            {/* ACTION BUTTONS */}
+            <div className="apply-box-actions">
+                {!editing && (
+                <>
+                    <button className="update-btn" onClick={() => setEditing(true)}>Update</button>
+                    <button className="logout-btn" onClick={handleLogout}>Logout</button>
+                </>
+                )}
+                {editing && (
+                <>
+                    <button className="cancel-btn" onClick={() => setEditing(false)}>Cancel</button>
+                    <button
+                    className="save-btn"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    >
+                    {isSaving ? (
+                        <>
+                        <span className="btn-spinner"></span>
+                        <span style={{ marginLeft: "8px" }}>Saving...</span>
+                        </>
+                    ) : (
+                        "Save"
+                    )}
+                    </button>
+                </>
+                )}
+            </div>
+
+            </section>
+        </main>
+        </OrgAppLayout>
+    );
 }
 
 export default OrgProfile;

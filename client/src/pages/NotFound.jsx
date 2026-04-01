@@ -7,7 +7,7 @@ function NotFound() {
     <div className="error-page">
       <h1>404</h1>
       <p>Page not found.</p>
-      <Link to="/">Back to landing page.</Link>
+      <Link to="/">Back to login page.</Link>
     </div>
   );
 }

@@ -5,8 +5,8 @@
 }
 
 .org-icon{
-  width:60px;
-  height:60px;
+  width: 75px;
+  height:75px;
   border-radius:50%;
   border:1px solid #aaa;
   display:flex;
@@ -110,12 +110,10 @@
 }
 
 .filter-btn:hover {
-  background:#333;
+  opacity: 0.9;
+  color: #f4a261;
 }
 
-.application-card {
-  margin-top: 12px;
-}
 .apply-btn{
   margin-right:12px;
 }
@@ -234,10 +232,19 @@ margin-bottom:8px;
   overflow:hidden;
 }
 
+
+.org-carousel img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius: 100%;
+}
+
 .org-circle img{
   width:100%;
   height:100%;
   object-fit:cover;
+  border-radius: 100%;
 }
 
 .org-details{
@@ -256,16 +263,15 @@ margin-top:20px;
 .apply-btn-large{
 padding:12px 28px;
 border-radius:25px;
-border:1px solid #444;
-background:#f4f4f4;
+background:#000;
 cursor:pointer;
 font-size:16px;
-color:#000;
+color:#fff;
 }
 
 .apply-btn-large:hover{
-background:#eaeaea;
-  border:1px solid #444;
+opacity: 0.9;
+color: #f4a261;
 }
 
 .pets-loading{
@@ -296,6 +302,10 @@ background:#eaeaea;
   display:flex;
   flex-direction:column;
   align-items:center;
+}
+
+.pet-org-box a:hover{
+  transform: scale(1.05);
 }
 
 /* ============================= */
@@ -394,7 +404,7 @@ select {
 
 .pet-fee input{
   width:120px;
-  border:none;
+  border:1px solid #8ec790;
   background:transparent;
   font-weight:600;
   font-size:14px;
@@ -413,22 +423,6 @@ select {
   justify-content:center;
   gap:16px;
   margin-top:25px;
-}
-
-.save-btn{
-  padding:12px 30px;
-  border-radius:25px;
-  border:1px solid #4caf50;
-
-  background:#4caf50;
-  color:white;
-
-  font-size:16px;
-  cursor:pointer;
-}
-
-.save-btn:hover{
-  background:#43a047;
 }
 
 .cancel-btn{
@@ -456,4 +450,10 @@ select {
 
 .pet-org-box textarea{
   margin-top:6px;
+}
+
+.form-group textarea{
+  background-color: #fff;
+  color: #000;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

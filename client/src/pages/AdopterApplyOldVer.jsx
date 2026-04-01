@@ -71,7 +71,7 @@ function AdopterApply() {
                   src={
                     pet.image
                       ? `${API}/images/${pet.image}`
-                      : "/images/placeholder-cat.svg"
+                      : `/temp-photos/pets/pet-main-${pet.id}.jpg`
                   }
                   alt={pet.name}
                 />

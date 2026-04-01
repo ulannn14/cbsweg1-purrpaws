@@ -74,29 +74,137 @@
 
 /* APPLICATION CARD */
 
-.application-list{
-  display:flex;
-  flex-direction:column;
-  gap:20px;
+.app-left {
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.application-card{
-  border:1px solid #ccc;
-  padding:25px;
-  border-radius:6px;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.applicant-info-pet-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.application-info h3{
-  margin:0;
+/* APPLICATION CARD */
+.org-application-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.org-application-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.application-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.app-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.applicant-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.applicant-pic img {
+  width: 90px;
+  height: 90px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-left: 0;
+}
+
+.application-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.application-info h3 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+}
+
+.application-info p {
+  margin: 2px 0;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.org-pet-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 100px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-left: 0;
+  background: white;
+}
+
+.org-pet-card:hover {
+  transform: translateY(-2px) scale(1.002);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.org-adopt-pet-photo {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.org-adopt-pet-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.org-pet-card .pet-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-left: 10px;
+  gap: 10px;
+}
+
+.org-pet-card .pet-text h3 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.org-pet-card .pet-text p {
+  font-size: 13px;
+  margin: 2px 0;
+}
+
+.application-view-btn {
+  align-self: flex-end;
+  margin-top: auto;
 }
 
 .view-btn{
   border:1px solid #444;
-  background:#f4f4f4;
+  background:#fff;
   color: #000;
   padding:8px 20px;
   border-radius:20px;
@@ -117,6 +225,15 @@
   cursor:pointer;
 }
 
+.action-btn{
+  border:1px solid #444;
+  background:#d04141;
+  color: #000;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}
+
 .pending-btn{
   border:1px solid #444;
   background:#eaeaea;
@@ -125,13 +242,56 @@
   border-radius:20px;
   cursor:pointer;
 }
-.accept-btn{
-  border:1px solid #444;
-  background:#44d44e;
-  color: #000;
+
+.org-app-actions .application-decline-btn{
+  background:#000;
+  color: #fff;
   padding:8px 20px;
   border-radius:20px;
   cursor:pointer;
+}
+
+.org-app-actions .application-action-btn{
+  background:#000;
+  color: #fff;
+  padding:8px 20px;
+  border-radius:20px;
+  cursor:pointer;
+}
+
+.selected-reject {
+  background: #d04141 !important;
+  color: #fff;
+  border-color: #d04141;
+}
+
+.selected-approve {
+  background: #44d44e !important;
+  color: #000;
+  border-color: #44d44e;
+}
+
+.org-app-actions button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  border-color: #ccc;
+}
+
+.org-app-actions .application-decline-btn:active { 
+  background: #a83232; 
+}
+
+.org-app-actions .application-decline-btn:hover { 
+  background: #a83232;
+}
+
+.org-app-actions .application-action-btn:active {
+  background: #44d44e;
+}
+
+.org-app-actions .application-action-btn:hover {
+  background: #44d44e;
 }
 
 .applied-pet-section {
@@ -143,44 +303,11 @@
   flex-direction: column;
 }
 
-.application-card {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  border: 1px solid #ddd;
-  padding: 25px;
-  border-radius: 10px;
-}
-
-.applicant-pic img {
-  width: 90px;
-  height: 90px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.application-info {
-  flex: 1;
-}
-
-.pet-card {
-  width: 120px;
-  text-align: center;
-}
-
 .pet-card img {
   width: 100px;
   height: 100px;
   object-fit: cover;
   border-radius: 10px;
-}
-
-.view-btn {
-  padding: 10px 24px;
-  border-radius: 25px;
-  border: 1px solid #333;
-  background: white;
-  cursor: pointer;
 }
 
 .org-loading{
@@ -194,8 +321,118 @@
 
 .loading-text,
 .empty-text {
+  grid-column: 1 / -1;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 500px;
+
   text-align: center;
-  padding: 40px;
   color: #777;
   font-size: 16px;
 }
+
+.org-app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 1100px;
+  margin: 5px;   
+  margin-left: 0px;
+  gap: 16px;
+}
+
+.column {
+  display: flex;
+  border:1px solid #ccc;
+  padding:20px;
+  border-radius:10px;
+  background:white;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.column h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+.assessment-box {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assessment-box label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.assessment-box textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.assessment-box textarea:focus {
+  outline: none;
+  border-color: #6c8f6b;
+}
+
+.assessment-box textarea:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.application-submit-btn{
+  margin-top: 20px;
+  padding:10px 18px;
+  border-radius:30px;
+  border:1px solid #444;
+  cursor:pointer;
+  background:black;
+  color:white;
+}
+
+.application-submit-btn:hover{
+  opacity: 0.9;
+  color: #f4a261;
+  background: #000;
+  border-color: #000;
+  border:1px solid #000;
+}
+
+.pending-label {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+@media (max-width: 1024px) {
+  .org-app-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1200px) {
+  .application-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .application-list {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import BackButton from "../components/BackButton";
 
 function ApplicationDetail(){
 
@@ -21,7 +22,7 @@ function ApplicationDetail(){
 
   return(
     <AppLayout>
-
+      <BackButton />
       <main className="main">
 
         <section className="section">
@@ -34,7 +35,7 @@ function ApplicationDetail(){
               src={
                 application.pet?.image
                 ? `${API}/images/${application.pet.image}`
-                : "/images/placeholder-cat.svg"
+                : `/temp-photos/pets/pet-main-${application.pet?.id}.jpg`
               }
               alt={application.pet?.name}
             />

@@ -50,7 +50,6 @@ function AdopterApplication() {
 
   return (
     <AppLayout>
-
       <main className="main">
 
         <section className="section applications">
@@ -60,8 +59,14 @@ function AdopterApplication() {
           <div className="applications-list">
 
             {applications.map(app => (
+          
+            <Link
+              key={app.id}
+              to={app.pet ? `/adopt/${app.pet.id}` : "#"}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
 
-                <div key={app.id} className="application-card">
+                <div key={app.id} className="adopter-application-card">
                 <div className="adopt-card">
 
                   <div className="adopt-pet-photo">
@@ -69,7 +74,7 @@ function AdopterApplication() {
                       src={
                         app.pet?.image
                           ? `${API}/images/${app.pet.image}`
-                          : "/images/placeholder-cat.svg"
+                          : `/temp-photos/pets/pet-main-${app.pet?.id}.jpg`
                       }
                       alt={app.pet?.name}
                       style={{
@@ -134,7 +139,7 @@ function AdopterApplication() {
                   </div>
 
                 </div>
-
+              </Link>
             ))}
 
           </div>
