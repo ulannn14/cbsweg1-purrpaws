@@ -190,7 +190,7 @@ function NewPet() {
       showSuccessPopup("Pet added successfully!");
 
       setTimeout(() => {
-        navigate(`/edit-pet/${created.id}`);
+        navigate(`/org/pets`);
       }, 1800);
 
     } catch (err) {

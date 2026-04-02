@@ -55,6 +55,7 @@ function AdopterApplication() {
         <section className="section applications">
 
           <h2>APPLICATION HISTORY</h2>
+          <p>Refer to email sent for application details and status updates.</p>
 
           <div className="applications-list">
 

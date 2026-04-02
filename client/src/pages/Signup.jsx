@@ -53,31 +53,31 @@ function SignUpPage() {
 
     if (name === "email") {
       if (!value.includes("@")) {
-        error = "Invalid email format";
+        error = "Invalid email format.";
       }
     }
 
-    if (name === "mobile") {
+    if (name === "phoneNumber") {
       if (!/^09\d{9}$/.test(value)) {
-        error = "Mobile must be 11 digits (PH format)";
+        error = "Mobile must be 11 digits (PH format).";
       }
     }
 
     if (name === "userName") {
       if (value.length < 4) {
-        error = "Username must be at least 4 characters";
+        error = "Username must be at least 4 characters.";
       }
     }
 
     if (name === "password") {
       if (value.length < 6) {
-        error = "Password must be at least 6 characters";
+        error = "Password must be at least 6 characters.";
       }
     }
 
     if (name === "firstName" || name === "lastName" || name === "city" || name === "provinceId" || name === "birthdate" || name === "address") {
       if (!value.trim()) {
-        error = "This field is required";
+        error = "This field is required.";
       }
     }
 

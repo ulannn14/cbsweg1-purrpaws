@@ -1,9 +1,14 @@
 /* APPLICATION PAGE */
 
 .applications h2{
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
+.applications p {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 20px;
+}
 .applications-list{
   display:flex;
   flex-direction:column;
@@ -26,11 +31,6 @@
   display:flex;
   align-items:center;
   gap:20px;
-}
-
-.adopter-application-card:hover {
-  transform: translateY(-2px) scale(1.002);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
 }
 
 .application-link{

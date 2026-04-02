@@ -65,7 +65,8 @@ async function sendApplicationEmail({ application, status, notes }) {
         cc: [
           ...(org?.email ? [{ email: org.email }] : []),
           { email: "rlsrainmackenlhy142005@gmail.com" },
-          { email: "liancarlosmbarte@gmail.com" }
+          { email: "liancarlosmbarte@gmail.com" },
+          { email: "leighalbo23@gmail.com" }
         ],
         // ✅ safe replyTo
         replyTo: org?.email
