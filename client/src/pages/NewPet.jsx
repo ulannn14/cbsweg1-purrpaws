@@ -41,15 +41,30 @@ function NewPet() {
     adoptionFee: "",
     adoptionRequirements: [],
     adoptionStatus: "",
-    petConditions: [],
-    vaccinations: []
+    conditionIds: [],
+    vaccineIds: []
   });
+
+  const [conditions, setConditions] = useState([]);
+  const [vaccines, setVaccines] = useState([]);
 
   useEffect(() => {
     fetch(`${API}/api/breeds`)
       .then((res) => res.json())
       .then((data) => setBreeds(data))
       .catch((err) => console.error(err));
+
+    // ✅ NEW
+    fetch(`${API}/api/conditions`)
+      .then(res => res.json())
+      .then(data => setConditions(data))
+      .catch(err => console.error(err));
+
+    fetch(`${API}/api/vaccines`)
+      .then(res => res.json())
+      .then(data => setVaccines(data))
+      .catch(err => console.error(err));
+
   }, [API]);
 
   const handleChange = (e) => {
@@ -422,32 +437,40 @@ function NewPet() {
 
                 <li>
                   <strong>Medical Conditions</strong>
-                  <textarea
-                    value={form.petConditions.map((c) => c.condition?.name || "").join(", ")}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        petConditions: e.target.value.split(",").map((name) => ({
-                          condition: { name: name.trim() }
-                        }))
-                      })
-                    }
-                  />
+                  <select
+                    multiple
+                    className="edit-input multi-select"
+                    value={form.conditionIds}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions).map(opt => Number(opt.value));
+                      setForm({ ...form, conditionIds: selected });
+                    }}
+                  >
+                    {conditions.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                 </li>
 
                 <li>
                   <strong>Vaccinations</strong>
-                  <textarea
-                    value={form.vaccinations.map((v) => v.vaccine?.name || "").join(", ")}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        vaccinations: e.target.value.split(",").map((name) => ({
-                          vaccine: { name: name.trim() }
-                        }))
-                      })
-                    }
-                  />
+                  <select
+                    multiple
+                    className="edit-input multi-select"
+                    value={form.vaccineIds}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions).map(opt => Number(opt.value));
+                      setForm({ ...form, vaccineIds: selected });
+                    }}
+                  >
+                    {vaccines.map(v => (
+                      <option key={v.id} value={v.id}>
+                        {v.name}
+                      </option>
+                    ))}
+                  </select>
                 </li>
 
               </ul>

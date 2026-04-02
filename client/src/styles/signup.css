@@ -156,3 +156,18 @@
   justify-content: flex-start;
   margin-bottom: 10px;
 }
+
+.upload-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+  align-items: center;
+}
+
+.remove-btn {
+  background-color: #555;
+}
+
+.signup-upload{
+  margin-bottom: 25px;
+}

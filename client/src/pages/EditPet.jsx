@@ -16,6 +16,9 @@ function EditPet() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [conditions, setConditions] = useState([]);
+  const [vaccines, setVaccines] = useState([]);
   
   useEffect(() => {
     if (!id) return;
@@ -43,6 +46,18 @@ function EditPet() {
     fetch(`${API}/api/breeds`)
       .then(res => res.json())
       .then(data => setBreeds(data))
+      .catch(err => console.error(err));
+
+    // fetch conditions
+    fetch(`${API}/api/conditions`)
+      .then(res => res.json())
+      .then(data => setConditions(data))
+      .catch(err => console.error(err));
+
+    // fetch vaccines
+    fetch(`${API}/api/vaccines`)
+      .then(res => res.json())
+      .then(data => setVaccines(data))
       .catch(err => console.error(err));
   }, [id]);
 
@@ -73,6 +88,28 @@ function EditPet() {
     if (!file) return;
     setImageFile(file);
     setPreview(URL.createObjectURL(file));
+  };
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this pet? This cannot be undone.");
+
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`${API}/api/pets/${id}`, {
+        method: "DELETE"
+      });
+
+      if (!res.ok) throw new Error("Failed to delete pet");
+
+      alert("Pet deleted successfully");
+
+      // redirect after delete
+      navigate("/org/pets"); // adjust if your route is different
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete pet");
+    }
   };
 
   {/*
@@ -121,21 +158,38 @@ function EditPet() {
     try {
       setIsSaving(true);
 
-      const { breed, organization, ...payload } = form;
+      const {
+        breed,
+        organization,
+        petConditions,
+        vaccinations,
+        ...payload
+      } = form;
 
       const res = await fetch(`${API}/api/pets/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          ...payload,
+          conditionIds: form.conditionIds,
+          vaccineIds: form.vaccineIds
+        })
       });
 
       if (!res.ok) throw new Error("Failed to update pet");
 
       const updated = await res.json();
-      setPet(updated);
-      setForm(updated);
+      setPet(data);
+
+      setForm({
+        ...data,
+
+        // ✅ extract IDs from nested structure
+        conditionIds: data.petConditions?.map(pc => pc.conditionId) || [],
+        vaccineIds: data.vaccinations?.map(v => v.vaccineId) || []
+      });
 
       showSuccessPopup("Pet saved successfully!");
     } catch (err) {
@@ -147,39 +201,39 @@ function EditPet() {
   };
 
   const handleAddImages = (e) => {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-  const newImages = files.map((file) => ({
-    id: crypto.randomUUID(),
-    file,
-    preview: URL.createObjectURL(file),
-    isExisting: false
-  }));
-
-  setGalleryImages((prev) => [...prev, ...newImages]);
-
-  if (galleryImages.length === 0) {
-    setActiveImageIndex(0);
-  }
-
-  e.target.value = "";
-};
-
-const handleReplaceImage = (e) => {
-  const file = e.target.files?.[0];
-    if (!file || galleryImages.length === 0) return;
-
-    const updated = [...galleryImages];
-    updated[activeImageIndex] = {
-      ...updated[activeImageIndex],
+    const newImages = files.map((file) => ({
+      id: crypto.randomUUID(),
       file,
       preview: URL.createObjectURL(file),
       isExisting: false
-    };
+    }));
 
-    setGalleryImages(updated);
+    setGalleryImages((prev) => [...prev, ...newImages]);
+
+    if (galleryImages.length === 0) {
+      setActiveImageIndex(0);
+    }
+
     e.target.value = "";
+  };
+
+  const handleReplaceImage = (e) => {
+    const file = e.target.files?.[0];
+      if (!file || galleryImages.length === 0) return;
+
+      const updated = [...galleryImages];
+      updated[activeImageIndex] = {
+        ...updated[activeImageIndex],
+        file,
+        preview: URL.createObjectURL(file),
+        isExisting: false
+      };
+
+      setGalleryImages(updated);
+      e.target.value = "";
   };
 
   const handleDeleteImage = () => {
@@ -447,39 +501,41 @@ const handleReplaceImage = (e) => {
                 {/* CONDITIONS */}
                 <li>
                   <strong>Medical Conditions</strong>
-                  <textarea
-                    name="conditions"
-                    value={
-                      form.petConditions?.map(pc => pc.condition.name).join(", ") || ""
-                    }
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        petConditions: e.target.value.split(",").map(name => ({
-                          condition: { name: name.trim() }
-                        }))
-                      })
-                    }
-                  />
+                  <select
+                    multiple
+                    className="edit-input multi-select"
+                    value={form.conditionIds || []}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions).map(opt => Number(opt.value));
+                      setForm({ ...form, conditionIds: selected });
+                    }}
+                  >
+                    {conditions.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                 </li>
 
                 {/* VACCINATIONS */}
                 <li>
                   <strong>Vaccinations</strong>
-                  <textarea
-                    name="vaccinations"
-                    value={
-                      form.vaccinations?.map(v => v.vaccine.name).join(", ") || ""
-                    }
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        vaccinations: e.target.value.split(",").map(name => ({
-                          vaccine: { name: name.trim() }
-                        }))
-                      })
-                    }
-                  />
+                  <select
+                    multiple
+                    className="edit-input multi-select"
+                    value={form.vaccineIds || []}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions).map(opt => Number(opt.value));
+                      setForm({ ...form, vaccineIds: selected });
+                    }}
+                  >
+                    {vaccines.map(v => (
+                      <option key={v.id} value={v.id}>
+                        {v.name}
+                      </option>
+                    ))}
+                  </select>
                 </li>
 
               </ul>
@@ -526,8 +582,17 @@ const handleReplaceImage = (e) => {
                 "Save Changes"
               )}
             </button>
+
             <button className="cancel-btn" onClick={() => navigate(-1)}>
               Cancel
+            </button>
+
+            {/* 🔥 NEW DELETE BUTTON */}
+            <button
+              className="delete-btn"
+              onClick={handleDelete}
+            >
+              Delete Pet
             </button>
           </div>
 
