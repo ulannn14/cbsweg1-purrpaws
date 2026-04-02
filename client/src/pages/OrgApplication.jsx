@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
 import BackButton from "../components/BackButton";
@@ -15,18 +15,106 @@ function OrgApplication() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  const [selectedReasons, setSelectedReasons] = useState([]);
+  const [otherChecked, setOtherChecked] = useState(false);
+  const [otherReason, setOtherReason] = useState("");
+
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetch(`${API}/api/applications/${id}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setApplication(data);
         setStatus(data.status);
         setAssessmentNotes(data.comment || "");
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   }, [API, id]);
+
+  {/* ! ! ! MIGHT HAVE TO PUT THIS SA BACKEND AND EDIT SO IT CAN RETURN THE CHECKLIST OPTIONS INSTEAD OF CALCULATING IT HERE ! ! ! */}
+  const checklistOptions = useMemo(() => {
+    if (status === "PENDING" && pendingAction === "UNDER_REVIEW") {
+      return [
+        "Clear and complete answers.",
+        "Shows genuine intent to adopt.",
+        "Basic requirements are met.",
+      ];
+    }
+
+    if (status === "PENDING" && pendingAction === "REJECTED") {
+      return [
+        "Inconsiderable and low-quality answers.",
+        "Incomplete application.",
+        "Unreasonable expectations.",
+        "Signs of lack of commitment.",
+      ];
+    }
+
+    if (status === "UNDER_REVIEW" && pendingAction === "APPROVED") {
+      return [
+        "Financially capable.",
+        "Responsible enough.",
+        "Has time and availability in caring for a pet.",
+        "Pet-friendly living situation.",
+        "Has a clear care plan.",
+        "Shows long-term commitment.",
+        "Good match for the pet.",
+      ];
+    }
+
+    if (status === "UNDER_REVIEW" && pendingAction === "REJECTED") {
+      return [
+        "Cannot sustain expenses.",
+        "Unsuitable living situation.",
+        "Unclear care plan.",
+        "Inconsistent answer.",
+      ];
+    }
+
+    return [];
+  }, [status, pendingAction]);
+
+  useEffect(() => {
+    const combinedNotes = [];
+
+    if (selectedReasons.length > 0) {
+      combinedNotes.push(...selectedReasons);
+    }
+
+    if (otherChecked && otherReason.trim()) {
+      combinedNotes.push(otherReason.trim());
+    }
+
+    setAssessmentNotes(combinedNotes.join("\n"));
+  }, [selectedReasons, otherChecked, otherReason]);
+
+  const toggleReason = (reason) => {
+    setSelectedReasons((prev) =>
+      prev.includes(reason)
+        ? prev.filter((item) => item !== reason)
+        : [...prev, reason]
+    );
+  };
+
+  const handleOtherToggle = () => {
+    setOtherChecked((prev) => {
+      const next = !prev;
+
+      if (!next) {
+        setOtherReason("");
+      }
+
+      return next;
+    });
+  };
+
+  const clearChecklistState = () => {
+    setSelectedReasons([]);
+    setOtherChecked(false);
+    setOtherReason("");
+    setAssessmentNotes("");
+  };
 
   if (!application) {
     return (
@@ -62,7 +150,7 @@ function OrgApplication() {
     setTimeout(() => {
       setSuccessMessage("");
     }, 2500);
-  };  
+  };
 
   async function updateStatus(newStatus) {
     if (!isEditable || isSubmitting) return;
@@ -73,12 +161,12 @@ function OrgApplication() {
       const res = await fetch(`${API}/api/applications/${id}/status`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           status: newStatus,
-          notes: assessmentNotes
-        })
+          notes: assessmentNotes,
+        }),
       });
 
       if (!res.ok) {
@@ -103,7 +191,6 @@ function OrgApplication() {
       setTimeout(() => {
         navigate("/org");
       }, 1800);
-
     } catch (err) {
       console.error(err);
       alert("Failed to update application status");
@@ -115,7 +202,11 @@ function OrgApplication() {
   const toggleAction = (action) => {
     if (!isEditable) return;
 
-    setPendingAction(prev => (prev === action ? null : action));
+    setPendingAction((prev) => {
+      const nextAction = prev === action ? null : action;
+      clearChecklistState();
+      return nextAction;
+    });
   };
 
   return (
@@ -124,7 +215,6 @@ function OrgApplication() {
 
       <main className="org-main">
         <section className="section org-application">
-
           {successMessage && (
             <div className="success-popup">
               <span className="success-popup-icon">✓</span>
@@ -132,14 +222,11 @@ function OrgApplication() {
             </div>
           )}
 
-          {/* STATUS */}
           <div className={`status-pill ${status.toLowerCase()}`}>
             {status === "UNDER_REVIEW" ? "UNDER REVIEW" : status}
           </div>
 
           <div className="org-app-grid">
-
-            {/* COLUMN 1 — APPLICANT */}
             <div className="column">
               <h2>Applicant Details</h2>
 
@@ -147,7 +234,9 @@ function OrgApplication() {
                 <img
                   src={
                     applicant?.userName
-                      ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(applicant.userName)}.jpg`
+                      ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(
+                          applicant.userName
+                        )}.jpg`
                       : "/images/avatar-placeholder.png"
                   }
                   alt="Applicant"
@@ -155,10 +244,19 @@ function OrgApplication() {
               </div>
 
               <div className="application-section">
-                <p><strong>Name:</strong> {application.applicantFirstName} {application.applicantLastName}</p>
-                <p><strong>Email:</strong> {application.applicantEmail}</p>
-                <p><strong>Phone:</strong> {application.applicantPhoneNumber}</p>
-                <p><strong>Address:</strong> {application.applicantAddress}</p>
+                <p>
+                  <strong>Name:</strong> {application.applicantFirstName}{" "}
+                  {application.applicantLastName}
+                </p>
+                <p>
+                  <strong>Email:</strong> {application.applicantEmail}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {application.applicantPhoneNumber}
+                </p>
+                <p>
+                  <strong>Address:</strong> {application.applicantAddress}
+                </p>
 
                 <p>
                   <strong>Age:</strong>{" "}
@@ -167,50 +265,75 @@ function OrgApplication() {
                     : "Unknown"}
                 </p>
 
-                <p><strong>Occupation:</strong> {application.applicantOccupation}</p>
-                <p><strong>Company:</strong> {application.applicantCompany}</p>
-                <p><strong>Civil Status:</strong> {application.applicantCivilStatus}</p>
+                <p>
+                  <strong>Occupation:</strong> {application.applicantOccupation}
+                </p>
+                <p>
+                  <strong>Company:</strong> {application.applicantCompany}
+                </p>
+                <p>
+                  <strong>Civil Status:</strong>{" "}
+                  {application.applicantCivilStatus}
+                </p>
               </div>
             </div>
 
-            {/* COLUMN 2 — QUESTIONNAIRE */}
             <div className="column">
               <h2>Adoption Questionnaire</h2>
 
               <div className="application-section">
-                <p><strong>Why do you want to adopt?</strong></p>
+                <p>
+                  <strong>Why do you want to adopt?</strong>
+                </p>
                 <p>{application.response1}</p>
 
-                <p><strong>Have you owned pets before?</strong></p>
+                <p>
+                  <strong>Have you owned pets before?</strong>
+                </p>
                 <p>{application.response2 ? "Yes" : "No"}</p>
 
-                <p><strong>Where will the pet stay?</strong></p>
+                <p>
+                  <strong>Where will the pet stay?</strong>
+                </p>
                 <p>{application.response3}</p>
 
-                <p><strong>Who will be responsible for the pet?</strong></p>
+                <p>
+                  <strong>Who will be responsible for the pet?</strong>
+                </p>
                 <p>{application.response4}</p>
 
-                <p><strong>Can you afford vet care?</strong></p>
+                <p>
+                  <strong>Can you afford vet care?</strong>
+                </p>
                 <p>{application.response5 ? "Yes" : "No"}</p>
 
-                <p><strong>What will you do if the pet gets sick?</strong></p>
+                <p>
+                  <strong>What will you do if the pet gets sick?</strong>
+                </p>
                 <p>{application.response6}</p>
 
-                <p><strong>How many hours will the pet be alone?</strong></p>
+                <p>
+                  <strong>How many hours will the pet be alone?</strong>
+                </p>
                 <p>{application.response7}</p>
 
-                <p><strong>What will happen if you move?</strong></p>
+                <p>
+                  <strong>What will happen if you move?</strong>
+                </p>
                 <p>{application.response8}</p>
 
-                <p><strong>Have you surrendered a pet before?</strong></p>
+                <p>
+                  <strong>Have you surrendered a pet before?</strong>
+                </p>
                 <p>{application.response9}</p>
 
-                <p><strong>How will you discipline the pet?</strong></p>
+                <p>
+                  <strong>How will you discipline the pet?</strong>
+                </p>
                 <p>{application.response10}</p>
               </div>
             </div>
 
-            {/* COLUMN 3 — PET */}
             <div className="column">
               <h2>Pet Applied</h2>
 
@@ -221,7 +344,9 @@ function OrgApplication() {
                 <div className="adopt-card applied-pet-card">
                   <div className="adopt-pet-photo">
                     <img
-                      src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(pet?.name)}.jpg`}
+                      src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(
+                        pet?.name
+                      )}.jpg`}
                       alt={pet?.name}
                     />
                   </div>
@@ -242,13 +367,9 @@ function OrgApplication() {
                 </div>
               </Link>
             </div>
-
           </div>
 
-          {/* ACTION BUTTONS */}
           <div className="org-app-actions">
-
-            {/* REJECT */}
             <button
               className={`application-decline-btn ${
                 pendingAction === "REJECTED" ? "selected-reject" : ""
@@ -259,7 +380,6 @@ function OrgApplication() {
               Reject
             </button>
 
-            {/* APPROVE / MOVE */}
             <button
               className={`application-action-btn ${
                 pendingAction === "APPROVED" || pendingAction === "UNDER_REVIEW"
@@ -282,27 +402,55 @@ function OrgApplication() {
               {status === "APPROVED" && "Approved"}
               {status === "REJECTED" && "Rejected"}
             </button>
-
           </div>
 
           {status !== "APPROVED" && status !== "REJECTED" && (
             <p className="pending-label">
-              {pendingAction ? `Selected: ${pendingAction}` : "No action selected."}
+              {pendingAction
+                ? `Selected: ${pendingAction}`
+                : "No action selected."}
             </p>
           )}
 
-          {/* NOTES */}
           <div className="assessment-box">
             <label>Assessment Details</label>
-            <textarea
-              placeholder="Enter reason for approval/rejection..."
-              value={assessmentNotes}
-              onChange={(e) => setAssessmentNotes(e.target.value)}
-              disabled={status === "APPROVED" || status === "REJECTED"}
-            />
+
+            {pendingAction && checklistOptions.length > 0 && (
+              <div className="assessment-checklist">
+                {checklistOptions.map((reason) => (
+                  <label key={reason} className="assessment-check-item">
+                    <input
+                      type="checkbox"
+                      checked={selectedReasons.includes(reason)}
+                      onChange={() => toggleReason(reason)}
+                      disabled={status === "APPROVED" || status === "REJECTED"}
+                    />
+                    <span>{reason}</span>
+                  </label>
+                ))}
+
+                <label className="assessment-check-item">
+                  <input
+                    type="checkbox"
+                    checked={otherChecked}
+                    onChange={handleOtherToggle}
+                    disabled={status === "APPROVED" || status === "REJECTED"}
+                  />
+                  <span>Other</span>
+                </label>
+              </div>
+            )}
+
+            {otherChecked && (
+              <textarea
+                placeholder="Enter other reason..."
+                value={otherReason}
+                onChange={(e) => setOtherReason(e.target.value)}
+                disabled={status === "APPROVED" || status === "REJECTED"}
+              />
+            )}
           </div>
 
-          {/* SUBMIT */}
           {status !== "APPROVED" && status !== "REJECTED" && (
             <button
               className="application-submit-btn"
@@ -319,7 +467,6 @@ function OrgApplication() {
               )}
             </button>
           )}
-
         </section>
       </main>
     </OrgAppLayout>

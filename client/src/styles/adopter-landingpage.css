@@ -130,12 +130,15 @@
   padding:12px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  align-items:flex-end;
+  gap:16px;
 }
 
 .pet-text{
   display:flex;
   flex-direction:column;
+  gap:4px;
+  align-items:flex-start;
 }
 
 .pet-type{
@@ -147,6 +150,47 @@
   display:flex;
   align-items:center;
   justify-content:center;
+}
+
+.pet-side-info{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  margin-right: 3px;
+}
+
+.pet-org-province{
+  font-size:14px;
+  color:#666;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.location-icon{
+  font-size:12px;
+  color:#999;
+}
+
+.pet-org-avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  overflow:hidden;
+  border:1px solid #ccc;
+  background:#f2f2f2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.pet-org-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
 /* male = blue */
