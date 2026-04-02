@@ -356,7 +356,7 @@ function EditPet() {
             <div className="pet-meta-grid">
 
               <div className="quick-card highlight">
-                <span>Adoption Fee</span>
+                <span>ADOPTION FEE</span>
                 <div className="meta-value">
                   ₱
                   <input
@@ -369,7 +369,7 @@ function EditPet() {
               </div>
 
               <div className={`quick-card highlight status ${form.adoptionStatus?.toLowerCase()}`}>
-                <span>Adoption Status</span>
+                <span>ADOPTION STATUS</span>
                 <select
                   name="adoptionStatus"
                   value={form.adoptionStatus || ""}
@@ -387,7 +387,7 @@ function EditPet() {
           <div className="pet-quick-grid">
 
             <div className="quick-card">
-              <span>Breed</span>
+              <span>BREED</span>
               <select name="breedId" value={form.breedId || ""} onChange={handleChange}>
                 <option value="">Select breed</option>
                 {breeds.map(b => (
@@ -397,12 +397,12 @@ function EditPet() {
             </div>
 
             <div className="quick-card">
-              <span>Age</span>
+              <span>AGE</span>
               <input type="number" name="age" value={form.age || ""} onChange={handleChange} />
             </div>
 
             <div className="quick-card">
-              <span>Gender</span>
+              <span>GENDER</span>
               <select
                 name="isMale"
                 value={form.isMale ? "true" : "false"}
@@ -416,7 +416,7 @@ function EditPet() {
             </div>
 
             <div className="quick-card">
-              <span>Size</span>
+              <span>SIZE</span>
               <select name="size" value={form.size || ""} onChange={handleChange}>
                 <option value="SMALL">Small</option>
                 <option value="MEDIUM">Medium</option>
@@ -425,12 +425,12 @@ function EditPet() {
             </div>
 
             <div className="quick-card">
-              <span>Weight</span>
+              <span>WEIGHT</span>
               <input type="number" name="weight" value={form.weight || ""} onChange={handleChange} />
             </div>
 
             <div className="quick-card">
-              <span>Color</span>
+              <span>COLOR</span>
               <input name="color" value={form.color || ""} onChange={handleChange} />
             </div>
 
@@ -545,6 +545,8 @@ function EditPet() {
           {/* ================= RESCUE INFO ================= */}
           <div className="pet-org-box">
 
+            <h3>Rescue Information</h3>
+
             <p>
               <strong>Date Rescued</strong>
               <input
@@ -562,6 +564,43 @@ function EditPet() {
                 value={form.rescueStory || ""}
                 onChange={handleChange}
               />
+            </p>
+
+            <p>
+              <strong>Adoption Requirements</strong>
+              <label className="checkbox-row">
+                <span>Zoom Meeting</span>
+                <input
+                  type="checkbox"
+                  checked={form.adoptionRequirements?.includes("ZOOM") || false}
+                  onChange={(e) => {
+                    const current = form.adoptionRequirements || [];
+                    setForm({
+                      ...form,
+                      adoptionRequirements: e.target.checked
+                        ? [...current, "ZOOM"]
+                        : current.filter(r => r !== "ZOOM")
+                    });
+                  }}
+                />
+              </label>
+
+              <label className="checkbox-row">
+                <span>Shelter Visit</span>
+                <input
+                  type="checkbox"
+                  checked={form.adoptionRequirements?.includes("SHELTER_VISIT") || false}
+                  onChange={(e) => {
+                    const current = form.adoptionRequirements || [];
+                    setForm({
+                      ...form,
+                      adoptionRequirements: e.target.checked
+                        ? [...current, "SHELTER_VISIT"]
+                        : current.filter(r => r !== "SHELTER_VISIT")
+                    });
+                  }}
+                />
+              </label>
             </p>
 
           </div>
