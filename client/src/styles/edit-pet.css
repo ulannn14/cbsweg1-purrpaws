@@ -142,6 +142,10 @@ select {
   margin-top:6px;
 }
 
+.pet-org-box h3{
+  text-decoration: underline;
+}
+
 /* ============================= */
 /* Fix inputs and dropdowns for specific fields */
 /* ============================= */
@@ -643,4 +647,55 @@ input[type="date"][name="dateRescued"]:focus {
 .delete-btn:hover {
   background:#b71c1c;
   border:1px solid #d32f2f;
+}
+
+/* ============================= */
+/* Adoption Requirements Checkbox Fix */
+/* ============================= */
+
+.pet-org-box .checkbox-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* override right alignment */
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* move checkbox to the LEFT */
+.pet-org-box .checkbox-row input[type="checkbox"] {
+  order: -1; /* puts checkbox before text */
+  margin-left: 0;
+  margin-right: 8px;
+
+  appearance: none;
+  width: 18px;
+  height: 18px;
+
+  border: 1px solid #aaa;
+  border-radius: 4px;
+
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+}
+
+/* checked state */
+.pet-org-box .checkbox-row input[type="checkbox"]:checked {
+  background: #555;
+  border-color: #555;
+}
+
+/* checkmark */
+.pet-org-box .checkbox-row input[type="checkbox"]:checked::after {
+  content: "✓";
+  color: #fff;
+  font-size: 12px;
+  position: absolute;
+  top: -1px;
+  left: 3px;
+}
+
+.pet-org-box span {
+  font-size: 15px;
+  color: #333;
 }
