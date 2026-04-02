@@ -9,6 +9,8 @@ function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [provinces, setProvinces] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState("/images/avatar-placeholder.png");
   
   const [formData, setFormData] = useState({
     firstName: "",
@@ -36,6 +38,14 @@ function SignUpPage() {
       ...formData,
       [name]: value
     });
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const validateField = (name, value) => {
@@ -102,21 +112,51 @@ function SignUpPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ age validation
     const age = calculateAge(formData.birthdate);
     if (age < 18) {
       alert("You must be at least 18 years old to register.");
       return;
     }
 
+    // ✅ basic front-end validation (optional but recommended)
+    let hasError = false;
+    const newErrors = {};
+
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
+        hasError = true;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (hasError) {
+      alert("Please fix validation errors before submitting.");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // ✅ Use FormData instead of JSON
+      const form = new FormData();
+
+      // append all form fields
+      Object.entries(formData).forEach(([key, value]) => {
+        form.append(key, value);
+      });
+
+      // ✅ append image if selected
+      if (imageFile) {
+        form.append("image", imageFile);
+      }
+
       const res = await fetch(`${API}/api/users/signup`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        body: form
       });
 
       const data = await res.json();
@@ -127,12 +167,14 @@ function SignUpPage() {
         return;
       }
 
-      console.log(formData);
+      console.log("Submitted:", formData);
+
       navigate("/adopter");
 
     } catch (error) {
       console.error(error);
       alert("Server error");
+    } finally {
       setLoading(false);
     }
   };
@@ -155,6 +197,50 @@ function SignUpPage() {
           <h2>SIGN UP</h2>
 
           <form onSubmit={handleSubmit}>
+
+            <div className="edit-upload-container signup-upload">
+              <img
+                src={preview}
+                alt="Preview"
+                className="edit-upload-preview"
+                onError={(e) => {
+                  e.target.src = "/images/avatar-placeholder.png";
+                }}
+              />
+
+              <input
+                type="file"
+                id="signup-photo"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="edit-upload-input"
+              />
+
+              <div className="upload-buttons">
+                <label htmlFor="signup-photo" className="edit-upload-label">
+                  Choose Photo
+                </label>
+
+                {imageFile && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageFile(null);
+                      setPreview("/images/avatar-placeholder.png");
+                    }}
+                    className="edit-upload-label remove-btn"
+                  >
+                    Remove Photo
+                  </button>
+                )}
+              </div>
+
+              {imageFile && (
+                <div className="edit-upload-filename">
+                  {imageFile.name}
+                </div>
+              )}
+            </div>
 
             <div className="signup-row">
 

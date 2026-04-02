@@ -15,6 +15,10 @@ function AdopterProfile() {
   const [successMessage, setSuccessMessage] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("/images/avatar-placeholder.png"); // new default avatar
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [removeImage, setRemoveImage] = useState(false);
 
   const USER_IMG_BASE =
   "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/";
@@ -61,6 +65,17 @@ function AdopterProfile() {
     setPreview(URL.createObjectURL(file));
   };
 
+  const handleNewPasswordChange = (e) => {
+    const value = e.target.value;
+    setNewPassword(value);
+
+    if (value.length > 0 && value.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+    } else {
+      setPasswordError("");
+    }
+  };
+
   const showSuccessPopup = (message) => {
     setSuccessMessage(message);
 
@@ -70,17 +85,41 @@ function AdopterProfile() {
   };
 
   const handleSave = async () => {
-  if (isSaving) return;
+    if (isSaving) return;
 
     try {
       setIsSaving(true);
 
+      if (changingPassword && newPassword.length < 6) {
+        alert("Password must be at least 6 characters");
+        setIsSaving(false);
+        return;
+      }
+
+      const form = new FormData();
+
+      Object.entries(userInfo).forEach(([key, value]) => {
+        form.append(key, value);
+      });
+
+      // ✅ password
+      if (changingPassword) {
+        form.append("password", newPassword);
+      }
+
+      // ✅ new image upload
+      if (imageFile) {
+        form.append("image", imageFile);
+      }
+
+      // ✅ remove image flag
+      if (removeImage) {
+        form.append("removeImage", "true");
+      }
+
       const res = await fetch(`${API}/api/users/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userInfo)
+        body: form
       });
 
       if (!res.ok) throw new Error("Update failed");
@@ -89,9 +128,21 @@ function AdopterProfile() {
 
       localStorage.setItem("user", JSON.stringify(updated));
 
-      setUser(updated);
-      setOriginalUser(updated);
+      setUserInfo(updated);
       setEditing(false);
+      setChangingPassword(false);
+      setNewPassword("");
+      setImageFile(null);
+      setRemoveImage(false);
+
+      // ✅ update preview after save
+      const newPreview =
+        updated.userName
+          ? `${USER_IMG_BASE}${encodeURIComponent(updated.userName)}.jpg`
+          : "/images/avatar-placeholder.png";
+
+      setPreview(newPreview);
+
       showSuccessPopup("Profile updated successfully!");
     } catch (err) {
       console.error(err);
@@ -99,7 +150,6 @@ function AdopterProfile() {
     } finally {
       setIsSaving(false);
     }
-
   };
 
   const handleLogout = () => {
@@ -137,21 +187,48 @@ function AdopterProfile() {
 
           {/* PROFILE PHOTO */}
           <div className="pet-header">
-            <div className="edit-upload-container">
-              <img
-                  src={preview || getUserImage(userInfo.userName)}
+            <div className="pet-header">
+              <div className="edit-upload-container">
+                <img
+                  src={preview}
                   alt="Profile"
                   className="edit-upload-preview"
                   onError={(e) => {
                     e.target.src = "/images/avatar-placeholder.png";
                   }}
                 />
-              {/*editing && (
-                <>
-                  <label htmlFor="image-upload" className="edit-upload-label">Change Photo</label>
-                  <input type="file" id="image-upload" className="edit-upload-input" onChange={handleImageUpload} />
-                </>
-              )*/}
+
+                {editing && (
+                  <div className="upload-buttons">
+                    <input
+                      type="file"
+                      id="image-upload"
+                      className="edit-upload-input"
+                      accept="image/*"
+                      onChange={(e) => {
+                        handleImageUpload(e);
+                        setRemoveImage(false); // user is uploading new → not removing
+                      }}
+                    />
+
+                    <label htmlFor="image-upload" className="edit-upload-label">
+                      Change Photo
+                    </label>
+
+                    <button
+                      type="button"
+                      className="edit-upload-label remove-btn"
+                      onClick={() => {
+                        setImageFile(null);
+                        setRemoveImage(true);
+                        setPreview("/images/avatar-placeholder.png");
+                      }}
+                    >
+                      Remove Photo
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -173,9 +250,35 @@ function AdopterProfile() {
               </div>
               <div className="info-row">
                 <label>Password</label>
-                {editing ? (
-                  <input type="password" className="edit-input" name="password" value={userInfo.password} onChange={handleChange} />
-                ) : <span>********</span>}
+
+                {!editing && <span>********</span>}
+
+                {editing && !changingPassword && (
+                  <div>
+                    <span>********</span>
+                    <button
+                      className="change-password-btn"
+                      onClick={() => setChangingPassword(true)}
+                    >
+                      Change Password
+                    </button>
+                  </div>
+                )}
+
+                {editing && changingPassword && (
+                  <div className="password-change-box">
+                    <input
+                      type="password"
+                      className="edit-input"
+                      placeholder="Enter new password"
+                      value={newPassword}
+                      onChange={handleNewPasswordChange}
+                    />
+                    {passwordError && (
+                      <p className="error-text">{passwordError}</p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

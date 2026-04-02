@@ -134,3 +134,28 @@
   font-size:20px;
   color:#666;
 }
+
+.change-password-btn{
+  margin-left: 10px;
+  padding:6px 12px;
+  border-radius:20px;
+  border:1px solid #444;
+  background:#f4f4f4;
+  cursor:pointer;
+}
+
+.change-password-btn:hover{
+  background:#eaeaea;
+}
+
+.password-change-box{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:8px;
+}
+
+.info-row .password-change-box .error-text{
+  color:red;
+  font-size:12px;
+}
