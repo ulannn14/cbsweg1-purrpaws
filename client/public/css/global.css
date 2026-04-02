@@ -157,3 +157,54 @@ img {
 .back-btn:hover {
   text-decoration: underline;
 }
+
+.floating-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 16px 18px 14px;
+  cursor: pointer;
+  z-index: 9999;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.floating-popup:hover {
+  transform: translateY(-2px);
+}
+
+.floating-popup-title {
+  margin: 0 24px 8px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #000;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 3px;
+}
+
+.floating-popup-message {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #444;
+}
+
+.floating-popup-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: none;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+}
+
+.floating-popup-close:hover {
+  color: #000;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
+import FloatingPopup from "../components/FloatingPopup";
 
 function OrgProfile() {
     const API = import.meta.env.VITE_API_URL;
@@ -164,6 +165,14 @@ function OrgProfile() {
 
     return (
         <OrgAppLayout>
+
+            {/* ! ! ! ! PUT BACKEND HERE ! ! ! */}
+            <FloatingPopup
+                title="ASEAN Pet Adoption Info"
+                message="Learn more about the stray animal and pet adoption situation across ASEAN."
+                redirectTo="/asean-info"
+            />
+            
         <main className="main">
             <section className="section apply-page">
 
