@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import AppLayout from "../components/AppLayout";
+import FloatingPopup from "../components/FloatingPopup";
 
 function AdopterProfile() {
   const API = import.meta.env.VITE_API_URL;
@@ -116,6 +117,14 @@ function AdopterProfile() {
 
   return (
     <AppLayout>
+
+      {/* ! ! ! ! PUT BACKEND HERE ! ! ! */}
+      <FloatingPopup
+                title="ASEAN Pet Adoption Info"
+                message="Learn more about the stray animal and pet adoption situation across ASEAN."
+                redirectTo="/asean-info"
+            />
+            
       <main className="main">
         <section className="section apply-page">
 
