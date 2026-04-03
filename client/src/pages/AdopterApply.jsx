@@ -34,6 +34,10 @@ function AdopterApply() {
     const [successMessage, setSuccessMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [step, setStep] = useState(0);
+    const [errors, setErrors] = useState({});
+    const [formError, setFormError] = useState("");
+    const [previousApplication, setPreviousApplication] = useState(null);
+    const [showReusePrompt, setShowReusePrompt] = useState(true);
 
     const [formData, setFormData] = useState({
         residenceType: "",
@@ -49,7 +53,7 @@ function AdopterApply() {
 
         consent: "",
         consentProof: [],
-        consentUnderstanding: false,
+        consentUnderstanding: "",
         housePhotos: [],
 
         petsNeutered: "",
@@ -66,22 +70,34 @@ function AdopterApply() {
         if (!userId) return;
 
         const fetchData = async () => {
-        try {
-            const [userRes, provincesRes] = await Promise.all([
-            fetch(`${API}/api/users/${userId}`),
-            fetch(`${API}/api/provinces`)
-            ]);
+            try {
+                const [userRes, provincesRes, appsRes] = await Promise.all([
+                    fetch(`${API}/api/users/${userId}`),
+                    fetch(`${API}/api/provinces`),
+                    fetch(`${API}/api/applications/user/${userId}`) // 👈 NEW
+                ]);
 
-            const userData = await userRes.json();
-            const provincesData = await provincesRes.json();
+                const userData = await userRes.json();
+                const provincesData = await provincesRes.json();
+                const appsData = await appsRes.json();
 
-            setPersonalInfo(userData);
-            setProvinces(provincesData);
-        } catch (err) {
-            console.error("Error fetching data:", err);
-        } finally {
-            setLoading(false);
-        }
+                setPersonalInfo(userData);
+                setProvinces(provincesData);
+
+                if (appsData.length > 0) {
+                    // get MOST RECENT
+                    const latest = appsData.sort(
+                        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                    )[0];
+
+                    setPreviousApplication(latest);
+                }
+
+            } catch (err) {
+                console.error("Error fetching data:", err);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchData();
@@ -97,11 +113,53 @@ function AdopterApply() {
         );
     }
 
-    const handleChange = (e) => {
+    const applyPreviousData = () => {
+        if (!previousApplication) return;
+
         setFormData({
-        ...formData,
-        [e.target.name]: e.target.value
+            residenceType: previousApplication.response1 || "",
+            occupation: previousApplication.response2 || "",
+            reasonAdopt: previousApplication.response3 || "",
+            experience: previousApplication.response4 || "",
+            preparationSteps: previousApplication.response5 || "",
+            vetClinic: previousApplication.response6 || "",
+            petDiet: previousApplication.response7 || "",
+            otherPetsList: previousApplication.response8 || "",
+            consent: previousApplication.response9 || "",
+            petsNeutered: previousApplication.response10 || "",
+            planNeuter: previousApplication.response11 || "",
+            agreeUpdates: previousApplication.response12 || "",
+            agreeEmergency: previousApplication.response13 || "",
+            shareSocial: previousApplication.response14 || "",
+            interviewTime: previousApplication.response16 || "",
+
+            // files cannot be restored directly
+            validId: [],
+            consentProof: [],
+            housePhotos: [],
+
+            consentUnderstanding: ""
         });
+
+        setShowReusePrompt(false);
+    };
+
+    const handleSkipReuse = () => {
+        setShowReusePrompt(false);
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+
+        setErrors(prev => ({
+            ...prev,
+            [name]: false
+        }));
     };
 
     const handlePersonalChange = (e) => {
@@ -119,10 +177,37 @@ function AdopterApply() {
         }, 2500);
     };
 
+    const RequiredLabel = ({ children }) => (
+        <label>
+            {children} <span style={{ color: "red" }}>*</span>
+        </label>
+    );
+
+    const getInputClass = (field) =>
+        `edit-input ${errors[field] ? "input-error" : ""}`;
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!isFormComplete() || isSubmitting) return;
+        const isValid = validateForm();
+
+        if (!isValid) {
+            setFormError("Please fill out all required fields before submitting.");
+
+            setTimeout(() => {
+                const firstError = document.querySelector(".input-error");
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            }, 100);
+
+            // auto-hide after 3 seconds
+            setTimeout(() => setFormError(""), 3000);
+
+            return;
+        }
+
+        if (isSubmitting) return;
 
         try {
             setIsSubmitting(true);
@@ -184,21 +269,40 @@ function AdopterApply() {
         "Interview Schedule"
     ];
 
-    const isFormComplete = () => {
-        return (
-            formData.residenceType &&
-            formData.occupation &&
-            formData.reasonAdopt &&
-            formData.experience &&
-            formData.preparationSteps &&
-            formData.vetClinic &&
-            formData.petDiet &&
-            formData.otherPetsList &&
-            formData.consent &&
-            formData.petsNeutered &&
-            formData.planNeuter &&
-            formData.interviewTime
-        );
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.residenceType) newErrors.residenceType = true;
+        if (!formData.occupation) newErrors.occupation = true;
+        if (!formData.reasonAdopt) newErrors.reasonAdopt = true;
+        if (!formData.experience) newErrors.experience = true;
+        if (!formData.preparationSteps) newErrors.preparationSteps = true;
+        if (!formData.vetClinic) newErrors.vetClinic = true;
+        if (!formData.petDiet) newErrors.petDiet = true;
+        if (!formData.otherPetsList) newErrors.otherPetsList = true;
+        if (!formData.consent) newErrors.consent = true;
+        if (!formData.petsNeutered) newErrors.petsNeutered = true;
+        if (!formData.planNeuter) newErrors.planNeuter = true;
+        if (!formData.interviewTime) newErrors.interviewTime = true;
+        if (formData.validId.length === 0) newErrors.validId = true;
+        if (formData.housePhotos.length === 0) newErrors.housePhotos = true;
+
+        // consent already required
+        if (!formData.consent) newErrors.consent = true;
+
+        // IF YES → require proof
+        if (formData.consent === "yes" && formData.consentProof.length === 0) {
+            newErrors.consentProof = true;
+        }
+
+        // IF NO → require understanding
+        if (formData.consent === "no" && !formData.consentUnderstanding) {
+            newErrors.consentUnderstanding = true;
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleFileChange = (e, field) => {
@@ -208,14 +312,11 @@ function AdopterApply() {
             ...prev,
             [field]: [...(prev[field] || []), ...files]
         }));
-        };
 
-        const removeFile = (field, index) => {
-        setFormData(prev => {
-            const updated = [...prev[field]];
-            updated.splice(index, 1);
-            return { ...prev, [field]: updated };
-        });
+        setErrors(prev => ({
+            ...prev,
+            [field]: false
+        }));
     };
 
     return (
@@ -403,9 +504,49 @@ function AdopterApply() {
 
     <h2 className="apply-title">Application Details</h2>
 
+    {formError && (
+    <div className="form-error-banner">
+        {formError}
+    </div>
+    )}
+
     <form onSubmit={handleSubmit}>
 
     <div className="apply-box form-box fixed-box">
+
+    {previousApplication && showReusePrompt ? (
+        <div className="reuse-box">
+
+            <h3 className="section-title">
+                Use Previous Application?
+            </h3>
+
+            <p style={{ marginBottom: "16px" }}>
+                We found a previous application. Would you like to reuse your previous answers?
+            </p>
+
+            <div className="reuse-actions">
+                <button
+                    type="button"
+                    className="save-btn"
+                    onClick={applyPreviousData}
+                >
+                    Yes, use previous answers
+                </button>
+
+                <button
+                    type="button"
+                    className="cancel-btn"
+                    onClick={handleSkipReuse}
+                >
+                    No, start fresh
+                </button>
+            </div>
+
+        </div>
+    ) : (
+
+    <>
 
     <h3 className="section-title">{sections[step]}</h3>
 
@@ -415,31 +556,55 @@ function AdopterApply() {
         {step === 0 && (
         <>
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 What type of residence do you live in? (e.g., House, Apartment, Dormitory, Condominium, etc.)
-            </label>
-            <input
-                className="edit-input"
+            </RequiredLabel>
+            <select
+                className={getInputClass("residenceType")}
                 name="residenceType"
                 value={formData.residenceType || ""}
                 onChange={handleChange}
-            />
-            </div>
+            >
+                <option value="">Select residence type</option>
+                <option>House</option>
+                <option>Apartment</option>
+                <option>Condominium</option>
+                <option>Dormitory / Student housing</option>
+                <option>Townhouse / Townhome</option>
+                <option>Duplex / Triplex</option>
+                <option>Boarding house / Lodging house</option>
+                <option>Studio unit</option>
+                <option>Shared housing / Co-living space</option>
+                <option>Gated community / Subdivision home</option>
+                <option>Rural home / Farmhouse</option>
+                <option>Mobile home</option>
+                <option>Temporary shelter (e.g., evacuation center)</option>
+            </select>
+
+            {errors.residenceType && (
+            <p className="error-text">This field is required</p>
+            )}
+
+            </div> 
 
             <div className="form-group">
-            <label>What is your occupation?</label>
+            <RequiredLabel>What is your occupation?</RequiredLabel>
             <input
-                className="edit-input"
+                className={getInputClass("occupation")}
                 name="occupation"
                 value={formData.occupation || ""}
                 onChange={handleChange}
             />
+
+            {errors.occupation && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
 
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 Kindly submit any valid ID. (e.g., Government, School, or Work)
-            </label>
+            </RequiredLabel>
 
             <label className="upload-box">
                 <input
@@ -458,6 +623,9 @@ function AdopterApply() {
                 </div>
                 ))}
             </div>
+            {errors.validId && (
+            <p className="error-text">Please upload at least one valid ID</p>
+            )}
             </div>
         </>
         )}
@@ -466,16 +634,21 @@ function AdopterApply() {
         {step === 1 && (
         <>
             <div className="form-group">
-            <label>Why would you like to adopt a cat/dog from us?</label>
+            <RequiredLabel>Why would you like to adopt a cat/dog from us?</RequiredLabel>
             <textarea
+                className={errors.reasonAdopt ? "input-error" : ""}
                 name="reasonAdopt"
                 value={formData.reasonAdopt || ""}
                 onChange={handleChange}
             />
+
+            {errors.reasonAdopt && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
 
             <div className="form-group">
-            <label>Do you have any prior experience taking care of cats/dogs?</label>
+            <RequiredLabel>Do you have any prior experience taking care of cats/dogs?</RequiredLabel>
             <div className="radio-group">
                 <label>
                 <input
@@ -496,48 +669,70 @@ function AdopterApply() {
                 /> No
                 </label>
             </div>
+
+            {errors.experience && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
 
             <div className="form-group">
-            <label>What steps are you taking to prepare for adopting a cat/dog?</label>
+            <RequiredLabel>What steps are you taking to prepare for adopting a cat/dog?</RequiredLabel>
             <textarea
+                className={errors.preparationSteps ? "input-error" : ""}
                 name="preparationSteps"
                 value={formData.preparationSteps || ""}
                 onChange={handleChange}
             />
+
+            {errors.preparationSteps && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
 
             <div className="form-group">
-            <label>What vet clinic do you plan on taking your chosen cat/dog to?</label>
+            <RequiredLabel>What vet clinic do you plan on taking your chosen cat/dog to?</RequiredLabel>
             <input
-                className="edit-input"
+                className={getInputClass("vetClinic")}
                 name="vetClinic"
                 value={formData.vetClinic || ""}
                 onChange={handleChange}
             />
+
+            {errors.vetClinic && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
 
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 What is the diet that you are planning on feeding to your chosen cat/dog? Please specify the brands.
-            </label>
+            </RequiredLabel>
             <textarea
+                className={errors.petDiet ? "input-error" : ""}
                 name="petDiet"
                 value={formData.petDiet || ""}
                 onChange={handleChange}
             />
+
+            {errors.petDiet && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
 
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 Do you have other pets? Please list (e.g., 2 cats, 1 dog). Write “N/A” if none.
-            </label>
+            </RequiredLabel>
             <input
-                className="edit-input"
+                className={getInputClass("otherPetsList")}
                 name="otherPetsList"
                 value={formData.otherPetsList || ""}
                 onChange={handleChange}
             />
+
+            {errors.otherPetsList && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
         </>
         )}
@@ -546,9 +741,9 @@ function AdopterApply() {
         {step === 2 && (
         <>
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 If living with others (e.g., family, roommates) or renting, do you have consent from your housemate/s and/or landlord to keep a cat?
-            </label>
+            </RequiredLabel>
             <div className="radio-group">
                 <label>
                 <input
@@ -578,13 +773,16 @@ function AdopterApply() {
                 /> I live alone.
                 </label>
             </div>
+            {errors.consent && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
 
             {formData.consent === "yes" && (
             <div className="form-group">
-                <label>
+                <RequiredLabel>
                 If yes, please provide proof of their consent (e.g., screenshots, documents).
-                </label>
+                </RequiredLabel>
 
                 <label className="upload-box">
                 <input
@@ -603,14 +801,17 @@ function AdopterApply() {
                     </div>
                 ))}
                 </div>
+                {errors.consentProof && (
+                <p className="error-text">Proof of consent is required</p>
+                )}
             </div>
             )}
 
             {formData.consent === "no" && (
             <div className="form-group">
-                <label>
+                <RequiredLabel>
                 If not, please understand that their consent is required for the organization to approve your application, and that proof may be provided at a later time or discussed further through Facebook Messenger.
-                </label>
+                </RequiredLabel>
 
                 <div className="radio-group">
                 <label>
@@ -634,13 +835,16 @@ function AdopterApply() {
                     No, I prefer not to communicate their consent to the organization, and I understand that this may affect the approval of my application.
                 </label>
                 </div>
+                {errors.consentUnderstanding && (
+                <p className="error-text">You must select an option</p>
+                )}
             </div>
             )}
 
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 Kindly upload photos of your residence and where the cat will stay, both indoors and outside the house (include facade, garage, or gate, if any).
-            </label>
+            </RequiredLabel>
 
             <label className="upload-box">
             <input
@@ -659,6 +863,9 @@ function AdopterApply() {
                 </div>
             ))}
             </div>
+            {errors.housePhotos && (
+            <p className="error-text">Please upload residence photos</p>
+            )}
             </div>
         </>
         )}
@@ -667,7 +874,7 @@ function AdopterApply() {
         {step === 3 && (
         <>
             <div className="form-group">
-            <label>If you have other cats/dogs, are they spayed or neutered?</label>
+            <RequiredLabel>If you have other cats/dogs, are they spayed or neutered?</RequiredLabel>
             <div className="radio-group">
                 <label>
                 <input type="radio" name="petsNeutered" value="yes"
@@ -685,18 +892,24 @@ function AdopterApply() {
                     onChange={handleChange}/> I don’t have other pets.
                 </label>
             </div>
+            {errors.petsNeutered && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
 
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 Do you plan to spay/neuter the cat/dog that you will be adopting (if the cat/dog is not spayed/neutered already)?
-            </label>
+            </RequiredLabel>
             <div className="radio-group">
                 <label><input type="radio" name="planNeuter" value="yes" checked={formData.planNeuter==="yes"} onChange={handleChange}/> Yes</label>
                 <label><input type="radio" name="planNeuter" value="no" checked={formData.planNeuter==="no"} onChange={handleChange}/> No</label>
                 <label><input type="radio" name="planNeuter" value="undecided" checked={formData.planNeuter==="undecided"} onChange={handleChange}/> I have not decided yet.</label>
                 <label><input type="radio" name="planNeuter" value="already" checked={formData.planNeuter==="already"} onChange={handleChange}/> The cat/dog that I’m adopting is already spayed/neutered.</label>
             </div>
+            {errors.planNeuter && (
+            <p className="error-text">This field is required</p>
+            )}
             </div>
         </>
         )}
@@ -705,9 +918,9 @@ function AdopterApply() {
         {step === 4 && (
         <>
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 Adopters are expected to send updates to the organization as regularly as possible through the organization’s email address.
-            </label>
+            </RequiredLabel>
             <div className="radio-group">
                 <label>
                 <input type="radio" name="agreeUpdates" value="yes"
@@ -725,9 +938,9 @@ function AdopterApply() {
             </div>
 
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 Adopters are expected to update the organization as soon as possible for the following cases: escape, injury, sickness, accidents, and, in worst cases, death.
-            </label>
+            </RequiredLabel>
             <div className="radio-group">
                 <label>
                 <input type="radio" name="agreeEmergency" value="yes"
@@ -745,9 +958,9 @@ function AdopterApply() {
             </div>
 
             <div className="form-group">
-            <label>
+            <RequiredLabel>
                 Adopters are encouraged to post their adopted pet on Facebook using the official hashtag #AdoptWithPurrPaws to help promote PurrPaws and support pet adoption awareness in reducing the number of stray animals in the country.
-            </label>
+            </RequiredLabel>
             <div className="radio-group">
                 <label>
                 <input type="radio" name="shareSocial" value="yes"
@@ -769,14 +982,18 @@ function AdopterApply() {
         {/* ================= INTERVIEW ================= */}
         {step === 5 && (
         <div className="form-group">
-            <label>What is your preferred date and time for a follow-up Zoom interview?</label>
+            <RequiredLabel>What is your preferred date and time for a follow-up Zoom interview?</RequiredLabel>
             <input
             type="datetime-local"
-            className="edit-input"
+            className={getInputClass("interviewTime")}
             name="interviewTime"
             value={formData.interviewTime || ""}
             onChange={handleChange}
             />
+
+            {errors.interviewTime && (
+            <p className="error-text">This field is required</p>
+            )}
         </div>
         )}
 
@@ -797,6 +1014,10 @@ function AdopterApply() {
         )}
     </div>
 
+    </>
+
+    )}
+
     </div>
 
     {/* BUTTONS */}
@@ -808,10 +1029,10 @@ function AdopterApply() {
     </button>
 
     <button
-    className="save-btn"
-    type="submit"
-    disabled={!isFormComplete() || isSubmitting}
-    >
+            className="save-btn"
+            type="submit"
+            disabled={isSubmitting}
+        >
     {isSubmitting ? (
         <>
         <span className="btn-spinner"></span>
