@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaMapMarkerAlt } from "react-icons/fa";
 import OrgAppLayout from "../components/OrgAppLayout";
 import FloatingPopup from "../components/FloatingPopup";
 
@@ -133,12 +134,22 @@ function OrgLanding() {
                     <div className="org-pet-card">
                       <div className="org-adopt-pet-photo">
                         <img
+<<<<<<< HEAD
                           src={
                                 app.pet?.petImage
                                     ? app.pet.petImage
                                     : "/images/placeholder.jpg"
                                 }
                             alt={app.pet?.name}
+=======
+                          src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(app.pet?.name)}.jpg`}
+                          alt={app.pet?.name}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover"
+                          }}
+>>>>>>> 7fde04c4026df84bada196762a0312dfd050f212
                         />
                       </div>
 
@@ -147,33 +158,53 @@ function OrgLanding() {
                           <h3>{app.pet?.name}</h3>
                           <p>{app.pet?.breed?.name}</p>
 
+                          <p className="pet-org-province">
+                            <FaMapMarkerAlt className="location-icon" />
+                            {app.pet?.organization?.province?.name ||
+                              app.pet?.organization?.province ||
+                              "Unknown province"}
+                          </p>
+
                           <div className="pet-tags">
-                            {app.pet?.age && (
-                              <span className="tag">{app.pet.age} yrs</span>
-                            )}
+                            {app.pet?.age && <span className="tag">{app.pet.age} yrs</span>}
                             {app.pet?.isSpayedOrNeutered && (
                               <span className="tag dark">Neutered</span>
                             )}
                           </div>
                         </div>
 
-                        <div
-                          className={`pet-type ${
-                            app.pet?.isMale === true
-                              ? "male"
-                              : app.pet?.isMale === false
-                              ? "female"
-                              : ""
-                          }`}
-                        >
-                          <img
-                            src={
-                              app.pet?.breed?.isCat
-                                ? "/images/flags/cat.jpg"
-                                : "/images/flags/dog.jpg"
-                            }
-                            alt="species"
-                          />
+                        <div className="pet-side-info">
+                          <div
+                            className={`pet-type ${
+                              app.pet?.isMale === true
+                                ? "male"
+                                : app.pet?.isMale === false
+                                ? "female"
+                                : ""
+                            }`}
+                          >
+                            <img
+                              src={
+                                app.pet?.breed?.isCat
+                                  ? "/images/flags/cat.jpg"
+                                  : "/images/flags/dog.jpg"
+                              }
+                              alt={app.pet?.breed?.isCat ? "Cat" : "Dog"}
+                            />
+                          </div>
+
+                          <div className="pet-org-avatar">
+                            <img
+                              src={
+                                app.pet?.organization?.userName
+                                  ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(app.pet.organization.userName)}.jpg`
+                                  : app.pet?.organization?.image
+                                  ? `${API}/images/${app.pet.organization.image}`
+                                  : "/images/avatar-placeholder.png"
+                              }
+                              alt={app.pet?.organization?.name || "Organization"}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>

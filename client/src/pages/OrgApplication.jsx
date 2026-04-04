@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { FaMapMarkerAlt } from "react-icons/fa";
 import OrgAppLayout from "../components/OrgAppLayout";
 import BackButton from "../components/BackButton";
 
@@ -18,6 +19,7 @@ function OrgApplication() {
   const [selectedReasons, setSelectedReasons] = useState([]);
   const [otherChecked, setOtherChecked] = useState(false);
   const [otherReason, setOtherReason] = useState("");
+  const [messageToApplicant, setMessageToApplicant] = useState("");
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -83,11 +85,15 @@ function OrgApplication() {
     }
 
     if (otherChecked && otherReason.trim()) {
-      combinedNotes.push(otherReason.trim());
+      combinedNotes.push(`Other reason: ${otherReason.trim()}`);
+    }
+
+    if (messageToApplicant.trim()) {
+      combinedNotes.push(`Message to applicant: ${messageToApplicant.trim()}`);
     }
 
     setAssessmentNotes(combinedNotes.join("\n"));
-  }, [selectedReasons, otherChecked, otherReason]);
+  }, [selectedReasons, otherChecked, otherReason, messageToApplicant]);
 
   const toggleReason = (reason) => {
     setSelectedReasons((prev) =>
@@ -113,6 +119,7 @@ function OrgApplication() {
     setSelectedReasons([]);
     setOtherChecked(false);
     setOtherReason("");
+    setMessageToApplicant("");
     setAssessmentNotes("");
   };
 
@@ -209,6 +216,27 @@ function OrgApplication() {
     });
   };
 
+
+
+  const QUESTIONS = [
+    { label: "Residence Type", field: "response1" },
+    { label: "Occupation", field: "response2" },
+    { label: "Why adopt?", field: "response3" },
+    { label: "Experience with pets", field: "response4" },
+    { label: "Preparation steps", field: "response5" },
+    { label: "Vet clinic", field: "response6" },
+    { label: "Planned diet", field: "response7" },
+    { label: "Other pets", field: "response8" },
+    { label: "Consent status", field: "response9" },
+    { label: "Consent understanding", field: "response10" },
+    { label: "Pets neutered?", field: "response11" },
+    { label: "Plan to neuter?", field: "response12" },
+    { label: "Agree to updates?", field: "response13" },
+    { label: "Agree emergency updates?", field: "response14" },
+    { label: "Share on social?", field: "response15" },
+    { label: "Interview time", field: "response16", type: "date" }
+  ];
+
   return (
     <OrgAppLayout>
       <BackButton />
@@ -282,55 +310,21 @@ function OrgApplication() {
               <h2>Adoption Questionnaire</h2>
 
               <div className="application-section">
-                <p>
-                  <strong>Why do you want to adopt?</strong>
-                </p>
-                <p>{application.response1}</p>
+                {QUESTIONS.map((q) => {
+                  let answer = application[q.field];
 
-                <p>
-                  <strong>Have you owned pets before?</strong>
-                </p>
-                <p>{application.response2 ? "Yes" : "No"}</p>
+                  if (q.type === "date" && answer) {
+                    answer = new Date(answer).toLocaleString();
+                  }
 
-                <p>
-                  <strong>Where will the pet stay?</strong>
-                </p>
-                <p>{application.response3}</p>
-
-                <p>
-                  <strong>Who will be responsible for the pet?</strong>
-                </p>
-                <p>{application.response4}</p>
-
-                <p>
-                  <strong>Can you afford vet care?</strong>
-                </p>
-                <p>{application.response5 ? "Yes" : "No"}</p>
-
-                <p>
-                  <strong>What will you do if the pet gets sick?</strong>
-                </p>
-                <p>{application.response6}</p>
-
-                <p>
-                  <strong>How many hours will the pet be alone?</strong>
-                </p>
-                <p>{application.response7}</p>
-
-                <p>
-                  <strong>What will happen if you move?</strong>
-                </p>
-                <p>{application.response8}</p>
-
-                <p>
-                  <strong>Have you surrendered a pet before?</strong>
-                </p>
-                <p>{application.response9}</p>
-
-                <p>
-                  <strong>How will you discipline the pet?</strong>
-                </p>
-                <p>{application.response10}</p>
+                  return (
+                    <div key={q.field}>
+                      <p><strong>{q.label}</strong></p>
+                      <p>{answer ?? "N/A"}</p>
+                    </div>
+                  );
+              })}
+              
               </div>
             </div>
 
@@ -343,28 +337,68 @@ function OrgApplication() {
               >
                 <div className="adopt-card applied-pet-card">
                   <div className="adopt-pet-photo">
-                    <img
-                      src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(
-                        pet?.name
-                      )}.jpg`}
-                      alt={pet?.name}
-                    />
+                  <img
+                      src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${pet.name}.jpg`}
+                      alt={pet.name}
+                      style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover"
+                      }}
+                  />
                   </div>
 
                   <div className="pet-info">
-                    <div className="pet-text">
-                      <h3>{pet?.name}</h3>
-                      <p>{pet?.breed?.name}</p>
+                  <div className="pet-text">
+                      <h3>{pet.name}</h3>
+                      <p>{pet.breed?.name}</p>
+
+                      <p className="pet-org-province">
+                          <FaMapMarkerAlt className="location-icon" />
+                          {pet.organization?.province?.name || pet.organization?.province || "Unknown province"}
+                      </p>
 
                       <div className="pet-tags">
-                        {pet?.age && <span className="tag">{pet.age} yrs</span>}
-                        {pet?.isSpayedOrNeutered && (
-                          <span className="tag dark">Neutered</span>
-                        )}
+                      {pet.age && <span className="tag">{pet.age} yrs</span>}
+                      {pet.isSpayedOrNeutered && <span className="tag dark">Neutered</span>}
                       </div>
-                    </div>
                   </div>
-                </div>
+
+                  <div className="pet-side-info">
+                      <div
+                      className={`pet-type ${
+                          pet.isMale === true
+                          ? "male"
+                          : pet.isMale === false
+                          ? "female"
+                          : ""
+                      }`}
+                      >
+                      <img
+                          src={
+                          pet.breed?.isCat
+                              ? "/images/flags/cat.jpg"
+                              : "/images/flags/dog.jpg"
+                          }
+                          alt={pet.breed?.isCat ? "Cat" : "Dog"}
+                      />
+                      </div>
+
+                      <div className="pet-org-avatar">
+                      <img
+                          src={
+                          pet.organization?.userName
+                              ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(pet.organization.userName)}.jpg`
+                              : pet.organization?.image
+                              ? `${API}/images/${pet.organization.image}`
+                              : "/images/avatar-placeholder.png"
+                          }
+                          alt={pet.organization?.name || "Organization"}
+                      />
+                      </div>
+                  </div>
+                  </div>
+              </div>
               </Link>
             </div>
           </div>
@@ -449,12 +483,19 @@ function OrgApplication() {
                 disabled={status === "APPROVED" || status === "REJECTED"}
               />
             )}
+
+            <textarea
+              placeholder="Message to send to applicant (required)."
+              value={messageToApplicant}
+              onChange={(e) => setMessageToApplicant(e.target.value)}
+              disabled={status === "APPROVED" || status === "REJECTED"}
+            />
           </div>
 
           {status !== "APPROVED" && status !== "REJECTED" && (
             <button
               className="application-submit-btn"
-              disabled={!assessmentNotes || !pendingAction || isSubmitting}
+              disabled={!pendingAction || !messageToApplicant.trim() || isSubmitting}
               onClick={() => updateStatus(pendingAction)}
             >
               {isSubmitting ? (

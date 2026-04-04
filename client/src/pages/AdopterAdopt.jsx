@@ -13,6 +13,14 @@ function AdopterAdopt() {
     const [pets, setPets] = useState([]);
     const [provinces, setProvinces] = useState([]);
 
+    const availableProvinceIds = new Set(
+        pets.map(p => p.organization?.provinceId)
+    );
+
+    const filteredProvinces = provinces.filter(p =>
+        availableProvinceIds.has(p.id)
+    );
+
     const [selectedOrg, setSelectedOrg] = useState(null);
 
     const getPetImage = (name) =>
@@ -246,9 +254,9 @@ function AdopterAdopt() {
                     onChange={handleChange}
                 >
 
-                    <option value="">All Provinces</option>
+                    <option value="">Available Provinces</option>
 
-                    {provinces.map(p => (
+                    {filteredProvinces.map(p => (
                         <option key={p.id} value={p.id}>
                             {p.name}
                         </option>
