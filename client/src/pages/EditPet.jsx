@@ -25,22 +25,32 @@ function EditPet() {
 
     // Fetch pet details
     fetch(`${API}/api/pets/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setPet(data);
-        setForm(data);
-        const initialImage = data.name
-          ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(data.name)}.jpg`
-          : "/images/placeholder.jpg";
+    .then(res => res.json())
+    .then(data => {
 
-        setGalleryImages([
-          { id: crypto.randomUUID(), file: null, preview: "/images/placeholder.jpg", isExisting: true },
-          { id: crypto.randomUUID(), file: null, preview: "/images/placeholder.jpg", isExisting: true }
-        ]);
-        setActiveImageIndex(0);
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+      console.log("DATA:", data);
+      setPet(data);
+      setForm(data);
+
+      const images = data?.petImages?.length
+        ? data.petImages.map(url => ({
+            id: crypto.randomUUID(),
+            file: null,
+            preview: url,
+            isExisting: true
+          }))
+        : [{
+            id: crypto.randomUUID(),
+            file: null,
+            preview: "/images/placeholder.jpg",
+            isExisting: true
+          }];
+
+      setGalleryImages(images);
+      setActiveImageIndex(0);
+    })
+    .catch(err => console.error(err))
+    .finally(() => setLoading(false));
 
     // Fetch breeds
     fetch(`${API}/api/breeds`)
@@ -154,7 +164,7 @@ function EditPet() {
 
   const handleSave = async () => {
     if (isSaving) return;
-
+    
     try {
       setIsSaving(true);
 
@@ -166,29 +176,47 @@ function EditPet() {
         ...payload
       } = form;
 
+      const formData = new FormData();
+
+      const existingImages = galleryImages
+        .filter(img => img.isExisting && !img.file)
+        .map(img => img.preview);
+
+      formData.append("existingImages", JSON.stringify(existingImages));
+
+      galleryImages.forEach((img) => {
+        if (img.file) {
+          formData.append("petImages", img.file);
+        }
+      });
+
+      // Append normal fields
+      Object.entries(payload).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value ?? "");
+        }
+      });
+
+      // Append condition + vaccine IDs
+      formData.append("conditionIds", JSON.stringify(form.conditionIds || []));
+      formData.append("vaccineIds", JSON.stringify(form.vaccineIds || []));
+
       const res = await fetch(`${API}/api/pets/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...payload,
-          conditionIds: form.conditionIds,
-          vaccineIds: form.vaccineIds
-        })
+        body: formData, // NO JSON HEADERS
       });
 
       if (!res.ok) throw new Error("Failed to update pet");
 
       const updated = await res.json();
-      setPet(data);
 
+      setPet(updated);
       setForm({
-        ...data,
-
-        // ✅ extract IDs from nested structure
-        conditionIds: data.petConditions?.map(pc => pc.conditionId) || [],
-        vaccineIds: data.vaccinations?.map(v => v.vaccineId) || []
+        ...updated,
+        conditionIds: updated.petConditions?.map(pc => pc.conditionId) || [],
+        vaccineIds: updated.vaccinations?.map(v => v.vaccineId) || []
       });
 
       showSuccessPopup("Pet saved successfully!");

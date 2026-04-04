@@ -226,11 +226,22 @@ function AdopterApply() {
             form.append("applicantBirthdate", personalInfo.birthdate);
 
             // --- FORM DATA ---
-            Object.entries(formData).forEach(([key, value]) => {
-            if (!Array.isArray(value) && value !== "" && value !== null) {
-                form.append(key, value);
-            }
-            });
+            form.append("response1", formData.residenceType);
+            form.append("response2", formData.occupation);
+            form.append("response3", formData.reasonAdopt);
+            form.append("response4", formData.experience);
+            form.append("response5", formData.preparationSteps);
+            form.append("response6", formData.vetClinic);
+            form.append("response7", formData.petDiet);
+            form.append("response8", formData.otherPetsList);
+            form.append("response9", formData.consent);
+            form.append("response10", formData.petsNeutered);
+            form.append("response11", formData.planNeuter);
+            form.append("response12", formData.agreeUpdates);
+            form.append("response13", formData.agreeEmergency);
+            form.append("response14", formData.shareSocial);
+            form.append("response15", formData.consentUnderstanding);
+            form.append("response16", formData.interviewTime);
 
             // --- FILES ---
             formData.validId.forEach(file => form.append("validId", file));

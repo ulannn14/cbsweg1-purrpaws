@@ -158,6 +158,17 @@ function NewPet() {
     }
   };
 
+  const handleSetAsMainImage = (index) => {
+    if (index === 0) return;
+
+    const updated = [...galleryImages];
+    const [selected] = updated.splice(index, 1);
+    updated.unshift(selected);
+
+    setGalleryImages(updated);
+    setActiveImageIndex(0);
+  };
+
   const showSuccessPopup = (message) => {
     setSuccessMessage(message);
 
@@ -172,15 +183,29 @@ function NewPet() {
     try {
       setIsSaving(true);
 
+      const formData = new FormData();
+
+      // append normal fields
+      Object.entries(form).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value ?? "");
+        }
+      });
+
+      formData.append("organizationId", org.id);
+
+      // append images
+      galleryImages.forEach((img) => {
+        if (img.file) {
+          formData.append("petImages", img.file);
+        }
+      });
+
       const res = await fetch(`${API}/api/pets`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...form,
-          organizationId: org.id
-        })
+        body: formData // NO JSON HEADER
       });
 
       if (!res.ok) throw new Error("Failed to create pet");
@@ -234,14 +259,22 @@ function NewPet() {
 
               <div className="edit-gallery-thumbs">
                 {galleryImages.map((img, index) => (
-                  <button
-                    key={img.id}
-                    type="button"
-                    className={`edit-thumb ${activeImageIndex === index ? "active" : ""}`}
-                    onClick={() => setActiveImageIndex(index)}
-                  >
-                    <img src={img.preview} alt={`thumb-${index}`} />
-                  </button>
+                  <div key={img.id}>
+                    <button
+                      type="button"
+                      className={`edit-thumb ${activeImageIndex === index ? "active" : ""}`}
+                      onClick={() => setActiveImageIndex(index)}
+                    >
+                      <img src={img.preview} alt={`thumb-${index}`} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSetAsMainImage(index)}
+                    >
+                      Set as Main
+                    </button>
+                  </div>
                 ))}
               </div>
 
