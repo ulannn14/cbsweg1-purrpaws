@@ -5,37 +5,34 @@ import AppLayout from "../components/AppLayout";
 import FloatingPopup from "../components/FloatingPopup";
 
 function AdopterApplication() {
-
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const API = import.meta.env.VITE_API_URL;
 
   const user = JSON.parse(localStorage.getItem("user"));
-  
+
   useEffect(() => {
+    if (!user) return;
 
-  if (!user) return;
-
-  fetch(`${API}/api/applications/user/${user.id}`)
-    .then(res => res.json())
-    .then(data => {
-      console.log("Applications:", data);
-      setApplications(data);
-      setLoading(false);
-    })
-    .catch(err => {
-      console.error(err);
-      setLoading(false);
-    });
-
+    fetch(`${API}/api/applications/user/${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Applications:", data);
+        setApplications(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
   }, [API, user]);
 
   if (loading) {
     return (
       <AppLayout>
-      <div className="page-loading">
-        <p>Loading applications...</p>
-      </div>
+        <div className="page-loading">
+          <p>Loading applications...</p>
+        </div>
       </AppLayout>
     );
   }
@@ -43,170 +40,132 @@ function AdopterApplication() {
   if (applications.length === 0) {
     return (
       <AppLayout>
-      <div className="page-loading">
-        <p>No applications yet.</p>
-      </div>
+        <div className="page-loading">
+          <p>No applications yet.</p>
+        </div>
       </AppLayout>
     );
   }
 
   return (
     <AppLayout>
-
-      {/* ! ! ! ! PUT BACKEND HERE ! ! ! */}
       <FloatingPopup
-                title="ASEAN Pet Adoption Info"
-                message="Learn more about the stray animal and pet adoption situation across ASEAN."
-                redirectTo="/asean-info"
-            />
+        title="ASEAN Pet Adoption Info"
+        message="Learn more about the stray animal and pet adoption situation across ASEAN."
+        redirectTo="/asean-info"
+      />
+
       <main className="main">
-
         <section className="section applications">
-
           <h2>APPLICATION HISTORY</h2>
-          <p>Refer to email sent for application details and status updates.</p>
+          <p>
+            Refer to email sent for application details and status updates.
+          </p>
 
           <div className="applications-list">
-
             {applications.map((app) => {
               const pet = app.pet;
 
               return (
-                  <div className="adopter-application-card">
-                    <div className="adopt-card">
-<<<<<<< HEAD
-                      <div className="adopt-pet-photo">
-                        <img
-                          src={
-                            pet.petImage
-                              ? pet.petImage
-                              : "/images/placeholder.jpg"
-                          }
-                          alt={pet.name}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover"
-                          }}
-                        />
+                <div className="adopter-application-card" key={app.id}>
+                  <div className="adopt-card">
+                    <div className="adopt-pet-photo">
+                      <img
+                        src={
+                          pet.petImage
+                            ? pet.petImage
+                            : "/images/placeholder.jpg"
+                        }
+                        alt={pet.name}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
+
+                    <div className="pet-info">
+                      <div className="pet-text">
+                        <h3>{pet?.name}</h3>
+                        <p>{pet?.breed?.name}</p>
+
+                        <p className="pet-org-province">
+                          <FaMapMarkerAlt className="location-icon" />
+                          {pet?.organization?.province?.name ||
+                            pet?.organization?.province ||
+                            "Unknown province"}
+                        </p>
+
+                        <div className="pet-tags">
+                          {pet?.age && (
+                            <span className="tag">{pet.age} yrs</span>
+                          )}
+                          {pet?.isSpayedOrNeutered && (
+                            <span className="tag dark">Neutered</span>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="pet-info">
-                        <div className="pet-text">
-                          <h3>{pet?.name}</h3>
-                          <p>{pet?.breed?.name}</p>
-
-                          <p className="pet-org-province">
-                            <FaMapMarkerAlt className="location-icon" />
-                            {pet?.organization?.province?.name ||
-                              pet?.organization?.province ||
-                              "Unknown province"}
-                          </p>
-
-                          <div className="pet-tags">
-                            {pet?.age && <span className="tag">{pet.age} yrs</span>}
-                            {pet?.isSpayedOrNeutered && (
-                              <span className="tag dark">Neutered</span>
-                            )}
-                          </div>
-=======
-                      <Link
-                        key={app.id}
-                        to={pet ? `/adopt/${pet.id}` : "#"}
-                        style={{ textDecoration: "none", color: "inherit" }}
-                      >
-                        <div className="adopt-pet-photo">
+                      <div className="pet-side-info">
+                        <div
+                          className={`pet-type ${
+                            pet?.isMale === true
+                              ? "male"
+                              : pet?.isMale === false
+                              ? "female"
+                              : ""
+                          }`}
+                        >
                           <img
-                            src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${pet?.name}.jpg`}
-                            alt={pet?.name}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover"
-                            }}
+                            src={
+                              pet?.breed?.isCat
+                                ? "/images/flags/cat.jpg"
+                                : "/images/flags/dog.jpg"
+                            }
+                            alt={pet?.breed?.isCat ? "Cat" : "Dog"}
                           />
->>>>>>> 7fde04c4026df84bada196762a0312dfd050f212
                         </div>
 
-                        <div className="pet-info">
-                          <div className="pet-text">
-                            <h3>{pet?.name}</h3>
-                            <p>{pet?.breed?.name}</p>
-
-                            <p className="pet-org-province">
-                              <FaMapMarkerAlt className="location-icon" />
-                              {pet?.organization?.province?.name ||
-                                pet?.organization?.province ||
-                                "Unknown province"}
-                            </p>
-
-                            <div className="pet-tags">
-                              {pet?.age && <span className="tag">{pet.age} yrs</span>}
-                              {pet?.isSpayedOrNeutered && (
-                                <span className="tag dark">Neutered</span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="pet-side-info">
-                            <div
-                              className={`pet-type ${
-                                pet?.isMale === true
-                                  ? "male"
-                                  : pet?.isMale === false
-                                  ? "female"
-                                  : ""
-                              }`}
-                            >
-                              <img
-                                src={
-                                  pet?.breed?.isCat
-                                    ? "/images/flags/cat.jpg"
-                                    : "/images/flags/dog.jpg"
-                                }
-                                alt={pet?.breed?.isCat ? "Cat" : "Dog"}
-                              />
-                            </div>
-
-                            <div className="pet-org-avatar">
-                              <img
-                                src={
-                                  pet?.organization?.userName
-                                    ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(
-                                        pet.organization.userName
-                                      )}.jpg`
-                                    : pet?.organization?.image
-                                    ? `${API}/images/${pet.organization.image}`
-                                    : "/images/avatar-placeholder.png"
-                                }
-                                alt={pet?.organization?.name || "Organization"}
-                              />
-                            </div>
-                          </div>
+                        <div className="pet-org-avatar">
+                          <img
+                            src={
+                              pet?.organization?.userName
+                                ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(
+                                    pet.organization.userName
+                                  )}.jpg`
+                                : pet?.organization?.image
+                                ? `${API}/images/${pet.organization.image}`
+                                : "/images/avatar-placeholder.png"
+                            }
+                            alt={
+                              pet?.organization?.name || "Organization"
+                            }
+                          />
                         </div>
-                      </Link>
-                    </div>
-
-                    <div className="application-info">
-                      <h3>{pet?.organization?.name}</h3>
-                      <p>
-                        Application Date {new Date(app.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-
-                    <div className={`status-pill ${app.status?.toLowerCase()}`}>
-                      {app.status}
+                      </div>
                     </div>
                   </div>
+
+                  <div className="application-info">
+                    <h3>{pet?.organization?.name}</h3>
+                    <p>
+                      Application Date{" "}
+                      {new Date(app.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <div
+                    className={`status-pill ${app.status?.toLowerCase()}`}
+                  >
+                    {app.status}
+                  </div>
+                </div>
               );
             })}
-
           </div>
-
         </section>
-
       </main>
-
     </AppLayout>
   );
 }
