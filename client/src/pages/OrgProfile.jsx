@@ -31,7 +31,11 @@ function OrgProfile() {
         .then(res => res.json())
         .then(data => {
         setOrgInfo(data);
-        setPreview(data.logo ? `${API}/images/${data.logo}` : "/images/org-avatar.png");
+
+        setPreview(
+            data.organizationImage || "/images/org-avatar.png"
+        );
+
         setLoading(false);
         })
         .catch(err => {
@@ -91,71 +95,53 @@ function OrgProfile() {
     };
 
     const handleSave = async () => {
-        if (isSaving) return;
+    if (isSaving) return;
 
-        try {
-            setIsSaving(true);
+    try {
+        setIsSaving(true);
 
-            if (changingPassword && newPassword.length < 6) {
-            alert("Password must be at least 6 characters");
-            setIsSaving(false);
-            return;
-            }
+        const form = new FormData();
 
-            const form = new FormData();
+        // append fields
+        Object.entries(orgInfo).forEach(([key, value]) => {
+        form.append(key, value);
+        });
 
-            // append all org fields
-            Object.entries(orgInfo).forEach(([key, value]) => {
-            form.append(key, value);
-            });
-
-            // password
-            if (changingPassword) {
-            form.append("password", newPassword);
-            }
-
-            // upload new logo
-            if (logoFile) {
-            form.append("image", logoFile);
-            }
-
-            // remove logo
-            if (removeImage) {
-            form.append("removeImage", "true");
-            }
-
-            const res = await fetch(`${API}/api/organizations/${id}`, {
-            method: "PUT",
-            body: form
-            });
-
-            if (!res.ok) throw new Error("Update failed");
-
-            const updated = await res.json();
-
-            setOrgInfo(updated);
-            setEditing(false);
-            setChangingPassword(false);
-            setNewPassword("");
-            setPasswordError("");
-            setLogoFile(null);
-            setRemoveImage(false);
-
-            // update preview after save
-            const newPreview = updated.organizationImage
-            ? `${API}/images/${updated.organizationImage}`
-            : "/images/org-avatar.png";
-
-            setPreview(newPreview);
-
-            showSuccessPopup("Profile updated successfully!");
-
-        } catch (err) {
-            console.error(err);
-            alert("Failed to update profile");
-        } finally {
-            setIsSaving(false);
+        // upload image
+        if (logoFile) {
+        form.append("organizationImage", logoFile); // FIXED
         }
+
+        // remove image
+        if (removeImage) {
+        form.append("removeImage", "true");
+        }
+
+        const res = await fetch(`${API}/api/organizations/${id}`, {
+        method: "PUT",
+        body: form
+        });
+
+        if (!res.ok) throw new Error("Update failed");
+
+        const updated = await res.json();
+
+        setOrgInfo(updated);
+        setEditing(false);
+        setLogoFile(null);
+        setRemoveImage(false);
+
+        // FIXED preview
+        setPreview(
+        updated.organizationImage || "/images/org-avatar.png"
+        );
+
+    } catch (err) {
+        console.error(err);
+        alert("Failed to update profile");
+    } finally {
+        setIsSaving(false);
+    }
     };
 
     const handleLogout = () => {
@@ -220,11 +206,7 @@ function OrgProfile() {
                         onClick={() => {
                             setLogoFile(null);
                             setRemoveImage(true);
-                            setPreview(
-                                data.organizationImage
-                                    ? `${API}/images/${data.organizationImage}`
-                                    : "/images/org-avatar.png"
-                            );
+                            setPreview("/images/org-avatar.png"); // FIXED
                         }}
                         >
                         Remove Photo

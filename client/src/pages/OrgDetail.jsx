@@ -62,9 +62,15 @@ function OrgDetail() {
                         {/* HEADER */}
                         <div className="profile-header">
                             <img
-                                src={`/temp-photos/orgs/org-profile-${orgInfo.id}.png`}
-                                alt="Org Logo"
-                                className="profile-avatar"
+                            src={
+                                orgInfo.organizationImage ||
+                                "/images/org-placeholder.png"
+                            }
+                            alt="Org Logo"
+                            className="profile-avatar"
+                            onError={(e) => {
+                                e.target.src = "/images/org-placeholder.png";
+                            }}
                             />
 
                             <div>
@@ -195,11 +201,14 @@ function OrgDetail() {
                                     <div className="adopt-pet-photo">
                                     <img
                                     src={
-                                        pet?.name
-                                        ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(pet.name)}.jpg`
-                                        : "/images/avatar-placeholder.png"
+                                        pet.petImage
+                                        ? pet.petImage
+                                        : "/images/placeholder.jpg"
                                     }
-                                    alt={pet?.name}
+                                    alt={pet.name}
+                                    onError={(e) => {
+                                        e.target.src = "/images/placeholder.jpg";
+                                    }}
                                     />
                                     </div>
 

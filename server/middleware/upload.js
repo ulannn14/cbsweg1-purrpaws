@@ -18,8 +18,11 @@ const userUpload = upload.fields([
   { name: "userImage" }
 ]);
 
+const organizationUpload = upload.single("organizationImage");
+
 module.exports = {
   applicationUpload,
   petUpload,
-  userUpload
+  userUpload,
+  organizationUpload
 };
