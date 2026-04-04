@@ -74,40 +74,22 @@ function AdopterApplication() {
               return (
                   <div className="adopter-application-card">
                     <div className="adopt-card">
-                      <div className="adopt-pet-photo">
-                        <img
-                          src={
-                            pet.petImage
-                              ? pet.petImage
-                              : "/images/placeholder.jpg"
-                          }
-                          alt={pet.name}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover"
-                          }}
-                        />
-                      </div>
 
-                      <div className="pet-info">
-                        <div className="pet-text">
-                          <h3>{pet?.name}</h3>
-                          <p>{pet?.breed?.name}</p>
-
-                          <p className="pet-org-province">
-                            <FaMapMarkerAlt className="location-icon" />
-                            {pet?.organization?.province?.name ||
-                              pet?.organization?.province ||
-                              "Unknown province"}
-                          </p>
-
-                          <div className="pet-tags">
-                            {pet?.age && <span className="tag">{pet.age} yrs</span>}
-                            {pet?.isSpayedOrNeutered && (
-                              <span className="tag dark">Neutered</span>
-                            )}
-                          </div>
+                       <Link
+                        key={app.id}
+                        to={pet ? `/adopt/${pet.id}` : "#"}
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        <div className="adopt-pet-photo">
+                          <img
+                            src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${pet?.name}.jpg`}
+                            alt={pet?.name}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover"
+                            }}
+                          />
                         </div>
 
                         <div className="pet-info">
