@@ -33,11 +33,11 @@ function ApplicationDetail(){
 
             <img
               src={
-                application.pet?.image
-                ? `${API}/images/${application.pet.image}`
-                : `/temp-photos/pets/pet-main-${application.pet?.id}.jpg`
-              }
-              alt={application.pet?.name}
+                  application.pet?.petImage
+                  ? application.pet?.petImage
+                  : "/images/placeholder.jpg"
+                  }
+                alt={application.pet?.name}
             />
 
             <h3>{application.pet?.name}</h3>

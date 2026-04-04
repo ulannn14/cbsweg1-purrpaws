@@ -74,7 +74,7 @@ function AdopterApply() {
                 const [userRes, provincesRes, appsRes] = await Promise.all([
                     fetch(`${API}/api/users/${userId}`),
                     fetch(`${API}/api/provinces`),
-                    fetch(`${API}/api/applications/user/${userId}`) // 👈 NEW
+                    fetch(`${API}/api/applications/user/${userId}`)
                 ]);
 
                 const userData = await userRes.json();

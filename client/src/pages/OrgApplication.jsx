@@ -260,15 +260,9 @@ function OrgApplication() {
 
               <div className="applicant-photo">
                 <img
-                  src={
-                    applicant?.userName
-                      ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(
-                          applicant.userName
-                        )}.jpg`
-                      : "/images/avatar-placeholder.png"
-                  }
-                  alt="Applicant"
-                />
+                    src={applicant.userImage || "/images/avatar-placeholder.png"}
+                    alt="applicant"
+                  />
               </div>
 
               <div className="application-section">
@@ -338,13 +332,12 @@ function OrgApplication() {
                 <div className="adopt-card applied-pet-card">
                   <div className="adopt-pet-photo">
                   <img
-                      src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${pet.name}.jpg`}
-                      alt={pet.name}
-                      style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover"
-                      }}
+                      src={
+                          pet?.petImage
+                           ? pet.petImage
+                           : "/images/placeholder.jpg"
+                          }
+                      alt={pet?.name}
                   />
                   </div>
 

@@ -108,11 +108,7 @@ function OrgLanding() {
                   <div className="applicant-section">
                     <div className="applicant-pic">
                       <img
-                        src={
-                          app.user?.userName
-                            ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(app.user.userName)}.jpg`
-                            : "/images/avatar-placeholder.png"
-                        }
+                        src={app.user?.userImage || "/images/avatar-placeholder.png"}
                         alt="applicant"
                       />
                     </div>
@@ -151,7 +147,7 @@ function OrgLanding() {
                           <p className="pet-org-province">
                             <FaMapMarkerAlt className="location-icon" />
                             {app.pet?.organization?.province?.name ||
-                              app.pet?.organization?.province ||
+                              app.pet?.organization?.province ||  
                               "Unknown province"}
                           </p>
 

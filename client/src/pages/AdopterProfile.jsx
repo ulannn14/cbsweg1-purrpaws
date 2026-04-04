@@ -19,11 +19,9 @@ function AdopterProfile() {
   const [newPassword, setNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [removeImage, setRemoveImage] = useState(false);
-
-  const USER_IMG_BASE =
-  "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/";
-
+  
   useEffect(() => {
+    console.log("USE EFFECT TRIGGERED");
     if (!id) return;
 
     const fetchData = async () => {
@@ -36,14 +34,14 @@ function AdopterProfile() {
         const userData = await userRes.json();
         const provincesData = await provincesRes.json();
 
-        const getUserImage = (username) =>
-        username
-          ? `${USER_IMG_BASE}${encodeURIComponent(username)}.jpg`
-          : "/images/avatar-placeholder.png";
+        console.log("USER DATA:", userData);
+
+        const getUserImage = (user) =>
+        user?.userImage || "/images/avatar-placeholder.png";
 
         setUserInfo(userData);
         setProvinces(provincesData);
-        setPreview(getUserImage(userData.userName));
+        setPreview(getUserImage(userData));
       } catch (err) {
         console.error(err);
       } finally {
@@ -102,17 +100,17 @@ function AdopterProfile() {
         form.append(key, value);
       });
 
-      // ✅ password
+      // password
       if (changingPassword) {
         form.append("password", newPassword);
       }
 
-      // ✅ new image upload
+      // new image upload
       if (imageFile) {
-        form.append("image", imageFile);
+        form.append("userImage", imageFile);
       }
 
-      // ✅ remove image flag
+      // remove image flag
       if (removeImage) {
         form.append("removeImage", "true");
       }
@@ -135,11 +133,9 @@ function AdopterProfile() {
       setImageFile(null);
       setRemoveImage(false);
 
-      // ✅ update preview after save
+      // update preview after save
       const newPreview =
-        updated.userName
-          ? `${USER_IMG_BASE}${encodeURIComponent(updated.userName)}.jpg`
-          : "/images/avatar-placeholder.png";
+      updated.userImage || "/images/avatar-placeholder.png";
 
       setPreview(newPreview);
 
@@ -190,13 +186,13 @@ function AdopterProfile() {
             <div className="pet-header">
               <div className="edit-upload-container">
                 <img
-                  src={preview}
-                  alt="Profile"
-                  className="edit-upload-preview"
-                  onError={(e) => {
-                    e.target.src = "/images/avatar-placeholder.png";
-                  }}
-                />
+            src={preview}
+            alt="Profile"
+            className="edit-upload-preview"
+            onError={(e) => {
+              e.target.src = "/images/avatar-placeholder.png";
+            }}
+          />
 
                 {editing && (
                   <div className="upload-buttons">

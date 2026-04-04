@@ -47,6 +47,7 @@ exports.getUsers = async (req, res) => {
     const users = await prisma.user.findMany({
       select: {
         id: true,
+        userImage: true,
         firstName: true,
         lastName: true,
         email: true,
@@ -82,6 +83,7 @@ exports.getUserById = async (req, res) => {
       where: { id },
       select: {
         id: true,
+        userImage: true,
         firstName: true,
         lastName: true,
         email: true,
@@ -129,18 +131,21 @@ exports.updateUser = async (req, res) => {
     }
 
     // Remove id from body
-    const { id: _, birthdate, ...rest } = req.body;
+    const { id: _, birthdate, provinceId, ...rest } = req.body;
 
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
         ...rest,
 
+        ...(provinceId && {
+          provinceId: Number(provinceId)
+        }),
+
         ...(birthdate && {
           birthdate: new Date(birthdate)
         }),
 
-        // IMAGE HANDLING
         ...(imageUrls.length > 0 && {
           userImage: imageUrls[0],
           userImages: imageUrls
@@ -227,21 +232,8 @@ exports.createUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // HANDLE IMAGE
-    const files = req.files || {};
-    const userImages = normalizeFiles(files.userImage);
-
-    let imageUrls = [];
-
-    if (userImages.length > 0) {
-      imageUrls = await uploadToSupabase(
-        userImages,
-        "userImages",
-        "general" // no userId yet
-      );
-    }
-
-    const user = await prisma.user.create({
+    // Create user FIRST
+    const newUser = await prisma.user.create({
       data: {
         firstName,
         lastName,
@@ -253,16 +245,40 @@ exports.createUser = async (req, res) => {
         provinceId: Number(provinceId),
         address,
         phoneNumber,
-
-        // SAVE IMAGE
-        userImage: imageUrls[0] || null,
-        userImages: imageUrls
+        userImage: null,
+        userImages: []
       }
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    // Handle image upload USING user id
+    const files = req.files || {};
+    const userImages = normalizeFiles(files.userImage);
 
-    res.status(201).json(userWithoutPassword);
+    let imageUrls = [];
+
+    if (userImages.length > 0) {
+      imageUrls = await uploadToSupabase(
+        userImages,
+        "userImages",   
+        newUser.id      
+      );
+
+      // Update user with image
+      await prisma.user.update({
+        where: { id: newUser.id },
+        data: {
+          userImage: imageUrls[0],
+          userImages: imageUrls
+        }
+      });
+    }
+
+    const { password: _, ...userWithoutPassword } = newUser;
+
+    res.status(201).json({
+      ...userWithoutPassword,
+      userImage: imageUrls[0] || null
+    });
 
   } catch (err) {
     console.error(err);

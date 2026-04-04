@@ -167,7 +167,9 @@ function SignUpPage() {
         return;
       }
 
-      console.log("Submitted:", formData);
+      console.log("SIGNUP RESPONSE:", data);
+      localStorage.setItem("user", JSON.stringify(data));
+      console.log("AFTER SIGNUP SAVE:", localStorage.getItem("user"));
 
       navigate("/adopter");
 
