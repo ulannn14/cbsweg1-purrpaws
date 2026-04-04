@@ -146,13 +146,17 @@ function AdopterAdopt() {
                     onClick={() => handleOrgClick(org.id)}
                 >
                 <img
-                src={`/temp-photos/orgs/org-profile-${org.id}.png`}
-                alt={org.name}
-                className="org-profile-img"
-                onError={(e) => {
-                    e.target.src = "/images/org-placeholder.png";
-                }}
-                />
+                    src={
+                        org.organizationImage
+                        ? org.organizationImage
+                        : "/images/org-placeholder.png"
+                    }
+                    alt={org.name}
+                    className="org-profile-img"
+                    onError={(e) => {
+                        e.target.src = "/images/org-placeholder.png";
+                    }}
+                    />
                 </div>
                 ))}
 

@@ -258,11 +258,10 @@ const images = pet?.petImages?.length
                   <div className="org-circle">
                     <img
                       src={
-                        pet.organization?.image
-                          ? `${API}/images/${pet.organization.organizationImage}`
-                          : `/temp-photos/orgs/org-profile-${pet.organization?.id}.png`
+                        pet.organization?.organizationImage ||
+                        "/images/avatar-placeholder.png"
                       }
-                      alt={pet.organization?.name}
+                      alt={pet.organization?.name || "Organization"}
                     />
                   </div>
 

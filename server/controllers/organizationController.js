@@ -1,6 +1,42 @@
 // controllers/organizationController.js
 const prisma = require("../config/prisma");
 const bcrypt = require("bcrypt");
+const supabase = require("../config/supabase");
+const path = require("path");
+
+const generateFileName = (file, folder, entityId = "general") => {
+  const ext = file.originalname
+    ? path.extname(file.originalname)
+    : ".jpg";
+
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8);
+
+  return `${folder}/${entityId}/${timestamp}-${random}${ext}`;
+};
+
+const uploadToSupabase = async (file, folder, entityId) => {
+  if (!file) return null;
+
+  const filePath = generateFileName(file, folder, entityId);
+
+  const { data, error } = await supabase.storage
+    .from("userImages")
+    .upload(filePath, file.buffer, {
+      contentType: file.mimetype,
+    });
+
+  console.log("Supabase data:", data);
+  console.log("Supabase error:", error);
+
+  if (error) throw error;
+
+  const publicUrl = supabase.storage
+    .from("userImages")
+    .getPublicUrl(data.path).data.publicUrl;
+
+  return publicUrl;
+};
 
 // GET organizations
 exports.getOrganizations = async (req, res) => {
@@ -86,12 +122,28 @@ exports.getOrganizationById = async (req, res) => {
 };
 
 exports.updateOrganization = async (req, res) => {
-  try {
 
+  console.log("FILE:", req.file);
+  
+  try {
     const { id } = req.params;
 
+    const removeImage = req.body.removeImage === "true";
+
+    let imageUrl;
+
+    if (removeImage) {
+      imageUrl = null;
+    } else if (req.file) {
+      imageUrl = await uploadToSupabase(
+      req.file,
+      "organizationImages",
+      id
+     );
+    }
+
     const updatedOrg = await prisma.organization.update({
-      where: { id: id }, // DO NOT convert to Number
+      where: { id },
       data: {
         email: req.body.email,
         name: req.body.name,
@@ -100,14 +152,22 @@ exports.updateOrganization = async (req, res) => {
         address: req.body.address,
         contactPerson: req.body.contactPerson,
         contactPersonRole: req.body.contactPersonRole,
-        contactNumber: req.body.contactNumber
-      }
+        contactNumber: req.body.contactNumber,
+
+        ...(imageUrl !== undefined && { organizationImage: imageUrl }),
+      },
     });
+
+    console.log("Saved image:", updatedOrg.organizationImage);
+
+    if (req.file) {
+      console.log("Uploading file...");
+    }
 
     res.json(updatedOrg);
 
   } catch (error) {
-    console.error(error);
+    console.error("UPDATE ORG ERROR:", error);
     res.status(500).json({ error: "Failed to update organization" });
   }
 };

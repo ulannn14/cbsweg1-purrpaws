@@ -182,11 +182,8 @@ function OrgLanding() {
                           <div className="pet-org-avatar">
                             <img
                               src={
-                                app.pet?.organization?.userName
-                                  ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(app.pet.organization.userName)}.jpg`
-                                  : app.pet?.organization?.image
-                                  ? `${API}/images/${app.pet.organization.image}`
-                                  : "/images/avatar-placeholder.png"
+                                app.pet?.organization?.organizationImage ||
+                                "/images/avatar-placeholder.png"
                               }
                               alt={app.pet?.organization?.name || "Organization"}
                             />
