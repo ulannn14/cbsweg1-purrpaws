@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { FaMapMarkerAlt } from "react-icons/fa";
 import AppLayout from "../components/AppLayout";
 import BackButton from "../components/BackButton";
 
@@ -174,9 +175,9 @@ function AdopterAdopt() {
                 >
 
                 <div className="adopt-card">
-
                 <div className="adopt-pet-photo">
                     <img
+                        src={getPetImage(pet.name)}
                         src={
                             pet.petImage
                                 ? pet.petImage
@@ -195,40 +196,62 @@ function AdopterAdopt() {
                 </div>
 
                 <div className="pet-info">
+                    <div className="pet-text">
+                    <h3>{pet?.name}</h3>
+                    <p>{pet?.breed?.name}</p>
 
-                        <div className="pet-text">
-                            <h3>{pet.name}</h3>
-                            <p>{pet.breed?.name}</p>
+                    <p className="pet-org-province">
+                        <FaMapMarkerAlt className="location-icon" />
+                        {pet?.organization?.province?.name ||
+                        pet?.organization?.province ||
+                        "Unknown province"}
+                    </p>
 
-                            <div className="pet-tags">
-                            {pet.age && <span className="tag">{pet.age} yrs</span>}
-                            {pet.isSpayedOrNeutered && <span className="tag dark">Neutered</span>}
-                            </div>
-                        </div>
-
-                        {/* SPECIES INDICATOR */}
-                        <div
-                            className={`pet-type ${
-                            pet.isMale === true
-                                ? "male"
-                                : pet.isMale === false
-                                ? "female"
-                                : ""
-                            }`}
-                        >
-                            <img
-                            src={
-                                pet.breed?.isCat === false
-                                ? "/images/flags/dog.jpg"
-                                : "/images/flags/cat.jpg"
-                            }
-                            alt={pet.breed?.isCat ? "Cat" : "Dog"}
-                            />
-                        </div>
-
+                    <div className="pet-tags">
+                        {pet?.age && <span className="tag">{pet.age} yrs</span>}
+                        {pet?.isSpayedOrNeutered && (
+                        <span className="tag dark">Neutered</span>
+                        )}
+                    </div>
                     </div>
 
+                    <div className="pet-side-info">
+                    <div
+                        className={`pet-type ${
+                        pet?.isMale === true
+                            ? "male"
+                            : pet?.isMale === false
+                            ? "female"
+                            : ""
+                        }`}
+                    >
+                        <img
+                        src={
+                            pet?.breed?.isCat
+                            ? "/images/flags/cat.jpg"
+                            : "/images/flags/dog.jpg"
+                        }
+                        alt={pet?.breed?.isCat ? "Cat" : "Dog"}
+                        />
+                    </div>
+
+                    <div className="pet-org-avatar">
+                        <img
+                        src={
+                            pet?.organization?.userName
+                            ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(
+                                pet.organization.userName
+                                )}.jpg`
+                            : pet?.organization?.image
+                            ? `${API}/images/${pet.organization.image}`
+                            : "/images/avatar-placeholder.png"
+                        }
+                        alt={pet?.organization?.name || "Organization"}
+                        />
+                    </div>
+                    </div>
                 </div>
+            </div>
 
                 </Link>
             ))}
