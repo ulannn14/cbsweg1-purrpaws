@@ -8,8 +8,11 @@ function PetDetail() {
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [checkingApplication, setCheckingApplication] = useState(true);
 
   const API = import.meta.env.VITE_API_URL;
+  const user = JSON.parse(localStorage.getItem("user"));
 
 const baseUrl = "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/";
 
@@ -25,7 +28,25 @@ const images = pet?.name
       .then((data) => setPet(data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [API, id]);
+
+  useEffect(() => {
+    if (!user?.id || !id) {
+      setCheckingApplication(false);
+      return;
+    }
+
+    fetch(`${API}/api/applications/user/${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const alreadyApplied = data.some(
+          (app) => String(app.pet?.id) === String(id)
+        );
+        setHasApplied(alreadyApplied);
+      })
+      .catch(console.error)
+      .finally(() => setCheckingApplication(false));
+  }, [API, user?.id, id]);
 
   if (loading) return (
     <AppLayout>
@@ -256,11 +277,21 @@ const images = pet?.name
 
           {/* ================= APPLY ================= */}
           <div className="pet-apply">
-            <Link to={`/apply/${pet.id}`}>
-              <button className="apply-btn-large">
-                Apply for Adoption
+            {checkingApplication ? (
+              <button className="apply-btn-large" disabled>
+                Checking application...
               </button>
-            </Link>
+            ) : hasApplied ? (
+              <button className="apply-btn-large" disabled>
+                Applied Already
+              </button>
+            ) : (
+              <Link to={`/apply/${pet.id}`}>
+                <button className="apply-btn-large">
+                  Apply for Adoption
+                </button>
+              </Link>
+            )}
           </div>
 
         </section>
