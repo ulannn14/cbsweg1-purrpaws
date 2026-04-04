@@ -173,7 +173,21 @@ exports.getPets = async (req, res) => {
 
       include: {
         breed: true,
-        organization: true
+        organization: {
+          include: {
+            province: true
+          }
+        },
+        petConditions: {
+          include: {
+            condition: true
+          }
+        },
+        vaccinations: {
+          include: {
+            vaccine: true
+          }
+        }
       },
 
       orderBy: {
@@ -201,7 +215,21 @@ exports.getPetById = async (req, res) => {
       },
       include: {
         breed: true,
-        organization: true
+        organization: {
+          include: {
+            province: true
+          }
+        },
+        petConditions: {
+          include: {
+            condition: true
+          }
+        },
+        vaccinations: {
+          include: {
+            vaccine: true
+          } 
+        }
       }
     });
 
