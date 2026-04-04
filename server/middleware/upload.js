@@ -14,7 +14,12 @@ const petUpload = upload.fields([
   { name: "petImages" }
 ]);
 
+const userUpload = upload.fields([
+  { name: "userImage" }
+]);
+
 module.exports = {
   applicationUpload,
-  petUpload
+  petUpload,
+  userUpload
 };
