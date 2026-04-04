@@ -168,6 +168,12 @@ model AdoptionApplication {
   @@unique([userId, petId])
 }
 
+model InfoSnippet {
+  id      BigInt   @id @default(autoincrement())
+  forUser Boolean?
+  info    String?
+}
+
 enum OperationalStatus {
   CATS
   DOGS

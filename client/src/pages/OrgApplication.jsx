@@ -209,6 +209,27 @@ function OrgApplication() {
     });
   };
 
+
+
+  const QUESTIONS = [
+    { label: "Residence Type", field: "response1" },
+    { label: "Occupation", field: "response2" },
+    { label: "Why adopt?", field: "response3" },
+    { label: "Experience with pets", field: "response4" },
+    { label: "Preparation steps", field: "response5" },
+    { label: "Vet clinic", field: "response6" },
+    { label: "Planned diet", field: "response7" },
+    { label: "Other pets", field: "response8" },
+    { label: "Consent status", field: "response9" },
+    { label: "Consent understanding", field: "response10" },
+    { label: "Pets neutered?", field: "response11" },
+    { label: "Plan to neuter?", field: "response12" },
+    { label: "Agree to updates?", field: "response13" },
+    { label: "Agree emergency updates?", field: "response14" },
+    { label: "Share on social?", field: "response15" },
+    { label: "Interview time", field: "response16", type: "date" }
+  ];
+
   return (
     <OrgAppLayout>
       <BackButton />
@@ -282,55 +303,21 @@ function OrgApplication() {
               <h2>Adoption Questionnaire</h2>
 
               <div className="application-section">
-                <p>
-                  <strong>Why do you want to adopt?</strong>
-                </p>
-                <p>{application.response1}</p>
+                {QUESTIONS.map((q) => {
+                  let answer = application[q.field];
 
-                <p>
-                  <strong>Have you owned pets before?</strong>
-                </p>
-                <p>{application.response2 ? "Yes" : "No"}</p>
+                  if (q.type === "date" && answer) {
+                    answer = new Date(answer).toLocaleString();
+                  }
 
-                <p>
-                  <strong>Where will the pet stay?</strong>
-                </p>
-                <p>{application.response3}</p>
-
-                <p>
-                  <strong>Who will be responsible for the pet?</strong>
-                </p>
-                <p>{application.response4}</p>
-
-                <p>
-                  <strong>Can you afford vet care?</strong>
-                </p>
-                <p>{application.response5 ? "Yes" : "No"}</p>
-
-                <p>
-                  <strong>What will you do if the pet gets sick?</strong>
-                </p>
-                <p>{application.response6}</p>
-
-                <p>
-                  <strong>How many hours will the pet be alone?</strong>
-                </p>
-                <p>{application.response7}</p>
-
-                <p>
-                  <strong>What will happen if you move?</strong>
-                </p>
-                <p>{application.response8}</p>
-
-                <p>
-                  <strong>Have you surrendered a pet before?</strong>
-                </p>
-                <p>{application.response9}</p>
-
-                <p>
-                  <strong>How will you discipline the pet?</strong>
-                </p>
-                <p>{application.response10}</p>
+                  return (
+                    <div key={q.field}>
+                      <p><strong>{q.label}</strong></p>
+                      <p>{answer ?? "N/A"}</p>
+                    </div>
+                  );
+              })}
+              
               </div>
             </div>
 
