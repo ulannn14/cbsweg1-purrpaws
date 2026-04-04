@@ -54,6 +54,21 @@ app.get("/api/breeds", async (req, res) => {
   }
 });
 
+app.get("/api/snippets", async (req, res) => {
+  try {
+    const { type } = req.query;
+
+    const snippets = await prisma.infoSnippet.findMany({
+      where: type ? { type } : {},
+    });
+
+    res.json(snippets);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Start server
 const PORT = process.env.PORT || 5000;
 
