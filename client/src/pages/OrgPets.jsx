@@ -190,11 +190,9 @@ function OrgPets() {
                 <div className="pet-img">
                   <img
                     src={
-                      pet.image
-                        ? `${API}/images/${pet.image}`
-                        : `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(
-                            pet.name
-                          )}.jpg`
+                      pet.petImage
+                        ? pet.petImage
+                        : "/images/placeholder.jpg"
                     }
                     alt={pet.name}
                   />

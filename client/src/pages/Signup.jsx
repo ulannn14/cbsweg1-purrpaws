@@ -16,7 +16,7 @@ function SignUpPage() {
     firstName: "",
     lastName: "",
     email: "",
-    mobile: "",
+    phoneNumber: "",
     userName: "",
     password: "",
     birthdate: "",
@@ -151,7 +151,7 @@ function SignUpPage() {
 
       // ✅ append image if selected
       if (imageFile) {
-        form.append("image", imageFile);
+        form.append("userImage", imageFile);
       }
 
       const res = await fetch(`${API}/api/users/signup`, {

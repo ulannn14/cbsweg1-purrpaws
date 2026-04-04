@@ -11,11 +11,15 @@ function PetDetail() {
 
   const API = import.meta.env.VITE_API_URL;
 
-const baseUrl = "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/";
 
-const images = pet?.name
-  ? [`${baseUrl}${encodeURIComponent(pet.name)}.jpg`]
-  : [`${baseUrl}Shadow.jpg`];
+const images = pet?.petImages?.length
+  ? [
+      pet.petImage, // main image FIRST
+      ...pet.petImages.filter(img => img !== pet.petImage) // avoid duplicate
+    ]
+  : pet?.petImage
+  ? [pet.petImage]
+  : ["/images/placeholder.jpg"];
   
   useEffect(() => {
     if (!id) return;

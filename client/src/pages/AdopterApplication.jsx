@@ -81,8 +81,12 @@ function AdopterApplication() {
                     <div className="adopt-card">
                       <div className="adopt-pet-photo">
                         <img
-                          src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${pet?.name}.jpg`}
-                          alt={pet?.name}
+                          src={
+                            pet.petImage
+                              ? pet.petImage
+                              : "/images/placeholder.jpg"
+                          }
+                          alt={pet.name}
                           style={{
                             width: "100%",
                             height: "100%",

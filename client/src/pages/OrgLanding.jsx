@@ -133,8 +133,12 @@ function OrgLanding() {
                     <div className="org-pet-card">
                       <div className="org-adopt-pet-photo">
                         <img
-                          src={`https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(app.pet?.name)}.jpg`}
-                          alt={app.pet?.name}
+                          src={
+                                app.pet?.petImage
+                                    ? app.pet.petImage
+                                    : "/images/placeholder.jpg"
+                                }
+                            alt={app.pet?.name}
                         />
                       </div>
 

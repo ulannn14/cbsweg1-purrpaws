@@ -169,7 +169,11 @@ function AdopterAdopt() {
 
                 <div className="adopt-pet-photo">
                     <img
-                        src={getPetImage(pet.name)}
+                        src={
+                            pet.petImage
+                                ? pet.petImage
+                                : "/images/placeholder.jpg"
+                        }
                         alt={pet.name}
                         style={{
                             width: "100%",

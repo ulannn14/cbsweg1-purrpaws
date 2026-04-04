@@ -1,5 +1,43 @@
 const bcrypt = require('bcrypt');
 const prisma = require('../config/prisma');
+const supabase = require("../config/supabase");
+const path = require("path");
+
+const normalizeFiles = (files) => {
+  if (!files) return [];
+  return Array.isArray(files) ? files : [files];
+};
+
+const generateFileName = (file, folder, entityId = "general") => {
+  const ext = file.originalname
+    ? path.extname(file.originalname)
+    : ".jpg";
+
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8);
+
+  return `${folder}/${entityId}/${timestamp}-${random}${ext}`;
+};
+
+const uploadToSupabase = async (fileArray, folder, entityId = "general") => {
+  const uploads = (fileArray || []).map(async (file) => {
+    const filePath = generateFileName(file, folder, entityId);
+
+    const { data, error } = await supabase.storage
+      .from("userImages")
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+      });
+
+    if (error) throw error;
+
+    return supabase.storage
+      .from("userImages")
+      .getPublicUrl(data.path).data.publicUrl;
+  });
+
+  return await Promise.all(uploads);
+};
 
 
 // GET ALL USERS
@@ -72,63 +110,55 @@ exports.getUserById = async (req, res) => {
 
 
 
-// SIGNUP
-exports.createUser = async (req, res) => {
-
-  const {
-    firstName,
-    lastName,
-    email,
-    userName,
-    password,
-    birthdate,
-    city,
-    provinceId,
-    address,
-    phoneNumber
-  } = req.body;
+// UPDATE USER
+exports.updateUser = async (req, res) => {
+  const { id } = req.params;
 
   try {
+    const files = req.files || {};
+    const userImages = normalizeFiles(files.userImage);
 
-    const existing = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email },
-          { userName }
-        ]
-      }
-    });
+    let imageUrls = [];
 
-    if (existing) {
-      return res.status(400).json({ message: "User already exists" });
+    if (userImages.length > 0) {
+      imageUrls = await uploadToSupabase(
+        userImages,
+        "userImages",
+        id
+      );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Remove id from body
+    const { id: _, birthdate, ...rest } = req.body;
 
-    const user = await prisma.user.create({
+    const updatedUser = await prisma.user.update({
+      where: { id },
       data: {
-        firstName,
-        lastName,
-        email,
-        userName,
-        password: hashedPassword,
-        birthdate: new Date(birthdate),
-        city,
-        provinceId: Number(provinceId),
-        address,
-        phoneNumber
+        ...rest,
+
+        ...(birthdate && {
+          birthdate: new Date(birthdate)
+        }),
+
+        // IMAGE HANDLING
+        ...(imageUrls.length > 0 && {
+          userImage: imageUrls[0],
+          userImages: imageUrls
+        })
       }
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const { password, ...userWithoutPassword } = updatedUser;
 
-    res.status(201).json(userWithoutPassword);
+    res.status(200).json(userWithoutPassword);
 
   } catch (err) {
+    if (err.code === "P2025") {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     console.error(err);
     res.status(500).json({ message: "Server error" });
-
   }
 };
 
@@ -169,40 +199,74 @@ exports.loginUser = async (req, res) => {
 
 
 
-// UPDATE USER
-exports.updateUser = async (req, res) => {
-
-  const { id } = req.params;
+// CREATE USER
+exports.createUser = async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    email,
+    userName,
+    password,
+    birthdate,
+    city,
+    provinceId,
+    address,
+    phoneNumber
+  } = req.body;
 
   try {
-
-    // Remove id from body so it can't overwrite the primary key
-    const { id: _, birthdate, ...rest } = req.body;
-
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: {
-        ...rest,
-
-        ...(birthdate && {
-          birthdate: new Date(birthdate)
-        })
+    const existing = await prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { userName }]
       }
     });
 
-    const { password, ...userWithoutPassword } = updatedUser;
-
-    res.status(200).json(userWithoutPassword);
-
-  } catch (err) {
-
-    if (err.code === "P2025") {
-      return res.status(404).json({ message: "User not found" });
+    if (existing) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // HANDLE IMAGE
+    const files = req.files || {};
+    const userImages = normalizeFiles(files.userImage);
+
+    let imageUrls = [];
+
+    if (userImages.length > 0) {
+      imageUrls = await uploadToSupabase(
+        userImages,
+        "userImages",
+        "general" // no userId yet
+      );
+    }
+
+    const user = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        userName,
+        password: hashedPassword,
+        birthdate: new Date(birthdate),
+        city,
+        provinceId: Number(provinceId),
+        address,
+        phoneNumber,
+
+        // SAVE IMAGE
+        userImage: imageUrls[0] || null,
+        userImages: imageUrls
+      }
+    });
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.status(201).json(userWithoutPassword);
+
+  } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
-
   }
 };
 
