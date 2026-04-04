@@ -1,99 +1,43 @@
 const e = require("express");
 const prisma = require("../config/prisma");
-const supabase = require("../config/supabase");
-const path = require("path");
 
-// Always return an array
-const normalizeFiles = (files) => {
-  if (!files) return [];
-  return Array.isArray(files) ? files : [files];
-};
+exports.addPet = async (req, res) => {
 
-// Safe + unique filename generator
-const generateFileName = (file, folder, entityId = "general") => {
-  const ext = file.originalname
-    ? path.extname(file.originalname)
-    : ".jpg";
-
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 8);
-
-  return `${folder}/${entityId}/${timestamp}-${random}${ext}`;
-};
-
-exports.createPet = async (req, res) => {
   try {
-    const files = req.files || {};
-    const petImages = normalizeFiles(files.petImages);
 
-    if (!req.body?.organizationId) {
-      return res.status(400).json({
-        message: "organizationId is required"
-      });
+    const data = { ...req.body };
+
+    // Convert JSON array
+    if (data.adoptionRequirements) {
+      data.adoptionRequirements = JSON.parse(data.adoptionRequirements);
     }
+
+    // Convert date
+    if (data.dateRescued) {
+      data.dateRescued = new Date(data.dateRescued);
+    }
+
+    // Convert empty numbers
+    if (data.age === "") data.age = null;
+    if (data.weight === "") data.weight = null;
+    if (data.adoptionFee === "") data.adoptionFee = null;
 
     const newPet = await prisma.pet.create({
-      data: {
-        organization: {
-          connect: { id: req.body.organizationId }
-        },
-        name: req.body.name,
-        isMale: req.body.isMale === "true",
-        age: req.body.age ? Number(req.body.age) : null,
-        size: req.body.size,
-        weight: req.body.weight ? Number(req.body.weight) : null,
-        color: req.body.color,
-        breed: {
-          connect: { id: Number(req.body.breedId) }
-        },
-        rescueStory: req.body.rescueStory,
-        temperament: req.body.temperament,
-        isSpayedOrNeutered: req.body.isSpayedOrNeutered === "true",
-        isGoodWithDogs: req.body.isGoodWithDogs === "true",
-        isGoodWithCats: req.body.isGoodWithCats === "true",
-        isGoodWithKids: req.body.isGoodWithKids === "true",
-        isHouseTrained: req.body.isHouseTrained === "true",
-        isLeashTrained: req.body.isLeashTrained === "true",
-        adoptionFee: req.body.adoptionFee
-          ? Number(req.body.adoptionFee)
-          : null,
-        adoptionRequirements: req.body.adoptionRequirements
-          ? JSON.parse(req.body.adoptionRequirements)
-          : [],
-        adoptionStatus: req.body.adoptionStatus || "AVAILABLE",
-        dateRescued: req.body.dateRescued
-          ? new Date(req.body.dateRescued)
-          : null,
-        petImages: [],
-        petImage: null
-      }
+      data
     });
 
-    let imageUrls = [];
-
-    if (petImages.length > 0) {
-      imageUrls = await uploadToSupabase(
-        petImages,
-        "petImages",
-        newPet.id
-      );
-    }
-
-    const updatedPet = await prisma.pet.update({
-      where: { id: newPet.id },
-      data: {
-        petImages: imageUrls,
-        petImage: imageUrls[0] || null
-      }
-    });
-
-    res.status(201).json(updatedPet);
+    res.status(201).json(newPet);
 
   } catch (error) {
-    console.error("CREATE PET ERROR:", error);
-    res.status(400).json({ message: error.message });
+
+    console.error(error);
+    res.status(500).json({ error: "Failed to create pet" });
+
   }
+
 };
+
+
 
 exports.getPets = async (req, res) => {
 
@@ -205,6 +149,8 @@ exports.getPets = async (req, res) => {
 
 };
 
+
+
 exports.getPetById = async (req, res) => {
 
   try {
@@ -248,29 +194,26 @@ exports.getPetById = async (req, res) => {
 
 };
 
+
+
 // Create new pet
 exports.createPet = async (req, res) => {
-  try {
-    const files = req.files || {};
 
-    if (!req.body?.organizationId) {
-      return res.status(400).json({
-        message: "organizationId is required"
-      });
-    }
+  try {
 
     const newPet = await prisma.pet.create({
       data: {
+
         organization: {
           connect: { id: req.body.organizationId }
         },
 
         name: req.body.name,
-        isMale: req.body.isMale === "true",
+        isMale: req.body.isMale,
 
-        age: req.body.age ? Number(req.body.age) : null,
+        age: Number(req.body.age),
         size: req.body.size,
-        weight: req.body.weight ? Number(req.body.weight) : null,
+        weight: Number(req.body.weight),
         color: req.body.color,
 
         breed: {
@@ -280,136 +223,54 @@ exports.createPet = async (req, res) => {
         rescueStory: req.body.rescueStory,
         temperament: req.body.temperament,
 
-        isSpayedOrNeutered: req.body.isSpayedOrNeutered === "true",
-        isGoodWithDogs: req.body.isGoodWithDogs === "true",
-        isGoodWithCats: req.body.isGoodWithCats === "true",
-        isGoodWithKids: req.body.isGoodWithKids === "true",
-        isHouseTrained: req.body.isHouseTrained === "true",
-        isLeashTrained: req.body.isLeashTrained === "true",
+        isSpayedOrNeutered: req.body.isSpayedOrNeutered,
+        isGoodWithDogs: req.body.isGoodWithDogs,
+        isGoodWithCats: req.body.isGoodWithCats,
+        isGoodWithKids: req.body.isGoodWithKids,
+        isHouseTrained: req.body.isHouseTrained,
+        isLeashTrained: req.body.isLeashTrained,
 
-        adoptionFee: req.body.adoptionFee
-          ? Number(req.body.adoptionFee)
-          : null,
+        adoptionFee: Number(req.body.adoptionFee),
 
-        adoptionRequirements: req.body.adoptionRequirements
-          ? JSON.parse(req.body.adoptionRequirements)
-          : [],
+        adoptionRequirements: req.body.adoptionRequirements,
 
         adoptionStatus: req.body.adoptionStatus || "AVAILABLE",
 
         dateRescued: req.body.dateRescued
           ? new Date(req.body.dateRescued)
-          : null,
-
-        // temporary empty
-        petImages: [],
-        petImage: null
+          : null
       }
     });
 
-    let imageUrls = [];
-
-    if (files.petImages && files.petImages.length > 0) {
-      imageUrls = await uploadToSupabase(
-        files.petImages,
-        "petImages",
-        newPet.id
-      );
-    }
-
-    const updatedPet = await prisma.pet.update({
-      where: { id: newPet.id },
-      data: {
-        petImages: imageUrls,
-        petImage: imageUrls.length > 0 ? imageUrls[0] : null
-      }
-    });
-
-    res.status(201).json(updatedPet);
+    res.status(201).json(newPet);
 
   } catch (error) {
-    console.error("CREATE PET ERROR:", error);
+
+    console.error(error);
     res.status(400).json({ message: error.message });
+
   }
+
 };
 
-const uploadToSupabase = async (fileArray, folder, entityId = "general") => {
-  const uploads = (fileArray || []).map(async (file) => {
-    const filePath = generateFileName(file, folder, entityId);
 
-    const { data, error } = await supabase.storage
-      .from("public-assets")
-      .upload(filePath, file.buffer, {
-        contentType: file.mimetype,
-      });
-
-    console.log("UPLOAD RESULT:", { data, error });
-
-    if (error) throw error;
-
-    return supabase.storage
-      .from("public-assets")
-      .getPublicUrl(data.path).data.publicUrl;
-  });
-
-  return await Promise.all(uploads);
-};
 
 exports.updatePet = async (req, res) => {
+
   try {
-    const files = req.files || {};
-    
-    // Upload images
-    let imageUrls = [];
-
-  const petImages = normalizeFiles(files.petImages);
-
-  if (petImages.length > 0) {
-      imageUrls = await uploadToSupabase(
-      petImages,
-      "petImages",
-      req.params.id
-    );
-  }
-
-    // Merge existing + new
-    const existingImages = req.body.existingImages
-    ? JSON.parse(req.body.existingImages)
-    : [];
-
-    const finalImages = [...existingImages, ...imageUrls];
-    const uniqueImages = [...new Set(finalImages)]; // Remove duplicates if any
-
-    const mainImage = finalImages.length > 0 ? finalImages[0] : null;
-
-    console.log("existingImages:", req.body.existingImages);
-    console.log("files:", req.files);
-
-    // Parse arrays
-    let adoptionRequirements = req.body.adoptionRequirements;
-    if (typeof adoptionRequirements === "string") {
-      adoptionRequirements = JSON.parse(adoptionRequirements);
-    }
-
-    let conditionIds = [];
-    if (req.body.conditionIds) {
-      conditionIds = JSON.parse(req.body.conditionIds);
-    }
-
-    let vaccineIds = [];
-    if (req.body.vaccineIds) {
-      vaccineIds = JSON.parse(req.body.vaccineIds);
-    }
 
     const updatedPet = await prisma.pet.update({
-      where: { id: req.params.id },
+      where: { 
+        id: req.params.id 
+      },
       data: {
-        name: req.body.name,
-        isMale: req.body.isMale === "true" || req.body.isMale === true,
 
-        age: req.body.age ? Number(req.body.age) : null,
+        name: req.body.name,
+        isMale: req.body.isMale,
+
+        age: Number(req.body.age),
         size: req.body.size,
-        weight: req.body.weight ? Number(req.body.weight) : null,
+        weight: Number(req.body.weight),
         color: req.body.color,
 
         breed: {
@@ -419,50 +280,34 @@ exports.updatePet = async (req, res) => {
         rescueStory: req.body.rescueStory,
         temperament: req.body.temperament,
 
-        isSpayedOrNeutered: req.body.isSpayedOrNeutered === "true",
-        isGoodWithDogs: req.body.isGoodWithDogs === "true",
-        isGoodWithCats: req.body.isGoodWithCats === "true",
-        isGoodWithKids: req.body.isGoodWithKids === "true",
-        isHouseTrained: req.body.isHouseTrained === "true",
-        isLeashTrained: req.body.isLeashTrained === "true",
+        isSpayedOrNeutered: req.body.isSpayedOrNeutered,
+        isGoodWithDogs: req.body.isGoodWithDogs,
+        isGoodWithCats: req.body.isGoodWithCats,
+        isGoodWithKids: req.body.isGoodWithKids,
+        isHouseTrained: req.body.isHouseTrained,
+        isLeashTrained: req.body.isLeashTrained,
 
-        adoptionFee: req.body.adoptionFee ? Number(req.body.adoptionFee) : null,
+        adoptionFee: Number(req.body.adoptionFee),
 
-        adoptionRequirements,
+        adoptionRequirements: req.body.adoptionRequirements,
 
         adoptionStatus: req.body.adoptionStatus,
 
         dateRescued: req.body.dateRescued
           ? new Date(req.body.dateRescued)
-          : null,
-
-        // SAVE IMAGE URLs
-        petImages: uniqueImages,
-        petImage: uniqueImages[0] || null,
-
-        // RELATIONS
-        petConditions: {
-          deleteMany: {},
-          create: conditionIds.map(id => ({
-            condition: { connect: { id } }
-          }))
-        },
-
-        vaccinations: {
-          deleteMany: {},
-          create: vaccineIds.map(id => ({
-            vaccine: { connect: { id } }
-          }))
-        }
+          : null
       }
     });
 
     res.json(updatedPet);
 
   } catch (error) {
+
     console.error(error);
     res.status(400).json({ message: error.message });
+
   }
+
 };
 
 

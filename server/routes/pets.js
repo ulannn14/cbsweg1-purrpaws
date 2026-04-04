@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { petUpload } = require("../middleware/upload");
 
 const {
   getPets,
@@ -20,10 +19,10 @@ router.get('/', getPets);
 router.get('/:id', getPetById);
 
 // CREATE pet
-router.post('/', petUpload, createPet);
+router.post('/', createPet);
 
 // UPDATE pet
-router.put('/:id', petUpload, updatePet);
+router.put('/:id', updatePet);
 
 // DELETE pet
 router.delete('/:id', deletePet);

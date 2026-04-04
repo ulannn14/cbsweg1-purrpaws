@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
 
-const { applicationUpload } = require("../middleware/upload");
+const applicationUpload = require("../middleware/upload");
 const controller = require("../controllers/applicationController");
 
 router.post("/", applicationUpload, controller.createApplication);

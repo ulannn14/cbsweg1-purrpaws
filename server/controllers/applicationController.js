@@ -17,7 +17,7 @@ exports.createApplication = async (req, res) => {
       housePhotos: [],
     };
 
-    // Upload helper
+    // 🔧 Upload helper
     const uploadToSupabase = async (fileArray, folder) => {
       const urls = [];
 
@@ -60,7 +60,38 @@ exports.createApplication = async (req, res) => {
       applicantPhoneNumber,
       applicantEmail,
       applicantBirthdate,
+
+      applicantOccupation,
+      applicantCompany,
+      applicantSocialMedia,
+      applicantCivilStatus,
+      adoptionPrompt,
+
+      alternateContactName,
+      alternateContactRelationship,
+      alternateContactNumber,
+      alternateContactEmail,
     } = req.body;
+
+    // 🧠 Map responses
+    const fieldMap = {
+      residenceType: "response1",
+      occupation: "response2",
+      reasonAdopt: "response3",
+      experience: "response4",
+      preparationSteps: "response5",
+      vetClinic: "response6",
+      petDiet: "response7",
+      otherPetsList: "response8",
+      consent: "response9",
+      consentUnderstanding: "response10",
+      petsNeutered: "response11",
+      planNeuter: "response12",
+      agreeUpdates: "response13",
+      agreeEmergency: "response14",
+      shareSocial: "response15",
+      interviewTime: "response16",
+    };
 
     const applicationData = {
       userId,
@@ -73,34 +104,40 @@ exports.createApplication = async (req, res) => {
       applicantEmail,
       applicantBirthdate: new Date(applicantBirthdate),
 
+      applicantOccupation,
+      applicantCompany,
+      applicantSocialMedia,
+      applicantCivilStatus,
+      adoptionPrompt,
+
+      alternateContactName,
+      alternateContactRelationship,
+      alternateContactNumber,
+      alternateContactEmail,
+
       validIdUrls: uploadedFiles.validId,
       consentProofUrls: uploadedFiles.consentProof,
       housePhotosUrls: uploadedFiles.housePhotos,
     };
 
-    // Map responses
-    Object.keys(req.body).forEach((key) => {
-      if (key.startsWith("response")) {
-        const value = req.body[key];
+    // 🔁 Attach dynamic responses
+    Object.entries(fieldMap).forEach(([frontendKey, backendKey]) => {
+      const value = req.body[frontendKey];
 
-        if (value === undefined) return;
+      if (value === undefined || value === "") return;
 
-        if (key === "response16") {
-          const parsedDate = new Date(value);
-          if (!isNaN(parsedDate)) {
-            applicationData[key] = parsedDate;
-          }
-        } else {
-          applicationData[key] = value;
+      if (frontendKey === "interviewTime") {
+        const parsedDate = new Date(value);
+        if (!isNaN(parsedDate)) {
+          applicationData[backendKey] = parsedDate;
         }
+        return;
       }
+
+      applicationData[backendKey] = value;
     });
 
-    console.log("ValidId:", applicationData.validIdUrls);
-    console.log("ConsentProof:", applicationData.consentProofUrls);
-    console.log("HousePhotos:", applicationData.housePhotosUrls);
-
-    // Create application
+    // 🗄️ Create application
     const application = await prisma.adoptionApplication.create({
       data: applicationData,
       include: {
@@ -114,7 +151,7 @@ exports.createApplication = async (req, res) => {
       },
     });
 
-    // SEND EMAIL (PENDING) — NON-BLOCKING
+    // 🔥 SEND EMAIL (PENDING) — NON-BLOCKING
     Promise.resolve().then(() =>
       sendApplicationEmail({
         application,
@@ -123,7 +160,7 @@ exports.createApplication = async (req, res) => {
       })
     );
 
-    // Response
+    // ✅ Response
     res.status(201).json(application);
 
   } catch (err) {

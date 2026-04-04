@@ -10,6 +10,7 @@ const applicationUpload = upload.fields([
   { name: "housePhotos" }
 ]);
 
+<<<<<<< HEAD
 const petUpload = upload.fields([
   { name: "petImages" }
 ]);
@@ -23,3 +24,6 @@ module.exports = {
   petUpload,
   userUpload
 };
+=======
+module.exports = applicationUpload;
+>>>>>>> parent of d856625 (fixed uploads)
