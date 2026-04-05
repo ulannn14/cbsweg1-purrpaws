@@ -238,15 +238,11 @@ function AdopterAdopt() {
                     <div className="pet-org-avatar">
                         <img
                         src={
-                            pet?.organization?.userName
-                            ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/userImages/${encodeURIComponent(
-                                pet.organization.userName
-                                )}.jpg`
-                            : pet?.organization?.image
-                            ? `${API}/images/${pet.organization.image}`
-                            : "/images/avatar-placeholder.png"
+                        pet.organization.organizationImage
+                        ? pet.organization.organizationImage
+                        : "/images/org-placeholder.png"
                         }
-                        alt={pet?.organization?.name || "Organization"}
+                        alt={pet.organization.name}
                         />
                     </div>
                     </div>

@@ -4,16 +4,17 @@
   gap: 12px;
 }
 
-.org-icon{
+.org-icon {
   width: 75px;
-  height:75px;
-  border-radius:50%;
-  border:1px solid #aaa;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  transition:all 0.2s ease;
+  height: 75px;
+  border-radius: 50%;
+  border: 1px solid #aaa;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
 }
 
 .org-icon.active{
