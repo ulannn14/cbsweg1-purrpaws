@@ -108,7 +108,11 @@ exports.createApplication = async (req, res) => {
         pet: {
           include: {
             breed: true,
-            organization: true,
+            organization: {
+              include: {
+                province: true
+              }
+            },
           },
         },
       },
@@ -147,7 +151,11 @@ exports.getMyApplications = async (req, res) => {
         pet: {
           include: {
             breed: true,
-            organization: true
+            organization: {
+              include: {
+                province: true
+              }
+            }
           }
         }
       },
@@ -183,7 +191,11 @@ exports.getOrgApplications = async (req, res) => {
         pet: {
           include: {
             breed: true,
-            organization: true
+            organization: {
+              include: {
+                province: true
+              }
+            }
           }
         }
       },
@@ -219,7 +231,11 @@ exports.getApplicationById = async (req, res) => {
         pet: {
           include: {
             breed: true,
-            organization: true
+            organization: {
+              include: {
+                province: true
+              }
+            }
           }
         }
       }
@@ -266,7 +282,11 @@ exports.updateApplicationStatus = async (req, res) => {
         user: true,
         pet: {
           include: {
-            organization: true,
+            organization: {
+              include: {
+                province: true
+              }
+            }
           },
         },
       },
@@ -293,7 +313,11 @@ exports.updateApplicationStatus = async (req, res) => {
           user: true,
           pet: {
             include: {
-              organization: true,
+              organization: {
+                include: {
+                  province: true
+                }
+              },
             },
           },
         },
