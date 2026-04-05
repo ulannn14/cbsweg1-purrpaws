@@ -181,7 +181,6 @@ function AdopterAdopt() {
                 <div className="adopt-card">
                 <div className="adopt-pet-photo">
                     <img
-                        src={getPetImage(pet.name)}
                         src={
                             pet.petImage
                                 ? pet.petImage

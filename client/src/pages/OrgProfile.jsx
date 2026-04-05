@@ -136,6 +136,8 @@ function OrgProfile() {
         updated.organizationImage || "/images/org-avatar.png"
         );
 
+        showSuccessPopup("Profile updated successfully!");
+
     } catch (err) {
         console.error(err);
         alert("Failed to update profile");
