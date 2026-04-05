@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
-import FloatingPopup from "../components/FloatingPopup";
 
 function OrgPets() {
   const [activeTab, setActiveTab] = useState("all");
@@ -111,13 +110,6 @@ function OrgPets() {
 
   return (
     <OrgAppLayout>
-
-      {/* ! ! ! ! PUT BACKEND HERE ! ! ! */}
-      <FloatingPopup
-                title="ASEAN Pet Adoption Info"
-                message="Learn more about the stray animal and pet adoption situation across ASEAN."
-                redirectTo="/asean-info"
-            />
             
       <main className="org-main">
         <h1 className="org-title">{org?.name}</h1>

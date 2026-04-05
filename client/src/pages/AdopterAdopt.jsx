@@ -4,9 +4,6 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import AppLayout from "../components/AppLayout";
 import BackButton from "../components/BackButton";
 
-const PET_IMG_BASE =
-  "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/";
-
 function AdopterAdopt() {
 
     const [organizations, setOrganizations] = useState([]);

@@ -54,15 +54,33 @@ app.get("/api/breeds", async (req, res) => {
   }
 });
 
-app.get("/api/snippets", async (req, res) => {
+app.get("/api/snippet", async (req, res) => {
   try {
-    const { type } = req.query;
+    const { forUser } = req.query;
 
+    const filters = {};
+
+    if (forUser !== undefined) {
+      filters.forUser = forUser === "true";
+    }
+
+    // get all matching
     const snippets = await prisma.infoSnippet.findMany({
-      where: type ? { type } : {},
+      where: filters,
     });
 
-    res.json(snippets);
+    if (snippets.length === 0) {
+      return res.json(null);
+    }
+
+    // pick random
+    const randomIndex = Math.floor(Math.random() * snippets.length);
+    const randomSnippet = snippets[randomIndex];
+
+    res.json({
+      ...randomSnippet,
+      id: randomSnippet.id.toString()
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
