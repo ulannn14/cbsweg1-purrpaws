@@ -112,14 +112,14 @@ function SignUpPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ age validation
+    // age validation
     const age = calculateAge(formData.birthdate);
     if (age < 18) {
       alert("You must be at least 18 years old to register.");
       return;
     }
 
-    // ✅ basic front-end validation (optional but recommended)
+    // basic front-end validation (optional but recommended)
     let hasError = false;
     const newErrors = {};
 
@@ -141,7 +141,7 @@ function SignUpPage() {
     setLoading(true);
 
     try {
-      // ✅ Use FormData instead of JSON
+      // Use FormData instead of JSON
       const form = new FormData();
 
       // append all form fields
@@ -149,7 +149,7 @@ function SignUpPage() {
         form.append(key, value);
       });
 
-      // ✅ append image if selected
+      // append image if selected
       if (imageFile) {
         form.append("userImage", imageFile);
       }

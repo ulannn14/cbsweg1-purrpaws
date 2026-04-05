@@ -122,38 +122,6 @@ function EditPet() {
     }
   };
 
-  {/*
-  const handleSave = async () => {
-    try {
-      const { breed, organization, ...payload } = form;
-
-      const formData = new FormData();
-      Object.entries(payload).forEach(([key, value]) => {
-        if (Array.isArray(value)) formData.append(key, JSON.stringify(value));
-        else formData.append(key, value);
-      });
-
-      if (imageFile) formData.append("image", imageFile);
-
-      const res = await fetch(`${API}/api/pets/${id}`, {
-        method: "PUT",
-        body: formData
-      });
-
-      if (!res.ok) throw new Error("Failed to update pet");
-
-      const updated = await res.json();
-      setPet(updated);
-      setForm(updated);
-      if (updated.image) setPreview(`${API}/images/${updated.image}`);
-      showSuccessPopup("Pet updated successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to save changes");
-    }
-  };
-  */}
-
   const showSuccessPopup = (message) => {
     setSuccessMessage(message);
 
