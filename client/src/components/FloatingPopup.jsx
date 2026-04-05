@@ -1,22 +1,55 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
+const API = import.meta.env.VITE_API_URL;
 
 function FloatingPopup({
   title,
-  message,
   redirectTo,
-  duration = 5000,
+  duration = 10000,
+  forUser = true
 }) {
   const [visible, setVisible] = useState(true);
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    let isActive = true; // 👈 guard
+
+    const fetchSnippet = async () => {
+      try {
+        setMessage(""); // clear para no flicker
+
+        const res = await fetch(
+          `${API}/api/snippet?forUser=${forUser}`
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch");
+
+        const data = await res.json();
+
+        if (data && isActive) {
+          setMessage(data.info);
+          setVisible(true);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchSnippet();
+
     const timer = setTimeout(() => {
-      setVisible(false);
+      if (isActive) setVisible(false);
     }, duration);
 
-    return () => clearTimeout(timer);
-  }, [duration]);
+    return () => {
+      isActive = false; // 👈 prevents double updates
+      clearTimeout(timer);
+    };
+  }, [forUser, location.pathname, duration]);
 
   const handleClose = (e) => {
     e.stopPropagation();
@@ -24,10 +57,12 @@ function FloatingPopup({
   };
 
   const handleRedirect = () => {
-    navigate(redirectTo);
+    if (redirectTo) {
+      navigate(redirectTo);
+    }
   };
 
-  if (!visible) return null;
+  if (!visible || !message) return null;
 
   return (
     <div className="floating-popup" onClick={handleRedirect}>

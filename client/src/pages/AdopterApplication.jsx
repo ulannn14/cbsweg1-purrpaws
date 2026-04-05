@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
-import FloatingPopup from "../components/FloatingPopup";
 
 function AdopterApplication() {
 
@@ -53,12 +52,6 @@ function AdopterApplication() {
   return (
     <AppLayout>
 
-      {/* ! ! ! ! PUT BACKEND HERE ! ! ! */}
-      <FloatingPopup
-                title="ASEAN Pet Adoption Info"
-                message="Learn more about the stray animal and pet adoption situation across ASEAN."
-                redirectTo="/asean-info"
-            />
       <main className="main">
 
         <section className="section applications">
