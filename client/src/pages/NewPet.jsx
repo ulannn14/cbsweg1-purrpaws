@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
 import BackButton from "../components/BackButton";
@@ -48,6 +48,12 @@ function NewPet() {
   const [conditions, setConditions] = useState([]);
   const [vaccines, setVaccines] = useState([]);
 
+  const [openConditions, setOpenConditions] = useState(false);
+  const [openVaccines, setOpenVaccines] = useState(false);
+
+  const conditionsRef = useRef(null);
+  const vaccinesRef = useRef(null);
+
   useEffect(() => {
     fetch(`${API}/api/breeds`)
       .then((res) => res.json())
@@ -65,6 +71,17 @@ function NewPet() {
       .then(data => setVaccines(data))
       .catch(err => console.error(err));
 
+    const handleClickOutside = (e) => {
+      if (conditionsRef.current && !conditionsRef.current.contains(e.target)) {
+        setOpenConditions(false);
+      }
+      if (vaccinesRef.current && !vaccinesRef.current.contains(e.target)) {
+        setOpenVaccines(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [API]);
 
   const handleChange = (e) => {
@@ -470,40 +487,124 @@ function NewPet() {
 
                 <li>
                   <strong>Medical Conditions</strong>
-                  <select
-                    multiple
-                    className="edit-input multi-select"
-                    value={form.conditionIds}
-                    onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions).map(opt => Number(opt.value));
-                      setForm({ ...form, conditionIds: selected });
-                    }}
-                  >
-                    {conditions.map(c => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+
+                  <div className="multi-select-wrapper" ref={conditionsRef}>
+                    <div
+                      className="multi-select-display"
+                      onClick={() => setOpenConditions(o => !o)}
+                    >
+                      {(form.conditionIds || []).length === 0 && (
+                        <span className="placeholder">Select conditions...</span>
+                      )}
+
+                      {(form.conditionIds || []).map(id => {
+                        const item = conditions.find(c => c.id === id);
+                        return (
+                          <span key={id} className="multi-tag">
+                            {item?.name}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setForm(prev => ({
+                                  ...prev,
+                                  conditionIds: prev.conditionIds.filter(i => i !== id)
+                                }));
+                              }}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+
+                    {openConditions && (
+                      <div className="multi-dropdown">
+                        {conditions.map(c => {
+                          const selected = form.conditionIds.includes(c.id);
+
+                          return (
+                            <div
+                              key={c.id}
+                              className={`multi-option ${selected ? "selected" : ""}`}
+                              onClick={() => {
+                                setForm(prev => ({
+                                  ...prev,
+                                  conditionIds: selected
+                                    ? prev.conditionIds.filter(i => i !== c.id)
+                                    : [...prev.conditionIds, c.id]
+                                }));
+                              }}
+                            >
+                              {c.name}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </li>
 
                 <li>
                   <strong>Vaccinations</strong>
-                  <select
-                    multiple
-                    className="edit-input multi-select"
-                    value={form.vaccineIds}
-                    onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions).map(opt => Number(opt.value));
-                      setForm({ ...form, vaccineIds: selected });
-                    }}
-                  >
-                    {vaccines.map(v => (
-                      <option key={v.id} value={v.id}>
-                        {v.name}
-                      </option>
-                    ))}
-                  </select>
+
+                  <div className="multi-select-wrapper" ref={vaccinesRef}>
+                    <div
+                      className="multi-select-display"
+                      onClick={() => setOpenVaccines(o => !o)}
+                    >
+                      {(form.vaccineIds || []).length === 0 && (
+                        <span className="placeholder">Select vaccines...</span>
+                      )}
+
+                      {(form.vaccineIds || []).map(id => {
+                        const item = vaccines.find(v => v.id === id);
+                        return (
+                          <span key={id} className="multi-tag">
+                            {item?.name}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setForm(prev => ({
+                                  ...prev,
+                                  vaccineIds: prev.vaccineIds.filter(i => i !== id)
+                                }));
+                              }}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+
+                    {openVaccines && (
+                      <div className="multi-dropdown">
+                        {vaccines.map(v => {
+                          const selected = form.vaccineIds.includes(v.id);
+
+                          return (
+                            <div
+                              key={v.id}
+                              className={`multi-option ${selected ? "selected" : ""}`}
+                              onClick={() => {
+                                setForm(prev => ({
+                                  ...prev,
+                                  vaccineIds: selected
+                                    ? prev.vaccineIds.filter(i => i !== v.id)
+                                    : [...prev.vaccineIds, v.id]
+                                }));
+                              }}
+                            >
+                              {v.name}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </li>
 
               </ul>

@@ -699,3 +699,146 @@ input[type="date"][name="dateRescued"]:focus {
   font-size: 15px;
   color: #333;
 }
+
+/* ============================= */
+/* NOTION-STYLE MULTI SELECT */
+/* ============================= */
+
+/* ============================= */
+/* MULTI SELECT (MATCHES UI) */
+/* ============================= */
+
+.multi-select-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 6px;
+}
+
+/* main box */
+.multi-select-display {
+  min-height: 44px;
+  padding: 8px;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  cursor: pointer;
+
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* focus style like your inputs */
+.multi-select-display:focus,
+.multi-select-display:hover {
+  border: 1px solid #666;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.06);
+}
+
+/* placeholder */
+.placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+/* tags */
+.multi-tag {
+  background: #555;
+  color: #fff;
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  transition: background 0.15s ease;
+}
+
+/* subtle hover like your buttons */
+.multi-tag:hover {
+  background: #222;
+}
+
+/* remove button */
+.multi-tag button {
+  border: none;
+  background: transparent;
+  color: #fff;
+
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+
+  padding: 0;
+  line-height: 1;
+}
+
+.multi-tag button:hover {
+  color: #f4a261; /* matches your upload hover color */
+}
+
+/* dropdown */
+.multi-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+
+  max-height: 220px;
+  overflow-y: auto;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  background: #fff;
+
+  z-index: 1000;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* options */
+.multi-option {
+  padding: 10px 12px;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* hover */
+.multi-option:hover {
+  background: #f4f4f4;
+}
+
+/* selected */
+.multi-option.selected {
+  background: #ccc;
+  color: #222;
+}
+
+/* smooth feel */
+.multi-dropdown {
+  animation: dropdownFade 0.15s ease;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
