@@ -9,7 +9,7 @@ function AppLayout({ children }) {
 
         <FloatingPopup
             title="Adoption Tips"
-            redirectTo="/pets"
+            redirectTo="/asean-info"
             forUser={true} 
         />
 
