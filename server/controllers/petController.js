@@ -358,51 +358,84 @@ const uploadToSupabase = async (fileArray, folder, entityId = "general") => {
 exports.updatePet = async (req, res) => {
   try {
     const files = req.files || {};
-    
-    // Upload images
+
+    // 🔧 Helper: safely parse arrays
+    const parseArrayField = (field) => {
+      if (!field) return [];
+
+      if (typeof field === "string") {
+        try {
+          const parsed = JSON.parse(field);
+          return Array.isArray(parsed)
+            ? parsed.map(v => Number(v))
+            : [Number(parsed)];
+        } catch {
+          return field.split(",").map(v => Number(v));
+        }
+      }
+
+      if (Array.isArray(field)) {
+        return field.map(v => Number(v));
+      }
+
+      return [Number(field)];
+    };
+
+    // 🔧 Helper: parse JSON but allow non-JSON fallback
+    const parseJSONField = (field, fallback = []) => {
+      if (!field) return fallback;
+
+      if (typeof field === "string") {
+        try {
+          return JSON.parse(field);
+        } catch {
+          return fallback;
+        }
+      }
+
+      return field;
+    };
+
+    // 📸 Upload images
     let imageUrls = [];
+    const petImages = normalizeFiles(files.petImages);
 
-  const petImages = normalizeFiles(files.petImages);
-
-  if (petImages.length > 0) {
+    if (petImages.length > 0) {
       imageUrls = await uploadToSupabase(
-      petImages,
-      "petImages",
-      req.params.id
-    );
-  }
+        petImages,
+        "petImages",
+        req.params.id
+      );
+    }
 
-    // Merge existing + new
-    const existingImages = req.body.existingImages
-    ? JSON.parse(req.body.existingImages)
-    : [];
-
+    // 🖼 Merge images
+    const existingImages = parseJSONField(req.body.existingImages, []);
     const finalImages = [...existingImages, ...imageUrls];
-    const uniqueImages = [...new Set(finalImages)]; // Remove duplicates if any
+    const uniqueImages = [...new Set(finalImages)];
 
-    const mainImage = finalImages.length > 0 ? finalImages[0] : null;
+    const mainImage = uniqueImages.length > 0 ? uniqueImages[0] : null;
 
-    console.log("existingImages:", req.body.existingImages);
-    console.log("files:", req.files);
+    // 🧠 Parse fields
+    const conditionIdsRaw = parseArrayField(req.body.conditionIds);
+    const vaccineIdsRaw = parseArrayField(req.body.vaccineIds);
 
-    // Parse arrays
-    let adoptionRequirements = req.body.adoptionRequirements;
-    if (typeof adoptionRequirements === "string") {
-      adoptionRequirements = JSON.parse(adoptionRequirements);
-    }
+    // 🚫 Remove NaN + duplicates
+    const conditionIds = [...new Set(conditionIdsRaw.filter(id => !isNaN(id)))];
+    const vaccineIds = [...new Set(vaccineIdsRaw.filter(id => !isNaN(id)))];
 
-    let conditionIds = [];
-    if (req.body.conditionIds) {
-      conditionIds = JSON.parse(req.body.conditionIds);
-    }
+    const adoptionRequirements = parseJSONField(
+      req.body.adoptionRequirements,
+      []
+    );
 
-    let vaccineIds = [];
-    if (req.body.vaccineIds) {
-      vaccineIds = JSON.parse(req.body.vaccineIds);
-    }
+    // 🧪 Debug (optional, remove later)
+    console.log("conditionIds:", conditionIds);
+    console.log("vaccineIds:", vaccineIds);
 
+    // 💾 Update DB
     const updatedPet = await prisma.pet.update({
       where: { id: req.params.id },
+
       data: {
         name: req.body.name,
         isMale: req.body.isMale === "true" || req.body.isMale === true,
@@ -426,7 +459,9 @@ exports.updatePet = async (req, res) => {
         isHouseTrained: req.body.isHouseTrained === "true",
         isLeashTrained: req.body.isLeashTrained === "true",
 
-        adoptionFee: req.body.adoptionFee ? Number(req.body.adoptionFee) : null,
+        adoptionFee: req.body.adoptionFee
+          ? Number(req.body.adoptionFee)
+          : null,
 
         adoptionRequirements,
 
@@ -436,11 +471,11 @@ exports.updatePet = async (req, res) => {
           ? new Date(req.body.dateRescued)
           : null,
 
-        // SAVE IMAGE URLs
+        // 🖼 Images
         petImages: uniqueImages,
-        petImage: uniqueImages[0] || null,
+        petImage: mainImage,
 
-        // RELATIONS
+        // 🧬 Relations
         petConditions: {
           deleteMany: {},
           create: conditionIds.map(id => ({
@@ -460,7 +495,7 @@ exports.updatePet = async (req, res) => {
     res.json(updatedPet);
 
   } catch (error) {
-    console.error(error);
+    console.error("UPDATE PET ERROR:", error);
     res.status(400).json({ message: error.message });
   }
 };
