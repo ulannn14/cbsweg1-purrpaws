@@ -6,12 +6,14 @@ function SignUpPage() {
 
   const API = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [provinces, setProvinces] = useState([]);
+
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("/images/avatar-placeholder.png");
-  
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -25,6 +27,7 @@ function SignUpPage() {
     address: ""
   });
 
+  // ================= FETCH PROVINCES =================
   useEffect(() => {
     fetch(`${API}/api/provinces`)
       .then(res => res.json())
@@ -32,12 +35,26 @@ function SignUpPage() {
       .catch(err => console.error(err));
   }, []);
 
+  // ================= HANDLE IMAGE PREVIEW (FIXED) =================
+  useEffect(() => {
+    if (!imageFile) {
+      setPreview("/images/avatar-placeholder.png");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(imageFile);
+    setPreview(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [imageFile]);
+
+  // ================= FORM HANDLERS =================
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: value
-    });
+    }));
   };
 
   const handleImageUpload = (e) => {
@@ -45,40 +62,32 @@ function SignUpPage() {
     if (!file) return;
 
     setImageFile(file);
-    setPreview(URL.createObjectURL(file));
   };
 
   const validateField = (name, value) => {
     let error = "";
 
-    if (name === "email") {
-      if (!value.includes("@")) {
-        error = "Invalid email format.";
-      }
+    if (name === "email" && !value.includes("@")) {
+      error = "Invalid email format.";
     }
 
-    if (name === "phoneNumber") {
-      if (!/^09\d{9}$/.test(value)) {
-        error = "Mobile must be 11 digits (PH format).";
-      }
+    if (name === "phoneNumber" && !/^09\d{9}$/.test(value)) {
+      error = "Mobile must be 11 digits (PH format).";
     }
 
-    if (name === "userName") {
-      if (value.length < 4) {
-        error = "Username must be at least 4 characters.";
-      }
+    if (name === "userName" && value.length < 4) {
+      error = "Username must be at least 4 characters.";
     }
 
-    if (name === "password") {
-      if (value.length < 6) {
-        error = "Password must be at least 6 characters.";
-      }
+    if (name === "password" && value.length < 6) {
+      error = "Password must be at least 6 characters.";
     }
 
-    if (name === "firstName" || name === "lastName" || name === "city" || name === "provinceId" || name === "birthdate" || name === "address") {
-      if (!value.trim()) {
-        error = "This field is required.";
-      }
+    if (
+      ["firstName", "lastName", "city", "provinceId", "birthdate", "address"].includes(name) &&
+      !value.trim()
+    ) {
+      error = "This field is required.";
     }
 
     return error;
@@ -109,17 +118,16 @@ function SignUpPage() {
     return age;
   };
 
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // age validation
     const age = calculateAge(formData.birthdate);
     if (age < 18) {
       alert("You must be at least 18 years old to register.");
       return;
     }
 
-    // basic front-end validation (optional but recommended)
     let hasError = false;
     const newErrors = {};
 
@@ -141,15 +149,12 @@ function SignUpPage() {
     setLoading(true);
 
     try {
-      // Use FormData instead of JSON
       const form = new FormData();
 
-      // append all form fields
       Object.entries(formData).forEach(([key, value]) => {
         form.append(key, value);
       });
 
-      // append image if selected
       if (imageFile) {
         form.append("userImage", imageFile);
       }
@@ -167,10 +172,7 @@ function SignUpPage() {
         return;
       }
 
-      console.log("SIGNUP RESPONSE:", data);
       localStorage.setItem("user", JSON.stringify(data));
-      console.log("AFTER SIGNUP SAVE:", localStorage.getItem("user"));
-
       navigate("/adopter");
 
     } catch (error) {
@@ -181,6 +183,7 @@ function SignUpPage() {
     }
   };
 
+  // ================= UI =================
   return (
     <main className="signup-page">
 
@@ -193,21 +196,18 @@ function SignUpPage() {
       </div>
 
       <div className="signup-container">
-
         <div className="signup-box">
 
           <h2>SIGN UP</h2>
 
           <form onSubmit={handleSubmit}>
 
+            {/* IMAGE UPLOAD */}
             <div className="edit-upload-container signup-upload">
               <img
-                src={preview}
+                src={imageFile ? preview : "/images/placeholder.jpg"}
                 alt="Preview"
                 className="edit-upload-preview"
-                onError={(e) => {
-                  e.target.src = "/images/avatar-placeholder.png";
-                }}
               />
 
               <input
@@ -226,10 +226,7 @@ function SignUpPage() {
                 {imageFile && (
                   <button
                     type="button"
-                    onClick={() => {
-                      setImageFile(null);
-                      setPreview("/images/avatar-placeholder.png");
-                    }}
+                    onClick={() => setImageFile(null)}
                     className="edit-upload-label remove-btn"
                   >
                     Remove Photo
@@ -244,8 +241,8 @@ function SignUpPage() {
               )}
             </div>
 
+            {/* NAME */}
             <div className="signup-row">
-
               <div style={{ flex: 1 }}>
                 <label>First Name</label>
                 <input
@@ -271,9 +268,9 @@ function SignUpPage() {
                 />
                 {errors.lastName && <p className="error-text">{errors.lastName}</p>}
               </div>
-
             </div>
 
+            {/* EMAIL */}
             <label>Email Address</label>
             <input
               type="email"
@@ -283,9 +280,9 @@ function SignUpPage() {
               onBlur={handleBlur}
               className={`signup-input ${errors.email ? "error" : ""}`}
             />
-
             {errors.email && <p className="error-text">{errors.email}</p>}
 
+            {/* PHONE */}
             <label>Mobile Number</label>
             <input
               type="tel"
@@ -295,9 +292,9 @@ function SignUpPage() {
               onBlur={handleBlur}
               className={`signup-input ${errors.phoneNumber ? "error" : ""}`}
             />
-
             {errors.phoneNumber && <p className="error-text">{errors.phoneNumber}</p>}
 
+            {/* USERNAME */}
             <label>Username</label>
             <input
               type="text"
@@ -307,9 +304,9 @@ function SignUpPage() {
               onBlur={handleBlur}
               className={`signup-input ${errors.userName ? "error" : ""}`}
             />
-
             {errors.userName && <p className="error-text">{errors.userName}</p>}
 
+            {/* PASSWORD */}
             <label>Password</label>
             <input
               type="password"
@@ -319,9 +316,9 @@ function SignUpPage() {
               onBlur={handleBlur}
               className={`signup-input ${errors.password ? "error" : ""}`}
             />
-
             {errors.password && <p className="error-text">{errors.password}</p>}
 
+            {/* BIRTHDATE */}
             <label>Date of Birth</label>
             <input
               type="date"
@@ -331,11 +328,10 @@ function SignUpPage() {
               onBlur={handleBlur}
               className={`signup-input ${errors.birthdate ? "error" : ""}`}
             />
-
             {errors.birthdate && <p className="error-text">{errors.birthdate}</p>}
 
+            {/* LOCATION */}
             <div className="signup-row">
-
               <div style={{ flex: 1 }}>
                 <label>City</label>
                 <input
@@ -359,17 +355,17 @@ function SignUpPage() {
                   className={`signup-input ${errors.provinceId ? "error" : ""}`}
                 >
                   <option value="">Select a province</option>
-                  {provinces.map(province => (
-                    <option key={province.id} value={province.id}>
-                      {province.name}
+                  {provinces.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
                     </option>
                   ))}
                 </select>
                 {errors.provinceId && <p className="error-text">{errors.provinceId}</p>}
               </div>
-
             </div>
 
+            {/* ADDRESS */}
             <label>General Address</label>
             <input
               type="text"
@@ -379,7 +375,6 @@ function SignUpPage() {
               onBlur={handleBlur}
               className={`signup-input ${errors.address ? "error" : ""}`}
             />
-
             {errors.address && <p className="error-text">{errors.address}</p>}
 
             <button type="submit" className="signup-btn" disabled={loading}>
@@ -388,37 +383,8 @@ function SignUpPage() {
 
           </form>
 
-          <p className="signup-text">
-            Already have an account? <a href="/">Log in</a>
-          </p>
-
-          <div className="org-invite">
-
-            <p>
-              Are you an <strong>animal welfare organization</strong> interested in
-              partnering with us?
-            </p>
-
-            <p>
-              You can apply to register your organization by filling out our
-              registration form.
-            </p>
-
-            <a
-              href="https://forms.gle/fcwdAFCBUVLbXaBG8"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="org-btn"
-            >
-              Register Your Organization
-            </a>
-
-          </div>
-
         </div>
-
       </div>
-
     </main>
   );
 }
