@@ -151,7 +151,7 @@ function AdopterApplication() {
                     </div>
 
                     <div className={`status-pill ${app.status?.toLowerCase()}`}>
-                      {app.status}
+                      {app.status.replace("_", " ")}
                     </div>
                   </div>
               );

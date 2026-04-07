@@ -271,24 +271,11 @@ input[type="date"][name="dateRescued"]:focus {
   transition: all 0.3s ease;
 }
 
-.edit-upload-preview:hover {
-  border-color: #f4a261;
-  transform: scale(1.05);
-}
-
 .edit-upload-input {
   display: none;
 }
 
-.edit-upload-label {
-  background-color: #000;
-  color: #fff;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s all ease;
-}
+
 
 .edit-upload-label:hover {
   background-color: #000;
@@ -524,25 +511,6 @@ input[type="date"][name="dateRescued"]:focus {
   color: #fff;
   cursor: pointer;
   font-weight: 600;
-}
-
-.edit-upload-label:hover {
-  color: #f4a261;
-}
-
-.edit-upload-label.secondary {
-  background: #f4f4f4;
-  border-color: #ccc;
-  color: #000;
-}
-
-.edit-upload-label.secondary:hover {
-  background: #e0e0e0;
-  color: #000;
-}
-
-.edit-upload-input {
-  display: none;
 }
 
 .edit-delete-btn {

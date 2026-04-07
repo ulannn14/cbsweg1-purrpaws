@@ -431,7 +431,7 @@ function OrgApplication() {
           {status !== "APPROVED" && status !== "REJECTED" && (
             <p className="pending-label">
               {pendingAction
-                ? `Selected: ${pendingAction}`
+                ? `Selected: ${pendingAction.replace("_", " ")}`
                 : "No action selected."}
             </p>
           )}
