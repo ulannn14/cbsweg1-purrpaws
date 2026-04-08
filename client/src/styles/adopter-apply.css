@@ -322,3 +322,35 @@ textarea {
     transform: rotate(360deg);
   }
 }
+
+.form-error-banner {
+  background-color: #ffe5e5;
+  color: #b00020;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  border: 1px solid #ffb3b3;
+}
+
+.input-error {
+  border: 1px solid red !important;
+}
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.reuse-box {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.reuse-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}

@@ -4,16 +4,17 @@
   gap: 12px;
 }
 
-.org-icon{
+.org-icon {
   width: 75px;
-  height:75px;
-  border-radius:50%;
-  border:1px solid #aaa;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  transition:all 0.2s ease;
+  height: 75px;
+  border-radius: 50%;
+  border: 1px solid #aaa;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
 }
 
 .org-icon.active{
@@ -198,10 +199,6 @@ border-radius:10px;
 background:white;
 }
 
-.pet-details-box ul{
-padding-left:18px;
-}
-
 .pet-details-box li{
 margin-bottom:8px;
 }
@@ -263,15 +260,17 @@ margin-top:20px;
 .apply-btn-large{
 padding:12px 28px;
 border-radius:25px;
+border:1px solid #000;
 background:#000;
 cursor:pointer;
 font-size:16px;
 color:#fff;
 }
 
-.apply-btn-large:hover{
+.apply-btn-large:not(:disabled):hover{
 opacity: 0.9;
 color: #f4a261;
+border:1px solid #000;
 }
 
 .pets-loading{

@@ -23,9 +23,11 @@
 
 /* HEADER */
 
-.pets-header{
-  display:grid;
-  grid-template-columns:80px 1fr 1fr 1fr 1fr 1fr 60px;
+.pets-header {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr 1.5fr 1fr 1fr 60px;
+  align-items: center;
+  gap: 10px;
   font-size:14px;
   color:#666;
   margin-bottom:10px;
@@ -35,11 +37,11 @@
 
 /* PET ROW */
 
-.pet-row{
-  display:grid;
-  grid-template-columns:80px 1fr 1fr 1fr 1fr 1fr 60px;
-
-  align-items:center;
+.pet-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr 1.5fr 1fr 1fr 60px;
+  align-items: center;
+  gap: 10px;
   text-align: center;
   justify-items: center;
   border:1px solid #ccc;
@@ -47,6 +49,10 @@
 
   padding:20px;
   margin-bottom:15px;
+}
+
+.pet-row div {
+  text-align: center;
 }
 
 /* IMAGE */
@@ -119,3 +125,28 @@
   background:#eaeaea;
   border:1px solid #444;
 }
+
+.sort-header {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 👈 center horizontally */
+  gap: 1px;
+
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.sort-arrow {
+  font-size: 12px;
+  margin-left: 8px;
+}
+.sort-header span {
+  font-size: 12px;
+}
+

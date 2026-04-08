@@ -142,6 +142,10 @@ select {
   margin-top:6px;
 }
 
+.pet-org-box h3{
+  text-decoration: underline;
+}
+
 /* ============================= */
 /* Fix inputs and dropdowns for specific fields */
 /* ============================= */
@@ -267,24 +271,11 @@ input[type="date"][name="dateRescued"]:focus {
   transition: all 0.3s ease;
 }
 
-.edit-upload-preview:hover {
-  border-color: #f4a261;
-  transform: scale(1.05);
-}
-
 .edit-upload-input {
   display: none;
 }
 
-.edit-upload-label {
-  background-color: #000;
-  color: #fff;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s all ease;
-}
+
 
 .edit-upload-label:hover {
   background-color: #000;
@@ -522,25 +513,6 @@ input[type="date"][name="dateRescued"]:focus {
   font-weight: 600;
 }
 
-.edit-upload-label:hover {
-  color: #f4a261;
-}
-
-.edit-upload-label.secondary {
-  background: #f4f4f4;
-  border-color: #ccc;
-  color: #000;
-}
-
-.edit-upload-label.secondary:hover {
-  background: #e0e0e0;
-  color: #000;
-}
-
-.edit-upload-input {
-  display: none;
-}
-
 .edit-delete-btn {
   min-width: 120px;
   padding: 10px 16px;
@@ -626,5 +598,215 @@ input[type="date"][name="dateRescued"]:focus {
   from {
     opacity: 0;
     transform: translateX(-10px);
+  }
+}
+
+.delete-btn {
+  padding:12px 30px;
+  border-radius:25px;
+  background:#d32f2f;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.2s ease;
+  border:1px solid #d32f2f;
+}
+
+.delete-btn:hover {
+  background:#b71c1c;
+  border:1px solid #d32f2f;
+}
+
+/* ============================= */
+/* Adoption Requirements Checkbox Fix */
+/* ============================= */
+
+.pet-org-box .checkbox-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* override right alignment */
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* move checkbox to the LEFT */
+.pet-org-box .checkbox-row input[type="checkbox"] {
+  order: -1; /* puts checkbox before text */
+  margin-left: 0;
+  margin-right: 8px;
+
+  appearance: none;
+  width: 18px;
+  height: 18px;
+
+  border: 1px solid #aaa;
+  border-radius: 4px;
+
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+}
+
+/* checked state */
+.pet-org-box .checkbox-row input[type="checkbox"]:checked {
+  background: #555;
+  border-color: #555;
+}
+
+/* checkmark */
+.pet-org-box .checkbox-row input[type="checkbox"]:checked::after {
+  content: "✓";
+  color: #fff;
+  font-size: 12px;
+  position: absolute;
+  top: -1px;
+  left: 3px;
+}
+
+.pet-org-box span {
+  font-size: 15px;
+  color: #333;
+}
+
+/* ============================= */
+/* NOTION-STYLE MULTI SELECT */
+/* ============================= */
+
+/* ============================= */
+/* MULTI SELECT (MATCHES UI) */
+/* ============================= */
+
+.multi-select-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 6px;
+}
+
+/* main box */
+.multi-select-display {
+  min-height: 44px;
+  padding: 8px;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  cursor: pointer;
+
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* focus style like your inputs */
+.multi-select-display:focus,
+.multi-select-display:hover {
+  border: 1px solid #666;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.06);
+}
+
+/* placeholder */
+.placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+/* tags */
+.multi-tag {
+  background: #555;
+  color: #fff;
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  transition: background 0.15s ease;
+}
+
+/* subtle hover like your buttons */
+.multi-tag:hover {
+  background: #222;
+}
+
+/* remove button */
+.multi-tag button {
+  border: none;
+  background: transparent;
+  color: #fff;
+
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+
+  padding: 0;
+  line-height: 1;
+}
+
+.multi-tag button:hover {
+  color: #f4a261; /* matches your upload hover color */
+}
+
+/* dropdown */
+.multi-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+
+  max-height: 220px;
+  overflow-y: auto;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  background: #fff;
+
+  z-index: 1000;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* options */
+.multi-option {
+  padding: 10px 12px;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* hover */
+.multi-option:hover {
+  background: #f4f4f4;
+}
+
+/* selected */
+.multi-option.selected {
+  background: #ccc;
+  color: #222;
+}
+
+/* smooth feel */
+.multi-dropdown {
+  animation: dropdownFade 0.15s ease;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

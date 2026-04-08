@@ -10,4 +10,19 @@ const applicationUpload = upload.fields([
   { name: "housePhotos" }
 ]);
 
-module.exports = applicationUpload;
+const petUpload = upload.fields([
+  { name: "petImages" }
+]);
+
+const userUpload = upload.fields([
+  { name: "userImage" }
+]);
+
+const organizationUpload = upload.single("organizationImage");
+
+module.exports = {
+  applicationUpload,
+  petUpload,
+  userUpload,
+  organizationUpload
+};

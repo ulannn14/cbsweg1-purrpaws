@@ -111,7 +111,7 @@
 }
 
 .quick-card span {
-  font-size:12px;
+  font-size:11px;
   color:#777;
 }
 
@@ -195,4 +195,56 @@
 
 .pet-details-box h3 {
   margin-bottom:10px;
+  text-decoration: underline;
+  text-align: center;
+}
+
+.org-rescue-box {
+  text-align: center;
+}
+
+/* Remove default list styles ONLY here */
+.org-rescue-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Keep items stacked cleanly */
+.org-rescue-content li {
+  margin-bottom: 8px;
+}
+
+/* Paragraph spacing */
+.org-rescue-content p {
+  margin: 6px 0;
+}
+
+/* Make nested adoption requirements clean */
+.org-rescue-content ul ul {
+  margin-top: 6px;
+  padding-left: 0;
+}
+
+.pet-details-box.org-rescue-box li {
+  display: block !important;
+  justify-content: initial !important;
+  align-items: initial !important;
+}
+
+.org-circle {
+  margin: 0 auto;
+}
+
+.org-rescue-box.rescue .org-rescue-content {
+  align-items: flex-start;   /* left align content */
+  text-align: left;
+}
+
+.org-rescue-box.rescue .org-rescue-content p{
+  padding-left: 18px; /* indent paragraphs for readability */
+}
+
+.org-rescue-box.rescue .org-rescue-content ul{
+  padding-left: 18px; /* indent paragraphs for readability */
 }

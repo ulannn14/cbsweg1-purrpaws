@@ -103,31 +103,6 @@ const handleSave = async () => {
                         className="edit-upload-preview"
                     />
                 </div>
-
-                {/*editing ? (
-                <div className="edit-upload-container">
-                    <img
-                        src={`/temp-photos/orgs/org-profile-${storedUser.id}.png`}
-                        alt="Organization Logo"
-                        className="edit-upload-preview"
-                    />
-                    <label htmlFor="logo-upload" className="edit-upload-label">Change Logo</label>
-                    <input
-                    type="file"
-                    id="logo-upload"
-                    className="edit-upload-input"
-                    onChange={handleLogoUpload}
-                    />
-                </div>
-                ) : (
-                <div className="pet-photo-large">
-                    <img
-                        src={`/temp-photos/orgs/org-profile-${storedUser.id}.png`}
-                        alt="Organization Logo"
-                        className="edit-upload-preview"
-                    />
-                </div>
-                )*/}
             </div>
 
             {/* ACCOUNT DETAILS */}

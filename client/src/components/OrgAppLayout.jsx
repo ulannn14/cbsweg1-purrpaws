@@ -1,10 +1,17 @@
 import OrgSidebar from "./OrgSidebar";
+import FloatingPopup from "./FloatingPopup";
 
 function OrgAppLayout({ children }) {
     return (
         <div className="app-layout">
 
         <OrgSidebar/>
+
+        <FloatingPopup
+            title="Adoption Tips"
+            redirectTo="/org/asean-info"
+            forUser={false} 
+        />
 
         <main className="main">
             {children}

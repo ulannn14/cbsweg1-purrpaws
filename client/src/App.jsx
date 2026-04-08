@@ -10,6 +10,7 @@ import AdopterApplication from "./pages/AdopterApplication";
 import AdopterApplicationDetail from "./pages/AdopterApplicationDetail";
 import AdopterProfile from "./pages/AdopterProfile"
 import OrgLanding from "./pages/OrgLanding";  
+import OrgAsean from "./pages/OrgAsean";
 import OrgPets from "./pages/OrgPets";
 import EditPet from "./pages/EditPet";
 import NewPet from "./pages/NewPet";
@@ -30,6 +31,7 @@ function App() {
         <Route path="/organizations/:id" element={<OrgDetail />} />
         <Route path="/apply/:id" element={<AdopterApply />} />
         <Route path="/asean-info" element={<AdopterAsean />} />
+        <Route path="/org/asean-info" element={<OrgAsean />} />
         <Route path="/applications" element={<AdopterApplication />} />
         <Route path="/applications/:id" element={<AdopterApplicationDetail />} />
         <Route path="/profile" element={<AdopterProfile />} />

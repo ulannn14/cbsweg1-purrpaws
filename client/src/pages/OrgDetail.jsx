@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { FaMapMarkerAlt } from "react-icons/fa";
 import AppLayout from "../components/AppLayout";
 import BackButton from "../components/BackButton";
 
@@ -62,9 +63,15 @@ function OrgDetail() {
                         {/* HEADER */}
                         <div className="profile-header">
                             <img
-                                src={`/temp-photos/orgs/org-profile-${orgInfo.id}.png`}
-                                alt="Org Logo"
-                                className="profile-avatar"
+                            src={
+                                orgInfo.organizationImage ||
+                                "/images/org-placeholder.png"
+                            }
+                            alt="Org Logo"
+                            className="profile-avatar"
+                            onError={(e) => {
+                                e.target.src = "/images/org-placeholder.png";
+                            }}
                             />
 
                             <div>
@@ -191,54 +198,80 @@ function OrgDetail() {
                                 >
 
                                 <div className="adopt-card">
-
-                                    <div className="adopt-pet-photo">
-                                    <img
-                                    src={
-                                        pet?.name
-                                        ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(pet.name)}.jpg`
-                                        : "/images/avatar-placeholder.png"
-                                    }
-                                    alt={pet?.name}
-                                    />
-                                    </div>
-
-                                    <div className="pet-info">
-
-                                        <div className="pet-text">
-                                            <h3>{pet.name}</h3>
-                                            <p>{pet.breed?.name}</p>
-
-                                            <div className="pet-tags">
-                                                {pet.age && <span className="tag">{pet.age} yrs</span>}
-                                                {pet.isSpayedOrNeutered && (
-                                                    <span className="tag dark">Neutered</span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div
-                                            className={`pet-type ${
-                                                pet.isMale === true
-                                                    ? "male"
-                                                    : pet.isMale === false
-                                                    ? "female"
-                                                    : ""
-                                            }`}
-                                        >
-                                            <img
-                                                src={
-                                                    pet.breed?.isCat === false
-                                                        ? "/images/flags/dog.jpg"
-                                                        : "/images/flags/cat.jpg"
-                                                }
-                                                alt={pet.breed?.isCat ? "Cat" : "Dog"}
-                                            />
-                                        </div>
-
-                                    </div>
-
-                                </div>
+                                                    <div className="adopt-pet-photo">
+                                                      <img
+                                                        src={
+                                                          pet.petImage
+                                                            ? pet.petImage
+                                                            : "/images/placeholder.jpg"
+                                                        }
+                                                        alt={pet.name}
+                                                        style={{
+                                                          width: "100%",
+                                                          height: "100%",
+                                                          objectFit: "cover",
+                                                        }}
+                                                        onError={(e) => {
+                                                          e.target.src = "/images/placeholder.jpg";
+                                                        }}
+                                                      />
+                                                    </div>
+                                
+                                                    <div className="pet-info">
+                                                      <div className="pet-text">
+                                                        <h3>{pet?.name}</h3>
+                                                        <p>{pet?.breed?.name}</p>
+                                
+                                                        <p className="pet-org-province">
+                                                          <FaMapMarkerAlt className="location-icon" />
+                                                          {pet?.organization?.province?.name ||
+                                                            pet?.organization?.province ||
+                                                            "Unknown province"}
+                                                        </p>
+                                
+                                                        <div className="pet-tags">
+                                                          {pet?.age && (
+                                                            <span className="tag">{pet.age} yrs</span>
+                                                          )}
+                                                          {pet?.isSpayedOrNeutered && (
+                                                            <span className="tag dark">Neutered</span>
+                                                          )}
+                                                        </div>
+                                                      </div>
+                                
+                                                      <div className="pet-side-info">
+                                                        <div
+                                                          className={`pet-type ${
+                                                            pet?.isMale === true
+                                                              ? "male"
+                                                              : pet?.isMale === false
+                                                              ? "female"
+                                                              : ""
+                                                          }`}
+                                                        >
+                                                          <img
+                                                            src={
+                                                              pet?.breed?.isCat
+                                                                ? "/images/flags/cat.jpg"
+                                                                : "/images/flags/dog.jpg"
+                                                            }
+                                                            alt={pet?.breed?.isCat ? "Cat" : "Dog"}
+                                                          />
+                                                        </div>
+                                
+                                                        <div className="pet-org-avatar">
+                                                          <img
+                                                            src={
+                                                              pet?.organization?.organizationImage
+                                                                ? pet.organization.organizationImage
+                                                                : "/images/org-placeholder.png"
+                                                            }
+                                                            alt={pet?.organization?.name}
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
 
                                 </Link>
                             ))}

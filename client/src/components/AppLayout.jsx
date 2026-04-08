@@ -1,10 +1,17 @@
 import Sidebar from "./Sidebar";
+import FloatingPopup from "./FloatingPopup";
 
 function AppLayout({ children }) {
     return (
         <div className="app-layout">
 
         <Sidebar />
+
+        <FloatingPopup
+            title="Adoption Tips"
+            redirectTo="/asean-info"
+            forUser={true} 
+        />
 
         <main className="main">
             {children}

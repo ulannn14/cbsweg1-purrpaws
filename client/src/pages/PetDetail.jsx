@@ -8,14 +8,21 @@ function PetDetail() {
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [checkingApplication, setCheckingApplication] = useState(true);
 
   const API = import.meta.env.VITE_API_URL;
+  const user = JSON.parse(localStorage.getItem("user"));
 
-const baseUrl = "https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/";
 
-const images = pet?.name
-  ? [`${baseUrl}${encodeURIComponent(pet.name)}.jpg`]
-  : [`${baseUrl}Shadow.jpg`];
+const images = pet?.petImages?.length
+  ? [
+      pet.petImage, // main image FIRST
+      ...pet.petImages.filter(img => img !== pet.petImage) // avoid duplicate
+    ]
+  : pet?.petImage
+  ? [pet.petImage]
+  : ["/images/placeholder.jpg"];
   
   useEffect(() => {
     if (!id) return;
@@ -25,7 +32,25 @@ const images = pet?.name
       .then((data) => setPet(data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [API, id]);
+
+  useEffect(() => {
+    if (!user?.id || !id) {
+      setCheckingApplication(false);
+      return;
+    }
+
+    fetch(`${API}/api/applications/user/${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const alreadyApplied = data.some(
+          (app) => String(app.pet?.id) === String(id)
+        );
+        setHasApplied(alreadyApplied);
+      })
+      .catch(console.error)
+      .finally(() => setCheckingApplication(false));
+  }, [API, user?.id, id]);
 
   if (loading) return (
     <AppLayout>
@@ -87,14 +112,14 @@ const images = pet?.name
             <div className="pet-meta-grid">
 
               <div className="quick-card highlight">
-                <span>Adoption Fee</span>
+                <span>ADOPTION FEE</span>
                 <strong>
                   ₱{pet.adoptionFee?.toFixed(2) || "Not specified"}
                 </strong>
               </div>
 
               <div className={`quick-card highlight status ${pet.adoptionStatus?.toLowerCase()}`}>
-                <span>Adoption Status</span>
+                <span>ADOPTION STATUS</span>
                 <strong>{pet.adoptionStatus}</strong>
               </div>
 
@@ -105,32 +130,32 @@ const images = pet?.name
           <div className="pet-quick-grid">
 
             <div className="quick-card">
-              <span>Breed</span>
+              <span>BREED</span>
               <strong>{pet.breed?.name || "Unknown"}</strong>
             </div>
 
             <div className="quick-card">
-              <span>Age</span>
+              <span>AGE</span>
               <strong>{pet.age ?? "Unknown"}</strong>
             </div>
 
             <div className="quick-card">
-              <span>Gender</span>
+              <span>GENDER</span>
               <strong>{pet.isMale ? "Male" : "Female"}</strong>
             </div>
 
             <div className="quick-card">
-              <span>Size</span>
+              <span>SIZE</span>
               <strong>{formatText(pet.size)}</strong>
             </div>
 
             <div className="quick-card">
-              <span>Weight</span>
+              <span>WEIGHT</span>
               <strong>{pet.weight?.toFixed(1) || "—"} kg</strong>
             </div>
 
             <div className="quick-card">
-              <span>Color</span>
+              <span>COLOR</span>
               <strong>{pet.color}</strong>
             </div>
 
@@ -159,55 +184,117 @@ const images = pet?.name
                 <li><strong>Spayed / Neutered:</strong> {pet.isSpayedOrNeutered ? "Yes" : "No"}</li>
 
                 <li>
-                  <strong>Conditions:</strong>{" "}
-                  {pet.petConditions?.length
-                    ? pet.petConditions.map(pc => pc.condition.name).join(", ")
+                  <strong>Medical Conditions:</strong>{" "}
+                  {pet.petConditions && pet.petConditions.length > 0
+                    ? pet.petConditions
+                        .map(pc => pc?.condition?.name)
+                        .filter(Boolean)
+                        .join(", ")
                     : "None"}
                 </li>
 
                 <li>
                   <strong>Vaccinations:</strong>{" "}
-                  {pet.vaccinations?.length
-                    ? pet.vaccinations.map(v => v.vaccine.name).join(", ")
+                  {pet.vaccinations && pet.vaccinations.length > 0
+                    ? pet.vaccinations
+                        .map(v => v?.vaccine?.name)
+                        .filter(Boolean)
+                        .join(", ")
                     : "None listed"}
                 </li>
+
               </ul>
             </div>
 
           </div>
 
-          {/* ================= ORGANIZATION ================= */}
-          <div className="pet-org-box">
+          {/* ================= ORG + RESCUE GRID ================= */}
+          <div className="pet-details-grid">
 
-            <Link to={`/organizations/${pet.organizationId}`}>
-              <div className="org-circle">
-                <img
-                  src={
-                    pet.organization?.image
-                      ? `${API}/images/${pet.organization.organizationImage}`
-                      : `/temp-photos/orgs/org-profile-${pet.organization?.id}.png`
-                  }
-                  alt={pet.organization?.name}
-                />
+            {/* ================= RESCUE INFO ================= */}
+            <div className="pet-details-box org-rescue-box rescue">
+              <h3>Rescue Information</h3>
+
+              <div className="org-rescue-content">
+
+                <ul>
+                  <li>
+                    <strong>Date Rescued:</strong>{" "}
+                    {pet.dateRescued
+                      ? new Date(pet.dateRescued).toLocaleDateString()
+                      : "—"}
+                  </li>
+
+                  <li>
+                    <strong>Rescue Story:</strong>
+                    <p>{pet.rescueStory || "—"}</p>
+                  </li>
+
+                  <li>
+                    <strong>Adoption Requirements:</strong>
+
+                    {pet.adoptionRequirements?.length > 0 ? (
+                      <ul>
+                        {pet.adoptionRequirements.map((req, i) => (
+                          <li key={i}>{req}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>None listed</p>
+                    )}
+                  </li>
+
+                </ul>
+
               </div>
+            </div>
 
-              <h3>{pet.organization?.name}</h3>
-            </Link>
+            {/* ================= ORGANIZATION ================= */}
+            <div className="pet-details-box org-rescue-box">
+              <h3>Organization Information</h3>
 
-            <div className="org-details">
-              <p><strong>Rescued:</strong> {new Date(pet.dateRescued).toLocaleDateString()}</p>
-              <p><strong>Rescue Story:</strong> {pet.rescueStory}</p>
+              <div className="org-rescue-content">
+                <Link to={`/organizations/${pet.organizationId}`}>
+                  <div className="org-circle">
+                    <img
+                      src={
+                        pet.organization?.organizationImage ||
+                        "/images/avatar-placeholder.png"
+                      }
+                      alt={pet.organization?.name || "Organization"}
+                    />
+                  </div>
+
+                  <h3>{pet.organization?.name}</h3>
+                </Link>
+
+                <ul>
+                  <li><strong>Type:</strong> {pet.organization?.organizationType || "—"}</li>
+                  <li><strong>Location:</strong> {pet.organization?.city || "—"}</li>
+                  <li><strong>Contact:</strong> {pet.organization?.contactNumber || "—"}</li>
+                </ul>
+              </div>
             </div>
 
           </div>
 
           {/* ================= APPLY ================= */}
           <div className="pet-apply">
-            <Link to={`/apply/${pet.id}`}>
-              <button className="apply-btn-large">
-                Apply for Adoption
+            {checkingApplication ? (
+              <button className="apply-btn-large" disabled>
+                Checking application...
               </button>
-            </Link>
+            ) : hasApplied ? (
+              <button className="apply-btn-large" disabled>
+                Applied Already
+              </button>
+            ) : (
+              <Link to={`/apply/${pet.id}`}>
+                <button className="apply-btn-large">
+                  Apply for Adoption
+                </button>
+              </Link>
+            )}
           </div>
 
         </section>

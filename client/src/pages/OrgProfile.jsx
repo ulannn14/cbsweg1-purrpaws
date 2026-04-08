@@ -17,6 +17,11 @@ function OrgProfile() {
 
     const [logoFile, setLogoFile] = useState(null);
     const [preview, setPreview] = useState("/images/org-avatar.png"); // default org avatar
+    const [removeImage, setRemoveImage] = useState(false);
+
+    const [changingPassword, setChangingPassword] = useState(false);
+    const [newPassword, setNewPassword] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
     useEffect(() => {
     if (!id) return;
@@ -25,7 +30,11 @@ function OrgProfile() {
         .then(res => res.json())
         .then(data => {
         setOrgInfo(data);
-        setPreview(data.logo ? `${API}/images/${data.logo}` : "/images/org-avatar.png");
+
+        setPreview(
+            data.organizationImage || "/images/org-avatar.png"
+        );
+
         setLoading(false);
         })
         .catch(err => {
@@ -65,6 +74,17 @@ function OrgProfile() {
         setPreview(URL.createObjectURL(file));
     };
 
+    const handleNewPasswordChange = (e) => {
+        const value = e.target.value;
+        setNewPassword(value);
+
+        if (value.length > 0 && value.length < 6) {
+            setPasswordError("Password must be at least 6 characters");
+        } else {
+            setPasswordError("");
+        }
+    };
+
     const showSuccessPopup = (message) => {
     setSuccessMessage(message);
 
@@ -79,12 +99,26 @@ function OrgProfile() {
     try {
         setIsSaving(true);
 
+        const form = new FormData();
+
+        // append fields
+        Object.entries(orgInfo).forEach(([key, value]) => {
+        form.append(key, value);
+        });
+
+        // upload image
+        if (logoFile) {
+        form.append("organizationImage", logoFile); // FIXED
+        }
+
+        // remove image
+        if (removeImage) {
+        form.append("removeImage", "true");
+        }
+
         const res = await fetch(`${API}/api/organizations/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(orgInfo)
+        body: form
         });
 
         if (!res.ok) throw new Error("Update failed");
@@ -93,7 +127,16 @@ function OrgProfile() {
 
         setOrgInfo(updated);
         setEditing(false);
+        setLogoFile(null);
+        setRemoveImage(false);
+
+        // FIXED preview
+        setPreview(
+        updated.organizationImage || "/images/org-avatar.png"
+        );
+
         showSuccessPopup("Profile updated successfully!");
+
     } catch (err) {
         console.error(err);
         alert("Failed to update profile");
@@ -103,12 +146,13 @@ function OrgProfile() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
+        localStorage.removeItem("org");
         navigate("/");
     };
 
     return (
         <OrgAppLayout>
+            
         <main className="main">
             <section className="section apply-page">
 
@@ -126,16 +170,43 @@ function OrgProfile() {
                 <div className="pet-header">
                     <div className="edit-upload-container">
                     <img 
-                        src={`/temp-photos/orgs/org-profile-${storedUser.id}.png`}
+                        src={preview}
                         alt="Profile"
                         className="edit-upload-preview"
+                        onError={(e) => {
+                            e.target.src = "/images/org-avatar.png";
+                        }}
                     />
-                    {/*editing && (
-                        <>
-                        <label htmlFor="image-upload" className="edit-upload-label">Change Photo</label>
-                        <input type="file" id="image-upload" className="edit-upload-input" onChange={handleImageUpload} />
-                        </>
-                    )*/}
+                    {editing && (
+                    <div className="upload-buttons">
+                        <input
+                        type="file"
+                        id="image-upload"
+                        className="edit-upload-input"
+                        accept="image/*"
+                        onChange={(e) => {
+                            handleLogoUpload(e);
+                            setRemoveImage(false); // uploading = not removing
+                        }}
+                        />
+
+                        <label htmlFor="image-upload" className="edit-upload-label">
+                        Change Photo
+                        </label>
+
+                        <button
+                        type="button"
+                        className="edit-upload-label remove-btn"
+                        onClick={() => {
+                            setLogoFile(null);
+                            setRemoveImage(true);
+                            setPreview("/images/org-avatar.png"); // FIXED
+                        }}
+                        >
+                        Remove Photo
+                        </button>
+                    </div>
+                    )}
                     </div>
                 </div>
                 
@@ -145,33 +216,52 @@ function OrgProfile() {
             <h2 className="apply-title">Account Details</h2>
             <div className="apply-box">
                 <div className="personal-grid">
-                <div className="info-row">
-                    <label>Email</label>
-                    {editing ? (
-                    <input
-                        className="edit-input"
-                        name="email"
-                        value={orgInfo.email}
-                        onChange={handleChange}
-                    />
-                    ) : (
-                    <span>{orgInfo.email}</span>
-                    )}
-                </div>
-                <div className="info-row">
+                    <div className="info-row">
+                        <label>Email</label>
+                        {editing ? (
+                        <input
+                            className="edit-input"
+                            name="email"
+                            value={orgInfo.email}
+                            onChange={handleChange}
+                        />
+                        ) : (
+                        <span>{orgInfo.email}</span>
+                        )}
+                    </div>
+                    <div className="info-row">
                     <label>Password</label>
-                    {editing ? (
-                    <input
-                        type="password"
-                        className="edit-input"
-                        name="password"
-                        value={orgInfo.password}
-                        onChange={handleChange}
-                    />
-                    ) : (
-                    <span>••••••••</span>
+
+                    {!editing && <span>********</span>}
+
+                    {editing && !changingPassword && (
+                        <div>
+                        <span>********</span>
+                        <button
+                            className="change-password-btn"
+                            onClick={() => setChangingPassword(true)}
+                        >
+                            Change Password
+                        </button>
+                        </div>
                     )}
-                </div>
+
+                    {editing && changingPassword && (
+                        <div className="password-change-box">
+                        <input
+                            type="password"
+                            className="edit-input"
+                            placeholder="Enter new password"
+                            value={newPassword}
+                            onChange={handleNewPasswordChange}
+                        />
+                        
+                        {passwordError && (
+                            <p className="error-text">{passwordError}</p>
+                        )}
+                        </div>
+                    )}
+                    </div>
                 </div>
             </div>
 

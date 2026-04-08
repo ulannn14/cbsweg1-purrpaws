@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import OrgAppLayout from "../components/OrgAppLayout";
 import BackButton from "../components/BackButton";
@@ -16,34 +16,82 @@ function EditPet() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [conditions, setConditions] = useState([]);
+  const [vaccines, setVaccines] = useState([]);
+
+  const [openConditions, setOpenConditions] = useState(false);
+  const [openVaccines, setOpenVaccines] = useState(false);
+
+  const conditionsRef = useRef(null);
+  const vaccinesRef = useRef(null);
   
   useEffect(() => {
     if (!id) return;
 
     // Fetch pet details
     fetch(`${API}/api/pets/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        setPet(data);
-        setForm(data);
-        const initialImage = data.name
-          ? `https://aiqpzufzjfwgwhmuxjby.supabase.co/storage/v1/object/public/petImages/${encodeURIComponent(data.name)}.jpg`
-          : "/images/placeholder.jpg";
+    .then(res => res.json())
+    .then(data => {
 
-        setGalleryImages([
-          { id: crypto.randomUUID(), file: null, preview: "/images/placeholder.jpg", isExisting: true },
-          { id: crypto.randomUUID(), file: null, preview: "/images/placeholder.jpg", isExisting: true }
-        ]);
-        setActiveImageIndex(0);
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+      console.log("DATA:", data);
+      setPet(data);
+      setForm({
+        ...data,
+        conditionIds: data.petConditions?.map(pc => pc.conditionId) || [],
+        vaccineIds: data.vaccinations?.map(v => v.vaccineId) || []
+      });
+
+      const images = data?.petImages?.length
+        ? data.petImages.map(url => ({
+            id: crypto.randomUUID(),
+            file: null,
+            preview: url,
+            isExisting: true
+          }))
+        : [{
+            id: crypto.randomUUID(),
+            file: null,
+            preview: "/images/placeholder.jpg",
+            isExisting: true
+          }];
+
+      setGalleryImages(images);
+      setActiveImageIndex(0);
+    })
+    .catch(err => console.error(err))
+    .finally(() => setLoading(false));
 
     // Fetch breeds
     fetch(`${API}/api/breeds`)
       .then(res => res.json())
       .then(data => setBreeds(data))
       .catch(err => console.error(err));
+
+    // fetch conditions
+    fetch(`${API}/api/conditions`)
+      .then(res => res.json())
+      .then(data => setConditions(data))
+      .catch(err => console.error(err));
+
+    // fetch vaccines
+    fetch(`${API}/api/vaccines`)
+      .then(res => res.json())
+      .then(data => setVaccines(data))
+      .catch(err => console.error(err));
+
+    const handleClickOutside = (e) => {
+      if (conditionsRef.current && !conditionsRef.current.contains(e.target)) {
+        setOpenConditions(false);
+      }
+      if (vaccinesRef.current && !vaccinesRef.current.contains(e.target)) {
+        setOpenVaccines(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+
   }, [id]);
 
   const handleChange = (e) => {
@@ -75,37 +123,27 @@ function EditPet() {
     setPreview(URL.createObjectURL(file));
   };
 
-  {/*
-  const handleSave = async () => {
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this pet? This cannot be undone.");
+
+    if (!confirmDelete) return;
+
     try {
-      const { breed, organization, ...payload } = form;
-
-      const formData = new FormData();
-      Object.entries(payload).forEach(([key, value]) => {
-        if (Array.isArray(value)) formData.append(key, JSON.stringify(value));
-        else formData.append(key, value);
-      });
-
-      if (imageFile) formData.append("image", imageFile);
-
       const res = await fetch(`${API}/api/pets/${id}`, {
-        method: "PUT",
-        body: formData
+        method: "DELETE"
       });
 
-      if (!res.ok) throw new Error("Failed to update pet");
+      if (!res.ok) throw new Error("Failed to delete pet");
 
-      const updated = await res.json();
-      setPet(updated);
-      setForm(updated);
-      if (updated.image) setPreview(`${API}/images/${updated.image}`);
-      showSuccessPopup("Pet updated successfully!");
+      alert("Pet deleted successfully");
+
+      // redirect after delete
+      navigate("/org/pets"); // adjust if your route is different
     } catch (err) {
       console.error(err);
-      alert("Failed to save changes");
+      alert("Failed to delete pet");
     }
   };
-  */}
 
   const showSuccessPopup = (message) => {
     setSuccessMessage(message);
@@ -117,25 +155,60 @@ function EditPet() {
 
   const handleSave = async () => {
     if (isSaving) return;
-
+    
     try {
       setIsSaving(true);
 
-      const { breed, organization, ...payload } = form;
+      const {
+        breed,
+        organization,
+        petConditions,
+        vaccinations,
+        ...payload
+      } = form;
+
+      const formData = new FormData();
+
+      const existingImages = galleryImages
+        .filter(img => img.isExisting && !img.file)
+        .map(img => img.preview);
+
+      formData.append("existingImages", JSON.stringify(existingImages));
+
+      galleryImages.forEach((img) => {
+        if (img.file) {
+          formData.append("petImages", img.file);
+        }
+      });
+
+      // Append normal fields
+      Object.entries(payload).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value ?? "");
+        }
+      });
+
+      // Append condition + vaccine IDs
+      formData.append("conditionIds", JSON.stringify(form.conditionIds || []));
+      formData.append("vaccineIds", JSON.stringify(form.vaccineIds || []));
 
       const res = await fetch(`${API}/api/pets/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+        body: formData, // NO JSON HEADERS
       });
 
       if (!res.ok) throw new Error("Failed to update pet");
 
       const updated = await res.json();
+
       setPet(updated);
-      setForm(updated);
+      setForm({
+        ...updated,
+        conditionIds: updated.petConditions?.map(pc => pc.conditionId) || [],
+        vaccineIds: updated.vaccinations?.map(v => v.vaccineId) || []
+      });
 
       showSuccessPopup("Pet saved successfully!");
     } catch (err) {
@@ -147,39 +220,39 @@ function EditPet() {
   };
 
   const handleAddImages = (e) => {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-  const newImages = files.map((file) => ({
-    id: crypto.randomUUID(),
-    file,
-    preview: URL.createObjectURL(file),
-    isExisting: false
-  }));
-
-  setGalleryImages((prev) => [...prev, ...newImages]);
-
-  if (galleryImages.length === 0) {
-    setActiveImageIndex(0);
-  }
-
-  e.target.value = "";
-};
-
-const handleReplaceImage = (e) => {
-  const file = e.target.files?.[0];
-    if (!file || galleryImages.length === 0) return;
-
-    const updated = [...galleryImages];
-    updated[activeImageIndex] = {
-      ...updated[activeImageIndex],
+    const newImages = files.map((file) => ({
+      id: crypto.randomUUID(),
       file,
       preview: URL.createObjectURL(file),
       isExisting: false
-    };
+    }));
 
-    setGalleryImages(updated);
+    setGalleryImages((prev) => [...prev, ...newImages]);
+
+    if (galleryImages.length === 0) {
+      setActiveImageIndex(0);
+    }
+
     e.target.value = "";
+  };
+
+  const handleReplaceImage = (e) => {
+    const file = e.target.files?.[0];
+      if (!file || galleryImages.length === 0) return;
+
+      const updated = [...galleryImages];
+      updated[activeImageIndex] = {
+        ...updated[activeImageIndex],
+        file,
+        preview: URL.createObjectURL(file),
+        isExisting: false
+      };
+
+      setGalleryImages(updated);
+      e.target.value = "";
   };
 
   const handleDeleteImage = () => {
@@ -302,7 +375,7 @@ const handleReplaceImage = (e) => {
             <div className="pet-meta-grid">
 
               <div className="quick-card highlight">
-                <span>Adoption Fee</span>
+                <span>ADOPTION FEE</span>
                 <div className="meta-value">
                   ₱
                   <input
@@ -315,7 +388,7 @@ const handleReplaceImage = (e) => {
               </div>
 
               <div className={`quick-card highlight status ${form.adoptionStatus?.toLowerCase()}`}>
-                <span>Adoption Status</span>
+                <span>ADOPTION STATUS</span>
                 <select
                   name="adoptionStatus"
                   value={form.adoptionStatus || ""}
@@ -333,7 +406,7 @@ const handleReplaceImage = (e) => {
           <div className="pet-quick-grid">
 
             <div className="quick-card">
-              <span>Breed</span>
+              <span>BREED</span>
               <select name="breedId" value={form.breedId || ""} onChange={handleChange}>
                 <option value="">Select breed</option>
                 {breeds.map(b => (
@@ -343,12 +416,12 @@ const handleReplaceImage = (e) => {
             </div>
 
             <div className="quick-card">
-              <span>Age</span>
+              <span>AGE</span>
               <input type="number" name="age" value={form.age || ""} onChange={handleChange} />
             </div>
 
             <div className="quick-card">
-              <span>Gender</span>
+              <span>GENDER</span>
               <select
                 name="isMale"
                 value={form.isMale ? "true" : "false"}
@@ -362,7 +435,7 @@ const handleReplaceImage = (e) => {
             </div>
 
             <div className="quick-card">
-              <span>Size</span>
+              <span>SIZE</span>
               <select name="size" value={form.size || ""} onChange={handleChange}>
                 <option value="SMALL">Small</option>
                 <option value="MEDIUM">Medium</option>
@@ -371,12 +444,12 @@ const handleReplaceImage = (e) => {
             </div>
 
             <div className="quick-card">
-              <span>Weight</span>
+              <span>WEIGHT</span>
               <input type="number" name="weight" value={form.weight || ""} onChange={handleChange} />
             </div>
 
             <div className="quick-card">
-              <span>Color</span>
+              <span>COLOR</span>
               <input name="color" value={form.color || ""} onChange={handleChange} />
             </div>
 
@@ -447,39 +520,118 @@ const handleReplaceImage = (e) => {
                 {/* CONDITIONS */}
                 <li>
                   <strong>Medical Conditions</strong>
-                  <textarea
-                    name="conditions"
-                    value={
-                      form.petConditions?.map(pc => pc.condition.name).join(", ") || ""
-                    }
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        petConditions: e.target.value.split(",").map(name => ({
-                          condition: { name: name.trim() }
-                        }))
-                      })
-                    }
-                  />
+                  {/* CONDITIONS */}
+                  <div className="multi-select-wrapper" ref={conditionsRef}>
+                    <div className="multi-select-display" onClick={() => setOpenConditions(o => !o)}>
+                      {(form.conditionIds || []).length === 0 && (
+                        <span className="placeholder">Select conditions...</span>
+                      )}
+
+                      {(form.conditionIds || []).map(id => {
+                        const item = conditions.find(c => c.id === id);
+                        return (
+                          <span key={id} className="multi-tag">
+                            {item?.name}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setForm(prev => ({
+                                  ...prev,
+                                  conditionIds: prev.conditionIds.filter(i => i !== id)
+                                }));
+                              }}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+
+                    {openConditions && (
+                      <div className="multi-dropdown">
+                        {conditions.map(c => {
+                          const selected = form.conditionIds?.includes(c.id);
+
+                          return (
+                            <div
+                              key={c.id}
+                              className={`multi-option ${selected ? "selected" : ""}`}
+                              onClick={() => {
+                                setForm(prev => ({
+                                  ...prev,
+                                  conditionIds: selected
+                                    ? prev.conditionIds.filter(i => i !== c.id)
+                                    : [...(prev.conditionIds || []), c.id]
+                                }));
+                              }}
+                            >
+                              {c.name}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </li>
 
                 {/* VACCINATIONS */}
                 <li>
                   <strong>Vaccinations</strong>
-                  <textarea
-                    name="vaccinations"
-                    value={
-                      form.vaccinations?.map(v => v.vaccine.name).join(", ") || ""
-                    }
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        vaccinations: e.target.value.split(",").map(name => ({
-                          vaccine: { name: name.trim() }
-                        }))
-                      })
-                    }
-                  />
+                    <div className="multi-select-wrapper" ref={vaccinesRef}>
+                      <div className="multi-select-display" onClick={() => setOpenVaccines(o => !o)}>
+                        {(form.vaccineIds || []).length === 0 && (
+                          <span className="placeholder">Select vaccines...</span>
+                        )}
+
+                        {(form.vaccineIds || []).map(id => {
+                          const item = vaccines.find(v => v.id === id);
+                          return (
+                            <span key={id} className="multi-tag">
+                              {item?.name}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setForm(prev => ({
+                                    ...prev,
+                                    vaccineIds: prev.vaccineIds.filter(i => i !== id)
+                                  }));
+                                }}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          );
+                        })}
+                      </div>
+
+                      {openVaccines && (
+                        <div className="multi-dropdown">
+                          {vaccines.map(v => {
+                            const selected = form.vaccineIds?.includes(v.id);
+
+                            return (
+                              <div
+                                key={v.id}
+                                className={`multi-option ${selected ? "selected" : ""}`}
+                                onClick={() => {
+                                  setForm(prev => ({
+                                    ...prev,
+                                    vaccineIds: selected
+                                      ? prev.vaccineIds.filter(i => i !== v.id)
+                                      : [...(prev.vaccineIds || []), v.id]
+                                  }));
+                                }}
+                              >
+                                {v.name}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                 </li>
 
               </ul>
@@ -488,6 +640,8 @@ const handleReplaceImage = (e) => {
 
           {/* ================= RESCUE INFO ================= */}
           <div className="pet-org-box">
+
+            <h3>Rescue Information</h3>
 
             <p>
               <strong>Date Rescued</strong>
@@ -508,6 +662,43 @@ const handleReplaceImage = (e) => {
               />
             </p>
 
+            <p>
+              <strong>Adoption Requirements</strong>
+              <label className="checkbox-row">
+                <span>Zoom Meeting</span>
+                <input
+                  type="checkbox"
+                  checked={form.adoptionRequirements?.includes("ZOOM") || false}
+                  onChange={(e) => {
+                    const current = form.adoptionRequirements || [];
+                    setForm({
+                      ...form,
+                      adoptionRequirements: e.target.checked
+                        ? [...current, "ZOOM"]
+                        : current.filter(r => r !== "ZOOM")
+                    });
+                  }}
+                />
+              </label>
+
+              <label className="checkbox-row">
+                <span>Shelter Visit</span>
+                <input
+                  type="checkbox"
+                  checked={form.adoptionRequirements?.includes("SHELTER_VISIT") || false}
+                  onChange={(e) => {
+                    const current = form.adoptionRequirements || [];
+                    setForm({
+                      ...form,
+                      adoptionRequirements: e.target.checked
+                        ? [...current, "SHELTER_VISIT"]
+                        : current.filter(r => r !== "SHELTER_VISIT")
+                    });
+                  }}
+                />
+              </label>
+            </p>
+
           </div>
 
           {/* ================= ACTIONS ================= */}
@@ -526,8 +717,17 @@ const handleReplaceImage = (e) => {
                 "Save Changes"
               )}
             </button>
+
             <button className="cancel-btn" onClick={() => navigate(-1)}>
               Cancel
+            </button>
+
+            {/* 🔥 NEW DELETE BUTTON */}
+            <button
+              className="delete-btn"
+              onClick={handleDelete}
+            >
+              Delete Pet
             </button>
           </div>
 
