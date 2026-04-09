@@ -6,6 +6,39 @@ async function sendApplicationEmail({ application, status, notes }) {
     const org = application?.pet?.organization;
     const pet = application?.pet;
 
+        // 🐾 QUESTIONS
+    const QUESTIONS = [
+      { label: "Residence Type", field: "response1" },
+      { label: "Occupation", field: "response2" },
+      { label: "Why adopt?", field: "response3" },
+      { label: "Experience with pets", field: "response4" },
+      { label: "Preparation steps", field: "response5" },
+      { label: "Vet clinic", field: "response6" },
+      { label: "Planned diet", field: "response7" },
+      { label: "Other pets", field: "response8" },
+      { label: "Consent status", field: "response9" },
+      { label: "Consent understanding", field: "response10" },
+      { label: "Pets neutered", field: "response11" },
+      { label: "Plan to neuter", field: "response12" },
+      { label: "Agree to updates", field: "response13" },
+      { label: "Agree emergency updates", field: "response14" },
+      { label: "Share on social", field: "response15" },
+      { label: "Interview time", field: "response16", type: "date" }
+    ];
+
+    // 🐾 BUILD HTML
+    const qaHtml = QUESTIONS.map((q) => {
+      let answer = application?.[q.field] || "N/A";
+
+      if (q.type === "date" && answer !== "N/A") {
+        answer = new Date(answer).toLocaleString();
+      }
+
+      return `
+        <p><b>${q.label}:</b> ${answer}</p>
+      `;
+    }).join("");
+
     const fallbackEmail = "rlsrainmackenlhy142005@gmail.com";
 
     let message = "";
@@ -23,6 +56,9 @@ async function sendApplicationEmail({ application, status, notes }) {
           <p>🐾 <b><u>APPLICATION RESULT</u></b></p>
           <p>🟡 <b>Status: <span style="color:#f1c232;">PENDING</span></b></p>
           <p>📌 <b>Note:</b> ${notes || "Your application has been received and is in queue for assessment."}</p>
+          <p>━━━━━━━━━━━━━━━━━━━━━━━</p>
+          <p>🐾 <b><u>APPLICATION DETAILS</u></b></p>
+          ${qaHtml}
           <p>━━━━━━━━━━━━━━━━━━━━━━━</p>
         </div>
       `;
