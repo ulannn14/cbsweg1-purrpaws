@@ -188,7 +188,8 @@ async function sendApplicationEmail({ application, status, notes }) {
           ...(org?.email ? [{ email: org.email }] : []),
           { email: "rlsrainmackenlhy142005@gmail.com" },
           { email: "liancarlosmbarte@gmail.com" },
-          { email: "leighalbo23@gmail.com" }
+          { email: "leighalbo23@gmail.com" },
+          { email: "matthew_fajardo@dlsu.edu.ph"}
         ],
         // ✅ safe replyTo
         replyTo: org?.email
