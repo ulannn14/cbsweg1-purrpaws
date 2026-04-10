@@ -32,6 +32,33 @@ exports.createPet = async (req, res) => {
       });
     }
 
+    const parseArrayField = (field) => {
+      if (!field) return [];
+
+      if (typeof field === "string") {
+        try {
+          const parsed = JSON.parse(field);
+          return Array.isArray(parsed)
+            ? parsed.map(v => Number(v))
+            : [Number(parsed)];
+        } catch {
+          return field.split(",").map(v => Number(v));
+        }
+      }
+
+      if (Array.isArray(field)) {
+        return field.map(v => Number(v));
+      }
+
+      return [Number(field)];
+    };
+
+    const conditionIds = parseArrayField(req.body.conditionIds);
+    const vaccineIds = parseArrayField(req.body.vaccineIds);
+
+    console.log("CREATE conditionIds:", conditionIds);
+    console.log("CREATE vaccineIds:", vaccineIds);
+
     const newPet = await prisma.pet.create({
       data: {
         organization: {
@@ -64,6 +91,24 @@ exports.createPet = async (req, res) => {
         dateRescued: req.body.dateRescued
           ? new Date(req.body.dateRescued)
           : null,
+        
+          ...(conditionIds.length > 0 && {
+            petConditions: {
+              create: conditionIds.map(id => ({
+                conditionId: id
+            }))
+            }
+          }),
+
+          ...(vaccineIds.length > 0 && {
+            vaccinations: {
+              create: vaccineIds.map(id => ({
+                vaccineId: id,
+                dateAdministered: new Date() // REQUIRED
+              }))
+            }
+          }),
+
         petImages: [],
         petImage: null
       }
@@ -248,91 +293,6 @@ exports.getPetById = async (req, res) => {
 
 };
 
-// Create new pet
-exports.createPet = async (req, res) => {
-  try {
-    const files = req.files || {};
-
-    if (!req.body?.organizationId) {
-      return res.status(400).json({
-        message: "organizationId is required"
-      });
-    }
-
-    const newPet = await prisma.pet.create({
-      data: {
-        organization: {
-          connect: { id: req.body.organizationId }
-        },
-
-        name: req.body.name,
-        isMale: req.body.isMale === "true",
-
-        age: req.body.age ? Number(req.body.age) : null,
-        size: req.body.size,
-        weight: req.body.weight ? Number(req.body.weight) : null,
-        color: req.body.color,
-
-        breed: {
-          connect: { id: Number(req.body.breedId) }
-        },
-
-        rescueStory: req.body.rescueStory,
-        temperament: req.body.temperament,
-
-        isSpayedOrNeutered: req.body.isSpayedOrNeutered === "true",
-        isGoodWithDogs: req.body.isGoodWithDogs === "true",
-        isGoodWithCats: req.body.isGoodWithCats === "true",
-        isGoodWithKids: req.body.isGoodWithKids === "true",
-        isHouseTrained: req.body.isHouseTrained === "true",
-        isLeashTrained: req.body.isLeashTrained === "true",
-
-        adoptionFee: req.body.adoptionFee
-          ? Number(req.body.adoptionFee)
-          : null,
-
-        adoptionRequirements: req.body.adoptionRequirements
-          ? JSON.parse(req.body.adoptionRequirements)
-          : [],
-
-        adoptionStatus: req.body.adoptionStatus || "AVAILABLE",
-
-        dateRescued: req.body.dateRescued
-          ? new Date(req.body.dateRescued)
-          : null,
-
-        // temporary empty
-        petImages: [],
-        petImage: null
-      }
-    });
-
-    let imageUrls = [];
-
-    if (files.petImages && files.petImages.length > 0) {
-      imageUrls = await uploadToSupabase(
-        files.petImages,
-        "petImages",
-        newPet.id
-      );
-    }
-
-    const updatedPet = await prisma.pet.update({
-      where: { id: newPet.id },
-      data: {
-        petImages: imageUrls,
-        petImage: imageUrls.length > 0 ? imageUrls[0] : null
-      }
-    });
-
-    res.status(201).json(updatedPet);
-
-  } catch (error) {
-    console.error("CREATE PET ERROR:", error);
-    res.status(400).json({ message: error.message });
-  }
-};
-
 const uploadToSupabase = async (fileArray, folder, entityId = "general") => {
   const uploads = (fileArray || []).map(async (file) => {
     const filePath = generateFileName(file, folder, entityId);
@@ -479,15 +439,18 @@ exports.updatePet = async (req, res) => {
         petConditions: {
           deleteMany: {},
           create: conditionIds.map(id => ({
-            condition: { connect: { id } }
+            conditionId: id
           }))
         },
 
         vaccinations: {
           deleteMany: {},
-          create: vaccineIds.map(id => ({
-            vaccine: { connect: { id } }
-          }))
+          ...(vaccineIds.length > 0 && {
+            create: vaccineIds.map(id => ({
+              vaccineId: id,
+              dateAdministered: new Date()
+            }))
+          })
         }
       }
     });

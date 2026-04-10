@@ -202,10 +202,9 @@ function NewPet() {
 
       const formData = new FormData();
 
-      // append normal fields
       Object.entries(form).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value));
+          formData.append(key, JSON.stringify(value || [])); // FORCE include
         } else {
           formData.append(key, value ?? "");
         }
