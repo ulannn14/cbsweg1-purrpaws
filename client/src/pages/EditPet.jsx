@@ -191,9 +191,6 @@ function EditPet() {
       });
 
       // Append condition + vaccine IDs
-      formData.append("conditionIds", JSON.stringify(form.conditionIds || []));
-      formData.append("vaccineIds", JSON.stringify(form.vaccineIds || []));
-
       const res = await fetch(`${API}/api/pets/${id}`, {
         method: "PUT",
         body: formData, // NO JSON HEADERS
